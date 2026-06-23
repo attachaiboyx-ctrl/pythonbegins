@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CheckCircle2, CreditCard, FileUp, QrCode, ShieldCheck } from "lucide-react";
 import { uploadSlipAction } from "@/app/actions/payment";
+import { PaymentSlipForm } from "@/components/PaymentSlipForm";
 import { getPaymentSettings } from "@/lib/promptpay";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
@@ -143,42 +144,11 @@ export default async function PaymentPage({
             })}
           </div>
 
-          <form
+          <PaymentSlipForm
             action={uploadSlipAction}
-            className="mt-6 space-y-4"
-            encType="multipart/form-data"
-          >
-            <input name="amount" type="hidden" value={settings.price} />
-            <div className="space-y-2">
-              <label className="label" htmlFor="slip">
-                ไฟล์สลิป
-              </label>
-              <input
-                accept="image/png,image/jpeg,image/webp,application/pdf"
-                className="input"
-                disabled={isPaid}
-                id="slip"
-                name="slip"
-                required
-                type="file"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="label" htmlFor="note">
-                หมายเหตุถึงแอดมิน
-              </label>
-              <textarea
-                className="input min-h-28"
-                disabled={isPaid}
-                id="note"
-                name="note"
-                placeholder="เช่น โอนจากบัญชีผู้ปกครอง เวลา 18:30"
-              />
-            </div>
-            <button className="btn-primary" disabled={isPaid} type="submit">
-              ส่งสลิป
-            </button>
-          </form>
+            amount={settings.price}
+            isPaid={isPaid}
+          />
         </div>
       </section>
 
