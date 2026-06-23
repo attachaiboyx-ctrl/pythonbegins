@@ -1,7 +1,5 @@
 "use server";
 
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
 import { redirect } from "next/navigation";
 import { getPaymentSettings } from "@/lib/promptpay";
 import { prisma } from "@/lib/prisma";
@@ -45,19 +43,15 @@ export async function uploadSlipAction(formData: FormData) {
     fail("รองรับเฉพาะไฟล์ PNG, JPG, WEBP หรือ PDF");
   }
 
-  const uploadDir = path.join(process.cwd(), "public", "uploads", "slips");
-  const filename = `${Date.now()}-${user.id}.${extension}`;
-  const filepath = path.join(uploadDir, filename);
   const bytes = Buffer.from(await file.arrayBuffer());
-
-  await mkdir(uploadDir, { recursive: true });
-  await writeFile(filepath, bytes);
+const base64 = bytes.toString("base64");
+const imageUrl = `data:${file.type};base64,${base64}`;
 
   await prisma.paymentSlip.create({
     data: {
       userId: user.id,
       amount,
-      imageUrl: `/uploads/slips/${filename}`,
+      imageUrl,
       note: note || null
     }
   });
