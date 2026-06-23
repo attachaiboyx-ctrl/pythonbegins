@@ -175,6 +175,7 @@ export default async function HomePage() {
               <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-black">
                 <CheckCircle2 className="h-4 w-4" />
                 พร้อมเริ่มเรียนวันนี้
+               
               </p>
               <h2 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">
                 ปลดล็อกทุกบทเรียน พร้อมแบบฝึกหัดและโปรเจกต์จริง

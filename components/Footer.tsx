@@ -7,9 +7,7 @@ export function Footer() {
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-[1.2fr_0.8fr_0.8fr] lg:px-8">
         <div>
           <div className="flex items-center gap-3">
-            <span className="grid h-11 w-11 place-items-center rounded-lg bg-gradient-to-br from-brand-600 to-lavender-600 text-lg font-black text-white">
-              Py
-            </span>
+            
             <div>
               <p className="font-black text-ink">Python สำหรับมือใหม่</p>
               <p className="text-sm font-medium text-slate-500">
@@ -43,7 +41,7 @@ export function Footer() {
           <div className="mt-4 space-y-3 text-sm font-bold text-slate-600">
             <p className="flex items-center gap-2">
               <Mail className="h-4 w-4 text-brand-600" />
-              support@pythonbeginner.local
+              pythonbegins@gmail.com
             </p>
             <p className="flex items-center gap-2">
               <ShieldCheck className="h-4 w-4 text-brand-600" />

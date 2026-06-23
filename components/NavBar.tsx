@@ -11,7 +11,7 @@ export async function NavBar() {
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
         <Link href="/" className="flex min-w-0 items-center gap-3">
-         <img
+        <img 
   src="/logo.png"
   alt="Logo"
   className="h-11 w-auto"
