@@ -70,7 +70,7 @@ function PaymentSlipFormFields({ isPaid }: { isPaid: boolean }) {
 
       <div className="space-y-2">
         <label className="label" htmlFor="note">
-          หมายเหตุถึงแอดมิน
+          หมายเหตุเพิ่มเติม (ถ้ามี)
         </label>
         <textarea
           aria-disabled={disabled}
@@ -78,7 +78,7 @@ function PaymentSlipFormFields({ isPaid }: { isPaid: boolean }) {
           disabled={disabled}
           id="note"
           name="note"
-          placeholder="เช่น โอนจากบัญชีผู้ปกครอง เวลา 18:30"
+          placeholder="งดโอนช่วง 00:00-01:00 นะครับ"
         />
       </div>
 
