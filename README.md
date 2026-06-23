@@ -1,6 +1,6 @@
 # Python สำหรับมือใหม่ Course Platform
 
-เว็บคอร์สเรียน Python ภาษาไทยสำหรับผู้เริ่มต้นทุกวัย สร้างด้วย Next.js, Tailwind CSS, Prisma และ SQLite
+เว็บคอร์สเรียน Python ภาษาไทยสำหรับผู้เริ่มต้นทุกวัย สร้างด้วย Next.js, Tailwind CSS, Prisma และ Neon PostgreSQL
 
 ## ฟีเจอร์หลัก
 
@@ -23,26 +23,36 @@ npm install
 
 ## ตั้งค่า Environment
 
-โปรเจกต์มีไฟล์ `.env` สำหรับทดลองในเครื่องแล้ว ถ้าต้องการเปลี่ยนค่าให้แก้ไฟล์นี้ได้เลย
+โปรเจกต์มีไฟล์ `.env` สำหรับตั้งค่าการเชื่อมต่อฐานข้อมูลและค่าระบบอื่น ๆ ให้ใส่ `DATABASE_URL` เป็น connection string ของ Neon PostgreSQL ชุดเดียวกับที่ตั้งไว้บน Vercel
 
 ```env
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://USER:PASSWORD@HOST/neondb?sslmode=require"
 SESSION_SECRET="replace-with-a-long-random-secret"
 PROMPTPAY_ID="0923341049"
 COURSE_PRICE="199"
 MERCHANT_NAME="Python Beginner Academy"
 ```
 
+อย่าใช้ `file:./dev.db` แล้ว เพราะ schema Prisma ตั้งค่าเป็น PostgreSQL สำหรับ Neon แล้ว
+
 ค่า `PROMPTPAY_ID` ใส่ได้ทั้งเบอร์โทร PromptPay, เลขบัตรประชาชน หรือ e-wallet ID ที่รองรับ
 
-## สร้างฐานข้อมูลและข้อมูลทดลอง
+## สร้างตารางใน Neon และข้อมูลทดลอง
 
 ```bash
 npm run db:push
 npm run db:seed
 ```
 
-บัญชีทดลอง:
+หรือใช้ Prisma CLI โดยตรง:
+
+```bash
+npx prisma generate
+npx prisma db push
+npm run db:seed
+```
+
+บัญชีทดลองที่ seed จะสร้าง/อัปเดต:
 
 - Admin: `admin@pythonm1.local` / `admin1234`
 - นักเรียน free: `student@pythonm1.local` / `student1234`
