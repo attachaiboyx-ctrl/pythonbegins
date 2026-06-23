@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    linear-gradient(135deg, rgba(37, 99, 235, 0.08), transparent 28rem),
+    linear-gradient(225deg, rgba(124, 58, 237, 0.1), transparent 32rem),
+    linear-gradient(180deg, #ffffff 0%, #f8fbff 48%, #f5f3ff 100%);
+  color: #111827;
+}
+
+::selection {
+  background: #dbeafe;
+  color: #111827;
+}
+
+@layer components {
+  .page-shell {
+    @apply mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8;
+  }
+
+  .panel {
+    @apply rounded-lg border border-slate-200/80 bg-white shadow-course;
+  }
+
+  .input {
+    @apply w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-100;
+  }
+
+  .label {
+    @apply text-sm font-bold text-slate-700;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-brand-600 to-lavender-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-600/25 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-ink shadow-sm transition hover:-translate-y-0.5 hover:border-brand-200 hover:bg-brand-50 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .eyebrow {
+    @apply text-sm font-black uppercase tracking-[0.18em] text-brand-600;
+  }
+
+  .section-title {
+    @apply text-3xl font-black tracking-tight text-ink sm:text-4xl;
+  }
+
+  .code-window {
+    @apply overflow-x-auto rounded-lg bg-slate-950 p-4 text-sm leading-7 text-sky-50 shadow-inner;
+  }
+}
