@@ -29,9 +29,7 @@ export default async function LoginPage({
           <p className="mt-4 leading-7 text-blue-50">
             เข้าสู่ระบบเพื่อเปิด Dashboard ดูความคืบหน้า และเรียนบทต่อไปได้ทันที
           </p>
-          <div className="mt-8 rounded-lg bg-white/15 p-4 text-sm font-bold leading-6">
-            บัญชีทดลอง: student@pythonm1.local / student1234
-          </div>
+          
         </div>
 
         <div className="p-6 sm:p-10">
