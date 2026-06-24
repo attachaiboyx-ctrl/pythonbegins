@@ -64,5 +64,7 @@ export async function setMembershipAction(formData: FormData) {
     data: { membership }
   });
 
-  redirect("/admin?message=อัปเดตสถานะสมาชิกเรียบร้อย");
+  redirect(
+    `/admin?message=${encodeURIComponent("อัปเดตสถานะสมาชิกเรียบร้อย")}`
+  );
 }

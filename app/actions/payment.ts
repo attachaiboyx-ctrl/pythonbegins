@@ -101,7 +101,8 @@ export async function uploadSlipAction(formData: FormData) {
     );
 
     imageUrl = blob.url;
-  } catch {
+  } catch (error) {
+    console.error("Payment slip upload failed:", error);
     fail("อัปโหลดสลิปไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
   }
 
