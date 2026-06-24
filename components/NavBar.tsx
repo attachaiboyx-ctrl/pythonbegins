@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BookOpen, CreditCard, LayoutDashboard, LogOut, Shield } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import { getCurrentUser } from "@/lib/session";
+import { PremiumNotificationBell } from "@/components/PremiumNotificationBell";
 import { StatusBadge } from "@/components/StatusBadge";
 
 export async function NavBar() {
@@ -48,6 +49,11 @@ export async function NavBar() {
                   Admin
                 </Link>
               ) : null}
+              <PremiumNotificationBell
+                membership={user.membership}
+                role={user.role}
+                userId={user.id}
+              />
               <StatusBadge
                 compact
                 membership={user.membership}
