@@ -1,5 +1,6 @@
 "use server";
 
+import { put } from "@vercel/blob";
 import { redirect } from "next/navigation";
 import { getPaymentSettings } from "@/lib/promptpay";
 import { prisma } from "@/lib/prisma";
@@ -13,23 +14,6 @@ const ALLOWED_TYPES = new Map([
   ["image/webp", "webp"],
   ["application/pdf", "pdf"]
 ]);
-const BLOB_PACKAGE_NAME = "@vercel/blob";
-
-type BlobPutResult = {
-  url: string;
-};
-
-type BlobModule = {
-  put: (
-    pathname: string,
-    body: File,
-    options: {
-      access: "public";
-      addRandomSuffix?: boolean;
-      contentType?: string;
-    }
-  ) => Promise<BlobPutResult>;
-};
 
 function fail(message: string): never {
   redirect(`/payment?error=${encodeURIComponent(message)}`);
@@ -48,20 +32,6 @@ function sanitizeFilename(filename: string, extension: string) {
   }
 
   return safeName.includes(".") ? safeName : `${safeName}.${extension}`;
-}
-
-async function uploadSlipToBlob(pathname: string, file: File) {
-  const importBlob = new Function(
-    "packageName",
-    "return import(packageName)"
-  ) as (packageName: string) => Promise<BlobModule>;
-  const { put } = await importBlob(BLOB_PACKAGE_NAME);
-
-  return put(pathname, file, {
-    access: "public",
-    addRandomSuffix: true,
-    contentType: file.type
-  });
 }
 
 export async function uploadSlipAction(formData: FormData) {
@@ -95,9 +65,14 @@ export async function uploadSlipAction(formData: FormData) {
   try {
     const timestamp = Date.now();
     const safeFilename = sanitizeFilename(file.name, extension);
-    const blob = await uploadSlipToBlob(
+    const blob = await put(
       `slips/${user.id}-${timestamp}-${safeFilename}`,
-      file
+      file,
+      {
+        access: "public",
+        addRandomSuffix: true,
+        contentType: file.type
+      }
     );
 
     imageUrl = blob.url;
