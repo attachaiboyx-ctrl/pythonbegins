@@ -33,6 +33,9 @@ export function Footer() {
             <Link className="hover:text-brand-600" href="/dashboard">
               Dashboard ผู้เรียน
             </Link>
+            <Link className="hover:text-brand-600" href="/help">
+              ช่วยเหลือ / FAQ
+            </Link>
           </div>
         </div>
 
