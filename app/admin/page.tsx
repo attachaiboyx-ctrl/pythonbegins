@@ -1,9 +1,27 @@
 import Image from "next/image";
+import Link from "next/link";
 import { AlertCircle, CheckCircle2, ReceiptText, UsersRound } from "lucide-react";
 import { reviewSlipAction, setMembershipAction } from "@/app/actions/admin";
 import { StatusBadge } from "@/components/StatusBadge";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/session";
+
+const slipFilters = [
+  { label: "รอตรวจ", value: "pending" },
+  { label: "อนุมัติแล้ว", value: "approved" },
+  { label: "ปฏิเสธ", value: "rejected" },
+  { label: "ทั้งหมด", value: "all" }
+] as const;
+
+type SlipFilter = (typeof slipFilters)[number]["value"];
+
+function getSlipFilter(status?: string): SlipFilter {
+  if (status === "approved" || status === "rejected" || status === "all") {
+    return status;
+  }
+
+  return "pending";
+}
 
 function slipStatusClass(status: string) {
   if (status === "approved") return "border-emerald-200 bg-emerald-50 text-emerald-800";
@@ -20,13 +38,16 @@ function slipStatusText(status: string) {
 export default async function AdminPage({
   searchParams
 }: {
-  searchParams: Promise<{ message?: string; error?: string }>;
+  searchParams: Promise<{ message?: string; error?: string; status?: string }>;
 }) {
   const query = await searchParams;
   await requireAdmin();
+  const activeFilter = getSlipFilter(query.status);
+  const slipWhere = activeFilter === "all" ? undefined : { status: activeFilter };
 
-  const [slips, users] = await Promise.all([
+  const [slips, users, pendingCount, approvedCount, rejectedCount, allCount] = await Promise.all([
     prisma.paymentSlip.findMany({
+      where: slipWhere,
       include: {
         user: {
           select: {
@@ -50,11 +71,23 @@ export default async function AdminPage({
         role: true,
         createdAt: true
       }
-    })
+    }),
+    prisma.paymentSlip.count({ where: { status: "pending" } }),
+    prisma.paymentSlip.count({ where: { status: "approved" } }),
+    prisma.paymentSlip.count({ where: { status: "rejected" } }),
+    prisma.paymentSlip.count()
   ]);
 
-  const pendingCount = slips.filter((slip) => slip.status === "pending").length;
+  const filterCounts: Record<SlipFilter, number> = {
+    pending: pendingCount,
+    approved: approvedCount,
+    rejected: rejectedCount,
+    all: allCount
+  };
+
   const premiumCount = users.filter((user) => user.membership === "paid" || user.role === "admin").length;
+  const activeFilterLabel =
+    slipFilters.find((filter) => filter.value === activeFilter)?.label || "รอตรวจ";
 
   return (
     <div className="page-shell space-y-8">
@@ -98,19 +131,50 @@ export default async function AdminPage({
       ) : null}
 
       <section>
-        <div className="mb-5">
-          <p className="eyebrow">Payment review</p>
-          <h2 className="section-title mt-3">สลิปชำระเงินล่าสุด</h2>
+        <div className="mb-5 flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
+          <div>
+            <p className="eyebrow">Payment review</p>
+            <h2 className="section-title mt-3">สลิปชำระเงิน: {activeFilterLabel}</h2>
+          </div>
+          <div className="flex flex-wrap gap-2 rounded-lg border border-slate-200 bg-white p-2 shadow-sm">
+            {slipFilters.map((filter) => {
+              const isActive = activeFilter === filter.value;
+
+              return (
+                <Link
+                  key={filter.value}
+                  className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-black transition ${
+                    isActive
+                      ? "bg-gradient-to-r from-brand-600 to-lavender-600 text-white shadow-lg shadow-blue-600/20"
+                      : "text-slate-600 hover:bg-brand-50 hover:text-brand-700"
+                  }`}
+                  href={filter.value === "pending" ? "/admin" : `/admin?status=${filter.value}`}
+                >
+                  {filter.label}
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-xs ${
+                      isActive ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500"
+                    }`}
+                  >
+                    {filterCounts[filter.value].toLocaleString("th-TH")}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
         </div>
 
         <div className="grid gap-5 lg:grid-cols-2">
           {slips.length === 0 ? (
             <div className="panel p-6 text-sm font-bold text-slate-600">
-              ยังไม่มีสลิปที่ส่งเข้ามา
+              {activeFilter === "pending"
+                ? "ไม่มีสลิปที่รอตรวจในตอนนี้"
+                : `ยังไม่มีสลิปในแท็บ${activeFilterLabel}`}
             </div>
           ) : (
             slips.map((slip) => {
               const isPdf = slip.imageUrl.toLowerCase().endsWith(".pdf");
+              const isPending = slip.status === "pending";
 
               return (
                 <article key={slip.id} className="panel overflow-hidden">
@@ -165,36 +229,47 @@ export default async function AdminPage({
                             หมายเหตุ: {slip.note}
                           </div>
                         ) : null}
+                        {!isPending && slip.adminNote ? (
+                          <div className="rounded-lg bg-slate-50 px-4 py-3">
+                            หมายเหตุแอดมิน: {slip.adminNote}
+                          </div>
+                        ) : null}
                       </div>
 
-                      <form action={reviewSlipAction} className="mt-4 space-y-3">
-                        <input name="slipId" type="hidden" value={slip.id} />
-                        <textarea
-                          className="input min-h-20"
-                          name="adminNote"
-                          placeholder="หมายเหตุการตรวจสลิป"
-                        />
-                        <div className="flex flex-wrap gap-2">
-                          <button
-                            className="btn-primary"
-                            name="status"
-                            type="submit"
-                            value="approved"
-                          >
-                            <CheckCircle2 className="h-4 w-4" />
-                            อนุมัติพรีเมียม
-                          </button>
-                          <button
-                            className="btn-secondary"
-                            name="status"
-                            type="submit"
-                            value="rejected"
-                          >
-                            <AlertCircle className="h-4 w-4" />
-                            ปฏิเสธ
-                          </button>
+                      {isPending ? (
+                        <form action={reviewSlipAction} className="mt-4 space-y-3">
+                          <input name="slipId" type="hidden" value={slip.id} />
+                          <textarea
+                            className="input min-h-20"
+                            name="adminNote"
+                            placeholder="หมายเหตุการตรวจสลิป"
+                          />
+                          <div className="flex flex-wrap gap-2">
+                            <button
+                              className="btn-primary"
+                              name="status"
+                              type="submit"
+                              value="approved"
+                            >
+                              <CheckCircle2 className="h-4 w-4" />
+                              อนุมัติพรีเมียม
+                            </button>
+                            <button
+                              className="btn-secondary"
+                              name="status"
+                              type="submit"
+                              value="rejected"
+                            >
+                              <AlertCircle className="h-4 w-4" />
+                              ปฏิเสธ
+                            </button>
+                          </div>
+                        </form>
+                      ) : (
+                        <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-600">
+                          รายการนี้ตรวจแล้ว สามารถดูเป็นประวัติได้จากแท็บนี้
                         </div>
-                      </form>
+                      )}
                     </div>
                   </div>
                 </article>

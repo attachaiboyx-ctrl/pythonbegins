@@ -5,7 +5,8 @@ import { getPaymentSettings } from "@/lib/promptpay";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_FILE_SIZE = 1024 * 1024;
+const FILE_SIZE_ERROR = "ไฟล์ใหญ่เกินไป กรุณาอัปโหลดรูปภาพไม่เกิน 1MB";
 const ALLOWED_TYPES = new Map([
   ["image/png", "png"],
   ["image/jpeg", "jpg"],
@@ -34,7 +35,7 @@ export async function uploadSlipAction(formData: FormData) {
   }
 
   if (file.size > MAX_FILE_SIZE) {
-    fail("ไฟล์ใหญ่เกิน 5MB กรุณาย่อไฟล์ก่อนอัปโหลด");
+    fail(FILE_SIZE_ERROR);
   }
 
   const extension = ALLOWED_TYPES.get(file.type);
@@ -44,8 +45,8 @@ export async function uploadSlipAction(formData: FormData) {
   }
 
   const bytes = Buffer.from(await file.arrayBuffer());
-const base64 = bytes.toString("base64");
-const imageUrl = `data:${file.type};base64,${base64}`;
+  const base64 = bytes.toString("base64");
+  const imageUrl = `data:${file.type};base64,${base64}`;
 
   await prisma.paymentSlip.create({
     data: {
