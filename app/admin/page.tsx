@@ -1,4 +1,4 @@
-import Image from "next/image";
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { AlertCircle, CheckCircle2, ReceiptText, UsersRound } from "lucide-react";
 import { reviewSlipAction, setMembershipAction } from "@/app/actions/admin";
@@ -33,6 +33,16 @@ function slipStatusText(status: string) {
   if (status === "approved") return "อนุมัติแล้ว";
   if (status === "rejected") return "ไม่ผ่าน";
   return "รอตรวจ";
+}
+
+function isPdfSlipUrl(imageUrl: string) {
+  const lowerUrl = imageUrl.toLowerCase();
+  const urlWithoutQuery = lowerUrl.split(/[?#]/)[0];
+
+  return (
+    lowerUrl.startsWith("data:application/pdf") ||
+    urlWithoutQuery.endsWith(".pdf")
+  );
 }
 
 export default async function AdminPage({
@@ -173,7 +183,7 @@ export default async function AdminPage({
             </div>
           ) : (
             slips.map((slip) => {
-              const isPdf = slip.imageUrl.toLowerCase().endsWith(".pdf");
+              const isPdf = isPdfSlipUrl(slip.imageUrl);
               const isPending = slip.status === "pending";
 
               return (
@@ -184,18 +194,16 @@ export default async function AdminPage({
                         <a
                           className="grid min-h-48 place-items-center rounded-lg border border-dashed border-slate-300 text-sm font-black text-brand-700"
                           href={slip.imageUrl}
+                          rel="noreferrer"
                           target="_blank"
                         >
                           เปิดไฟล์ PDF
                         </a>
                       ) : (
-                        <Image
+                        <img
                           alt="สลิปชำระเงิน"
                           className="h-56 w-full rounded-lg object-cover"
-                          height={224}
                           src={slip.imageUrl}
-                          unoptimized
-                          width={320}
                         />
                       )}
                     </div>

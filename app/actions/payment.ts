@@ -13,9 +13,55 @@ const ALLOWED_TYPES = new Map([
   ["image/webp", "webp"],
   ["application/pdf", "pdf"]
 ]);
+const BLOB_PACKAGE_NAME = "@vercel/blob";
+
+type BlobPutResult = {
+  url: string;
+};
+
+type BlobModule = {
+  put: (
+    pathname: string,
+    body: File,
+    options: {
+      access: "public";
+      addRandomSuffix?: boolean;
+      contentType?: string;
+    }
+  ) => Promise<BlobPutResult>;
+};
 
 function fail(message: string): never {
   redirect(`/payment?error=${encodeURIComponent(message)}`);
+}
+
+function sanitizeFilename(filename: string, extension: string) {
+  const fallback = `slip.${extension}`;
+  const safeName = (filename || fallback)
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+
+  if (!safeName) {
+    return fallback;
+  }
+
+  return safeName.includes(".") ? safeName : `${safeName}.${extension}`;
+}
+
+async function uploadSlipToBlob(pathname: string, file: File) {
+  const importBlob = new Function(
+    "packageName",
+    "return import(packageName)"
+  ) as (packageName: string) => Promise<BlobModule>;
+  const { put } = await importBlob(BLOB_PACKAGE_NAME);
+
+  return put(pathname, file, {
+    access: "public",
+    addRandomSuffix: true,
+    contentType: file.type
+  });
 }
 
 export async function uploadSlipAction(formData: FormData) {
@@ -44,9 +90,20 @@ export async function uploadSlipAction(formData: FormData) {
     fail("รองรับเฉพาะไฟล์ PNG, JPG, WEBP หรือ PDF");
   }
 
-  const bytes = Buffer.from(await file.arrayBuffer());
-  const base64 = bytes.toString("base64");
-  const imageUrl = `data:${file.type};base64,${base64}`;
+  let imageUrl: string;
+
+  try {
+    const timestamp = Date.now();
+    const safeFilename = sanitizeFilename(file.name, extension);
+    const blob = await uploadSlipToBlob(
+      `slips/${user.id}-${timestamp}-${safeFilename}`,
+      file
+    );
+
+    imageUrl = blob.url;
+  } catch {
+    fail("อัปโหลดสลิปไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
+  }
 
   await prisma.paymentSlip.create({
     data: {
