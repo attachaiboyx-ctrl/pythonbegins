@@ -63,9 +63,9 @@ export default async function LessonDetailPage({
                 <Link className="btn-primary" href="/payment">
                   ไปชำระเงิน
                 </Link>
-                <Link className="btn-secondary" href="/lessons">
+                <Link className="btn-secondary" href="/courses/python-beginner">
                   <ArrowLeft className="h-4 w-4" />
-                  กลับไปหน้าหลักสูตร
+                  กลับไปคอร์ส Python มือใหม่
                 </Link>
               </div>
             </div>
@@ -182,9 +182,9 @@ export default async function LessonDetailPage({
           <div className="panel p-5">
             <p className="eyebrow">Navigation</p>
             <div className="mt-4 flex flex-col gap-3">
-              <Link className="btn-secondary" href="/lessons">
+              <Link className="btn-secondary" href="/courses/python-beginner">
                 <ArrowLeft className="h-4 w-4" />
-                กลับหน้าหลักสูตร
+                กลับคอร์ส Python มือใหม่
               </Link>
               <Link className="btn-secondary" href="/dashboard">
                 ไป Dashboard

@@ -123,7 +123,7 @@ export default async function PaymentPage({
                 ส่งหลักฐานให้แอดมินตรวจ
               </h2>
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                รองรับ PNG, JPG, WEBP หรือ PDF ขนาดไม่เกิน 5MB
+                รองรับ PNG, JPG, WEBP หรือ PDF ขนาดไม่เกิน 1MB
               </p>
             </div>
           </div>

@@ -1,7 +1,12 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
+import { useState, type ChangeEvent } from "react";
 import { useFormStatus } from "react-dom";
+
+const MAX_SLIP_FILE_SIZE = 1024 * 1024;
+const SLIP_FILE_SIZE_ERROR =
+  "ไฟล์ใหญ่เกินไป กรุณาอัปโหลดรูปภาพไม่เกิน 1MB";
 
 type PaymentSlipFormProps = {
   action: (formData: FormData) => void | Promise<void>;
@@ -28,7 +33,20 @@ export function PaymentSlipForm({
 
 function PaymentSlipFormFields({ isPaid }: { isPaid: boolean }) {
   const { pending } = useFormStatus();
-  const disabled = isPaid || pending;
+  const [fileError, setFileError] = useState<string | null>(null);
+  const fieldDisabled = isPaid || pending;
+  const submitDisabled = fieldDisabled || Boolean(fileError);
+
+  function handleSlipChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+
+    if (file && file.size > MAX_SLIP_FILE_SIZE) {
+      setFileError(SLIP_FILE_SIZE_ERROR);
+      return;
+    }
+
+    setFileError(null);
+  }
 
   return (
     <>
@@ -58,14 +76,25 @@ function PaymentSlipFormFields({ isPaid }: { isPaid: boolean }) {
         </label>
         <input
           accept="image/png,image/jpeg,image/webp,application/pdf"
-          aria-disabled={disabled}
+          aria-disabled={fieldDisabled}
+          aria-describedby="slip-help slip-error"
+          aria-invalid={Boolean(fileError)}
           className="input disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
-          disabled={disabled}
+          disabled={fieldDisabled}
           id="slip"
           name="slip"
+          onChange={handleSlipChange}
           required
           type="file"
         />
+        <p id="slip-help" className="text-xs font-bold text-slate-500">
+          รองรับ PNG, JPG, WEBP หรือ PDF ขนาดไม่เกิน 1MB
+        </p>
+        {fileError ? (
+          <p id="slip-error" className="text-sm font-bold text-red-600">
+            {fileError}
+          </p>
+        ) : null}
       </div>
 
       <div className="space-y-2">
@@ -73,9 +102,9 @@ function PaymentSlipFormFields({ isPaid }: { isPaid: boolean }) {
           หมายเหตุเพิ่มเติม (ถ้ามี)
         </label>
         <textarea
-          aria-disabled={disabled}
+          aria-disabled={fieldDisabled}
           className="input min-h-28 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
-          disabled={disabled}
+          disabled={fieldDisabled}
           id="note"
           name="note"
           placeholder="งดโอนช่วง 00:00-01:00 นะครับ"
@@ -83,9 +112,9 @@ function PaymentSlipFormFields({ isPaid }: { isPaid: boolean }) {
       </div>
 
       <button
-        aria-disabled={disabled}
+        aria-disabled={submitDisabled}
         className="btn-primary"
-        disabled={disabled}
+        disabled={submitDisabled}
         type="submit"
       >
         {pending ? (

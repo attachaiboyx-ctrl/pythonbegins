@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail, ShieldCheck } from "lucide-react";
+import { Mail, MessageCircle, ShieldCheck } from "lucide-react";
 
 export function Footer() {
   return (
@@ -41,8 +41,17 @@ export function Footer() {
           <div className="mt-4 space-y-3 text-sm font-bold text-slate-600">
             <p className="flex items-center gap-2">
               <Mail className="h-4 w-4 text-brand-600" />
-              pythonbegins@gmail.com
+              pythonbegins1@gmail.com
             </p>
+            <a
+              className="flex items-center gap-2 hover:text-brand-600"
+              href="https://line.me/R/ti/p/@883oiwcd"
+              rel="noreferrer"
+              target="_blank"
+            >
+              <MessageCircle className="h-4 w-4 text-brand-600" />
+              LINE:@883oiwcd
+            </a>
             <p className="flex items-center gap-2">
               <ShieldCheck className="h-4 w-4 text-brand-600" />
               นโยบายความเป็นส่วนตัว
