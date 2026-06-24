@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { BookOpen, CreditCard, LayoutDashboard, LogOut, Shield } from "lucide-react";
+import {
+  BookOpen,
+  CreditCard,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  Shield
+} from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import { getCurrentUser } from "@/lib/session";
 import { PremiumNotificationBell } from "@/components/PremiumNotificationBell";
@@ -38,6 +45,10 @@ export async function NavBar() {
               <Link className="inline-flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-brand-50 hover:text-brand-700" href="/dashboard">
                 <LayoutDashboard className="h-4 w-4" />
                 Dashboard
+              </Link>
+              <Link className="inline-flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-brand-50 hover:text-brand-700" href="/settings">
+                <Settings className="h-4 w-4" />
+                ตั้งค่า
               </Link>
               <Link className="inline-flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-brand-50 hover:text-brand-700" href="/payment">
                 <CreditCard className="h-4 w-4" />
