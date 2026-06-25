@@ -7,7 +7,6 @@ import {
   HelpCircle,
   LayoutDashboard,
   LogIn,
-  LogOut,
   Menu,
   Settings,
   Shield,
@@ -16,7 +15,7 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { useState } from "react";
-import { logoutAction } from "@/app/actions/auth";
+import { LogoutButton } from "@/components/LogoutButton";
 import { StatusBadge } from "@/components/StatusBadge";
 import type { CurrentUser } from "@/lib/session";
 
@@ -128,16 +127,7 @@ export function MobileNavMenu({ user }: MobileNavMenuProps) {
                     Admin
                   </MobileMenuLink>
                 ) : null}
-                <form action={logoutAction}>
-                  <button
-                    className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-black text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
-                    onClick={closeMenu}
-                    type="submit"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    ออกจากระบบ
-                  </button>
-                </form>
+                <LogoutButton variant="mobile" />
               </>
             ) : (
               <>

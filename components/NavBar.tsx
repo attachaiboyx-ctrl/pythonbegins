@@ -3,12 +3,11 @@ import {
   BookOpen,
   CreditCard,
   LayoutDashboard,
-  LogOut,
   Settings,
   Shield
 } from "lucide-react";
-import { logoutAction } from "@/app/actions/auth";
 import { getCurrentUser } from "@/lib/session";
+import { LogoutButton } from "@/components/LogoutButton";
 import { MobileNavMenu } from "@/components/MobileNavMenu";
 import { PremiumNotificationBell } from "@/components/PremiumNotificationBell";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -88,12 +87,7 @@ export async function NavBar() {
                   membership={user.membership}
                   role={user.role}
                 />
-                <form action={logoutAction}>
-                  <button className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-slate-500 hover:bg-slate-100 hover:text-slate-900">
-                    <LogOut className="h-4 w-4" />
-                    ออกจากระบบ
-                  </button>
-                </form>
+                <LogoutButton />
               </div>
             </>
           ) : null}
