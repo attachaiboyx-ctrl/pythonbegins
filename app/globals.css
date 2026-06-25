@@ -60,4 +60,90 @@ body {
   .code-window {
     @apply overflow-x-auto rounded-lg bg-slate-950 p-4 text-sm leading-7 text-sky-50 shadow-inner;
   }
+
+  .status-badge {
+    @apply relative isolate inline-flex shrink-0 items-center gap-1.5 overflow-hidden rounded-full border font-black leading-none;
+  }
+
+  .status-badge-compact {
+    @apply px-2.5 py-1 text-xs;
+  }
+
+  .status-badge-regular {
+    @apply px-3.5 py-1.5 text-sm;
+  }
+
+  .status-badge-content,
+  .status-badge-spark {
+    @apply relative z-10;
+  }
+
+  .status-badge-spark {
+    @apply h-1.5 w-1.5 rounded-full bg-amber-200;
+    box-shadow: 0 0 10px rgba(253, 230, 138, 0.9);
+  }
+
+  .status-badge-premium {
+    border-color: rgba(251, 191, 36, 0.62);
+    background:
+      radial-gradient(circle at 12% 20%, rgba(253, 230, 138, 0.28), transparent 28%),
+      linear-gradient(135deg, #0f172a 0%, #312e81 42%, #7c3aed 76%, #d97706 132%);
+    color: #fff7ed;
+    box-shadow:
+      0 8px 20px rgba(79, 70, 229, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  }
+
+  .status-badge-premium::before {
+    content: "";
+    position: absolute;
+    inset: -85% auto -85% -65%;
+    width: 48%;
+    transform: rotate(22deg);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.18),
+      rgba(253, 230, 138, 0.34),
+      rgba(255, 255, 255, 0.16),
+      transparent
+    );
+    animation: premium-badge-shimmer 3.8s ease-in-out infinite;
+  }
+
+  .status-badge-free {
+    @apply border-slate-200 bg-white text-slate-600 shadow-sm;
+  }
+
+  .status-badge-admin {
+    @apply border-indigo-200 bg-indigo-50 text-indigo-700 shadow-sm;
+  }
+}
+
+@keyframes premium-badge-shimmer {
+  0% {
+    opacity: 0;
+    transform: translateX(0) rotate(22deg);
+  }
+
+  14% {
+    opacity: 0.75;
+  }
+
+  44% {
+    opacity: 0;
+    transform: translateX(360%) rotate(22deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(360%) rotate(22deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-badge-premium::before {
+    animation: none;
+    opacity: 0;
+  }
 }

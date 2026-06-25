@@ -7,19 +7,24 @@ export function StatusBadge({
   role?: string;
   compact?: boolean;
 }) {
-  const isPaid = membership === "paid" || role === "admin";
+  const isAdmin = role === "admin";
+  const isPremium = membership === "paid";
+  const showPremiumSpark = isPremium && !isAdmin;
+  const label = isAdmin ? "admin" : isPremium ? "premium" : "free";
+  const variantClass = isAdmin
+    ? "status-badge-admin"
+    : isPremium
+      ? "status-badge-premium"
+      : "status-badge-free";
 
   return (
     <span
-      className={`inline-flex items-center rounded-full border px-3 py-1 font-bold ${
-        compact ? "text-xs" : "text-sm"
-      } ${
-        isPaid
-          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-          : "border-blue-200 bg-brand-50 text-brand-700"
+      className={`status-badge ${variantClass} ${
+        compact ? "status-badge-compact" : "status-badge-regular"
       }`}
     >
-      {role === "admin" ? "admin" : isPaid ? "premium" : "free"}
+      {showPremiumSpark ? <span aria-hidden="true" className="status-badge-spark" /> : null}
+      <span className="status-badge-content">{label}</span>
     </span>
   );
 }

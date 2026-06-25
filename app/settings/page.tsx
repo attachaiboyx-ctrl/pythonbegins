@@ -5,6 +5,7 @@ import {
   changePasswordAction,
   updateDisplayNameAction
 } from "@/app/actions/settings";
+import { StatusBadge } from "@/components/StatusBadge";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 
@@ -51,10 +52,6 @@ export default async function SettingsPage({
   }
 
   const statusLabel = membershipLabel(account.membership, account.role);
-  const statusClass =
-    statusLabel === "Premium"
-      ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-      : "border-blue-200 bg-brand-50 text-brand-700";
 
   return (
     <div className="page-shell space-y-8">
@@ -122,8 +119,8 @@ export default async function SettingsPage({
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
               <div className="rounded-lg border border-slate-200 bg-white p-4">
                 <div className="text-sm font-bold text-slate-500">สถานะสมาชิก</div>
-                <div className={`mt-2 inline-flex rounded-full border px-3 py-1 text-sm font-black ${statusClass}`}>
-                  {statusLabel}
+                <div className="mt-2">
+                  <StatusBadge membership={account.membership} role={account.role} />
                 </div>
               </div>
               <div className="rounded-lg border border-slate-200 bg-white p-4">
