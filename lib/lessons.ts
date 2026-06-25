@@ -2998,6 +2998,524 @@ if (average >= 80) {
   }
 ];
 
+type JavaScriptLessonEnhancement = {
+  learn: string;
+  why: string;
+  concept: string;
+  exampleCode: string;
+  walkthrough: string[];
+  mistakes: string[];
+  summary: string;
+  extraTasks: string[];
+  extraQuiz: QuizQuestion;
+};
+
+const javascriptLessonEnhancements: Record<number, JavaScriptLessonEnhancement> = {
+  101: {
+    learn:
+      "บทนี้พาผู้เรียนรู้จัก JavaScript ในฐานะภาษาที่ทำให้เว็บโต้ตอบกับผู้ใช้ได้ เช่น กดปุ่มแล้วข้อความเปลี่ยน ตรวจข้อมูลในฟอร์ม แสดง popup คำนวณราคา หรือสร้างเกมเล็ก ๆ บนหน้าเว็บ",
+    why:
+      "ถ้า HTML คือโครงสร้างของหน้าเว็บ และ CSS คือหน้าตา JavaScript คือส่วนที่ทำให้เว็บตอบสนองต่อการกระทำของผู้ใช้ การเข้าใจบทบาทนี้ช่วยให้ผู้เรียนเห็นภาพว่าโค้ดที่กำลังเรียนจะนำไปใช้จริงตรงไหน",
+    concept:
+      "ให้มองเว็บไซต์เหมือนร้านค้าออนไลน์ HTML คือชั้นวางสินค้า CSS คือสีและการจัดร้าน ส่วน JavaScript คือพนักงานที่ตอบเมื่อเรากดปุ่ม คำนวณราคารวม หรือแจ้งเตือนเมื่อกรอกข้อมูลไม่ครบ JavaScript ใช้ได้ทั้งฝั่ง frontend ในเบราว์เซอร์ และฝั่ง backend ผ่านสภาพแวดล้อมอย่าง Node.js แต่ในคอร์สนี้จะเริ่มจากพื้นฐานที่เห็นผลได้ง่ายก่อน",
+    exampleCode: `console.log("สวัสดี JavaScript");
+console.log("JavaScript ช่วยให้เว็บโต้ตอบกับผู้ใช้ได้");
+
+const buttonText = "เริ่มเรียน";
+console.log("ข้อความบนปุ่ม:", buttonText);`,
+    walkthrough: [
+      "บรรทัดที่ 1 แสดงข้อความทักทายใน Console",
+      "บรรทัดที่ 2 อธิบายหน้าที่หลักของ JavaScript เป็นข้อความ",
+      "บรรทัดที่ 4 สร้างตัวแปร buttonText เพื่อเก็บข้อความที่อาจอยู่บนปุ่มจริงในเว็บ",
+      "บรรทัดที่ 5 แสดงข้อความพร้อมค่าจากตัวแปร ทำให้เห็นว่าข้อมูลในโปรแกรมนำมาแสดงผลได้"
+    ],
+    mistakes: [
+      "เข้าใจว่า JavaScript คือ Java ทั้งที่เป็นคนละภาษา",
+      "คิดว่า JavaScript ใช้ได้เฉพาะทำ popup ทั้งที่ใช้ทำ logic ได้หลากหลาย",
+      "ลืมว่าโค้ดพื้นฐานควรทดสอบทีละน้อยก่อนต่อยอดเป็นเว็บจริง"
+    ],
+    summary:
+      "JavaScript คือภาษาสำคัญของเว็บที่ช่วยให้หน้าเว็บมีพฤติกรรมและตอบสนองต่อผู้ใช้ได้ บทแรกควรจำภาพรวม HTML เป็นโครงสร้าง CSS เป็นหน้าตา และ JavaScript เป็นการทำงาน",
+    extraTasks: [
+      "เขียน console.log() แสดงตัวอย่างเว็บที่มีการโต้ตอบ 3 แบบ",
+      "อธิบายด้วยคำพูดของตัวเองว่า JavaScript ต่างจาก HTML และ CSS อย่างไร"
+    ],
+    extraQuiz: {
+      question: "ข้อใดอธิบาย JavaScript ได้ใกล้เคียงที่สุดสำหรับผู้เริ่มต้น",
+      options: ["ภาษาที่ทำให้เว็บมีการทำงานและโต้ตอบ", "ภาษาไว้ตกแต่งสีเท่านั้น", "ไฟล์รูปภาพชนิดหนึ่ง", "ฐานข้อมูลของเว็บ"],
+      answer: 0,
+      explanation: "JavaScript ใช้เขียนพฤติกรรมของเว็บ เช่น ตอบสนองต่อปุ่ม ฟอร์ม และการคำนวณ"
+    }
+  },
+  102: {
+    learn:
+      "บทนี้ฝึกใช้ console.log() เพื่อแสดงข้อความ ตัวเลข และผลลัพธ์จาก expression ซึ่งเป็นวิธีพื้นฐานที่สุดในการตรวจว่าโค้ดทำงานอย่างที่คิดหรือไม่",
+    why:
+      "ผู้เริ่มต้นมักไม่รู้ว่าโค้ดผิดตรงไหน Console เป็นพื้นที่สังเกตผลลัพธ์ระหว่างเขียนโปรแกรม เหมือนกระดาษทดเลขที่ช่วยให้เราเห็นค่าทีละขั้นก่อนนำไปสร้างหน้าเว็บจริง",
+    concept:
+      "console.log() ไม่ได้มีไว้แค่แสดงข้อความ แต่ใช้ debug ได้ เช่น ตรวจค่าตัวแปร ตรวจผลคำนวณ หรือดูว่าโปรแกรมเดินมาถึงบรรทัดที่ต้องการหรือยัง เวลาโค้ดยาวขึ้น การใส่ console.log() เป็นจุดตรวจเล็ก ๆ จะช่วยหาปัญหาเร็วขึ้น",
+    exampleCode: `console.log("เริ่มตรวจโปรแกรม");
+console.log(100 + 50);
+
+const coursePrice = 199;
+console.log("ราคาคอร์ส:", coursePrice);
+console.log("จ่าย 2 คนรวม:", coursePrice * 2);`,
+    walkthrough: [
+      "บรรทัดที่ 1 แสดงข้อความเพื่อบอกว่าโปรแกรมเริ่มทำงานแล้ว",
+      "บรรทัดที่ 2 ให้ JavaScript คำนวณ 100 + 50 ก่อน แล้วค่อยแสดงผล",
+      "บรรทัดที่ 4 สร้างตัวแปร coursePrice เก็บราคา",
+      "บรรทัดที่ 5 แสดงข้อความพร้อมราคาจากตัวแปร",
+      "บรรทัดที่ 6 คำนวณราคาสำหรับ 2 คน แล้วแสดงผลทันที"
+    ],
+    mistakes: [
+      "พิมพ์ concole.log หรือ console.Log ผิดตัวพิมพ์เล็กใหญ่",
+      "ลืมเครื่องหมายคำพูดรอบข้อความ",
+      "ลืมปิดวงเล็บหรือเครื่องหมายคำพูด",
+      "ใช้ console.log() แล้วคิดว่าผลจะไปแสดงบนหน้าเว็บ ทั้งที่จริงแสดงใน Console"
+    ],
+    summary:
+      "console.log() เป็นเครื่องมือฝึกคิดและ debug ที่ดีมากสำหรับมือใหม่ ใช้ดูข้อความ ตัวเลข expression และค่าตัวแปรได้ก่อนนำความรู้ไปใช้กับหน้าเว็บจริง",
+    extraTasks: [
+      "แสดงผลลัพธ์ของ 50 + 25, 50 - 25, 50 * 2 และ 50 / 2",
+      "สร้างตัวแปรชื่อ learnerName แล้วแสดงข้อความว่า สวัสดี ตามด้วยชื่อ"
+    ],
+    extraQuiz: {
+      question: "console.log(10 * 3) จะแสดงผลอะไร",
+      options: ["30", "10 * 3 เป็นข้อความ", "error เสมอ", "ไม่มีอะไรเกิดขึ้น"],
+      answer: 0,
+      explanation: "JavaScript คำนวณ expression 10 * 3 ก่อน แล้ว console.log() แสดงผลลัพธ์คือ 30"
+    }
+  },
+  103: {
+    learn:
+      "บทนี้เรียนการเก็บข้อมูลด้วยตัวแปร let, const และ var โดยเน้นวิธีใช้ let กับ const ให้เหมาะกับงานจริง และรู้จัก var ในฐานะรูปแบบเก่าที่อาจเจอในโค้ดตัวอย่าง",
+    why:
+      "โปรแกรมแทบทุกแบบต้องจำข้อมูล เช่น ชื่อผู้ใช้ คะแนน ราคาสินค้า หรือสถานะสมาชิก ถ้าไม่ใช้ตัวแปร เราจะต้องเขียนข้อมูลซ้ำและแก้ไขยากมาก",
+    concept:
+      "ตัวแปรเหมือนกล่องที่มีป้ายชื่อ ถ้าของในกล่องอาจเปลี่ยน เช่น คะแนนล่าสุด ให้ใช้ let ถ้าของในกล่องไม่ควรถูกเปลี่ยน เช่น ชื่อคอร์สหรือราคาตั้งต้น ให้ใช้ const ส่วน var เป็นรูปแบบเก่าที่มีพฤติกรรมเรื่อง scope และ hoisting ที่ทำให้มือใหม่สับสน จึงควรรู้จักแต่ยังไม่ต้องใช้เป็นหลัก",
+    exampleCode: `const courseName = "JavaScript มือใหม่";
+let completedLessons = 0;
+
+completedLessons = completedLessons + 1;
+
+console.log(courseName);
+console.log("เรียนแล้ว", completedLessons, "บท");`,
+    walkthrough: [
+      "บรรทัดที่ 1 ใช้ const เพราะชื่อคอร์สไม่ควรถูกเปลี่ยนระหว่างโปรแกรม",
+      "บรรทัดที่ 2 ใช้ let เพราะจำนวนบทที่เรียนแล้วเพิ่มขึ้นได้",
+      "บรรทัดที่ 4 เพิ่ม completedLessons จาก 0 เป็น 1",
+      "บรรทัดที่ 6-7 แสดงชื่อคอร์สและความคืบหน้าปัจจุบัน"
+    ],
+    mistakes: [
+      "พยายามกำหนดค่าใหม่ให้ const",
+      "ตั้งชื่อตัวแปรกว้างเกินไป เช่น data หรือ x จนอ่านไม่รู้เรื่อง",
+      "ประกาศตัวแปรซ้ำในบริเวณเดียวกัน",
+      "ใช้ var เพราะเห็นในตัวอย่างเก่า โดยยังไม่เข้าใจ scope"
+    ],
+    summary:
+      "จำง่าย ๆ ว่า const ใช้ก่อนเมื่อค่าไม่ควรเปลี่ยน let ใช้เมื่อค่าต้องเปลี่ยน และ var เป็นรูปแบบเก่าที่ควรอ่านออกแต่ไม่ใช่ตัวเลือกแรกสำหรับมือใหม่",
+    extraTasks: [
+      "สร้าง const ชื่อ schoolName และ let ชื่อ score",
+      "เปลี่ยนค่า score สองครั้ง แล้วใช้ console.log() ตรวจผล",
+      "ลองอธิบายว่าทำไม schoolName ไม่ควรเป็น let ในโปรแกรมนี้"
+    ],
+    extraQuiz: {
+      question: "เหตุผลหลักที่มือใหม่ควรเริ่มจาก let และ const คืออะไร",
+      options: ["อ่านความตั้งใจของโค้ดง่ายกว่า", "ทำให้เว็บมีสีสวยขึ้น", "ใช้แทน HTML ได้", "ทำให้ไม่ต้องใช้ Console"],
+      answer: 0,
+      explanation: "let และ const ช่วยบอกเจตนาว่าค่าจะเปลี่ยนหรือไม่ ทำให้โค้ดอ่านง่ายและลดความสับสน"
+    }
+  },
+  104: {
+    learn:
+      "บทนี้เรียนชนิดข้อมูลพื้นฐาน string, number และ boolean รวมถึงการใช้ typeof ตรวจชนิดข้อมูล เพื่อให้แยกได้ว่าค่าที่เห็นควรนำไปคำนวณหรือใช้เป็นข้อความ",
+    why:
+      "Bug จำนวนมากเกิดจากใช้ชนิดข้อมูลผิด เช่น เอา \"10\" ที่เป็นข้อความไปบวกกับ \"5\" แล้วได้ \"105\" ไม่ใช่ 15 การรู้ชนิดข้อมูลช่วยให้คิดและแก้ error ได้เร็วขึ้น",
+    concept:
+      "string คือข้อความและต้องอยู่ในเครื่องหมายคำพูด number คือตัวเลขที่ใช้คำนวณได้ boolean คือ true/false สำหรับสถานะหรือเงื่อนไข ส่วน typeof เป็นคำสั่งช่วยถาม JavaScript ว่าค่านี้เป็นชนิดอะไร",
+    exampleCode: `const learnerName = "น้ำ";
+const score = 85;
+const isPassed = true;
+const textNumber = "10";
+
+console.log(typeof learnerName);
+console.log(typeof score);
+console.log(typeof isPassed);
+console.log(textNumber + 5);
+console.log(Number(textNumber) + 5);`,
+    walkthrough: [
+      "บรรทัดที่ 1 เก็บชื่อเป็น string",
+      "บรรทัดที่ 2 เก็บคะแนนเป็น number",
+      "บรรทัดที่ 3 เก็บสถานะผ่านเป็น boolean",
+      "บรรทัดที่ 4 เก็บเลข 10 แบบ string เพราะอยู่ในเครื่องหมายคำพูด",
+      "บรรทัดท้าย ๆ แสดงให้เห็นว่า \"10\" + 5 ได้ผลต่างจาก Number(\"10\") + 5"
+    ],
+    mistakes: [
+      "คิดว่า \"10\" กับ 10 เหมือนกัน",
+      "เขียน True หรือ False แบบภาษาอื่น ทั้งที่ JavaScript ใช้ true และ false",
+      "ใช้ typeof แล้วลืมว่า typeof คืนค่าเป็นข้อความ",
+      "เอาข้อมูลที่รับจากผู้ใช้ไปคำนวณทันทีโดยไม่ตรวจชนิด"
+    ],
+    summary:
+      "string, number และ boolean เป็นฐานสำคัญของ JavaScript ถ้ารู้ว่าค่าของเราเป็นชนิดอะไร จะตัดสินใจได้ถูกว่าจะนำไปแสดงผล คำนวณ หรือใช้ตรวจเงื่อนไข",
+    extraTasks: [
+      "สร้างตัวแปร price เป็น number และ priceText เป็น string แล้วเปรียบเทียบผลเมื่อบวก 1",
+      "ใช้ typeof ตรวจตัวแปรอย่างน้อย 4 ตัว",
+      "สร้าง boolean ชื่อ isPremium แล้วแสดงค่าใน Console"
+    ],
+    extraQuiz: {
+      question: "\"10\" + 5 มักได้ผลแบบใด",
+      options: ["\"105\"", "15", "true", "error เสมอ"],
+      answer: 0,
+      explanation: "เมื่อด้านหนึ่งเป็น string เครื่องหมาย + มักต่อข้อความ จึงได้ \"105\""
+    }
+  },
+  105: {
+    learn:
+      "บทนี้เรียนการคำนวณด้วย +, -, *, / และการแปลงข้อมูลจาก prompt หรือ input ที่มักเป็น string ให้เป็น number ด้วย Number(), parseInt() หรือ parseFloat() แบบเข้าใจง่าย",
+    why:
+      "เว็บจำนวนมากต้องคำนวณ เช่น ราคารวม คะแนนเฉลี่ย ค่าจัดส่ง หรือส่วนลด ถ้าไม่เข้าใจการแปลงข้อมูล ผู้เรียนจะเจอปัญหาเลขกลายเป็นข้อความบ่อยมาก",
+    concept:
+      "ข้อมูลจากผู้ใช้มักเข้ามาเป็นข้อความก่อนเสมอ Number() เหมาะเมื่ออยากแปลงทั้งค่าเป็นตัวเลข parseInt() เหมาะกับจำนวนเต็ม และ parseFloat() เหมาะกับเลขทศนิยม เช่น ราคา 19.5 หรือคะแนนเฉลี่ย 82.75",
+    exampleCode: `const priceText = prompt("กรอกราคา");
+const quantityText = prompt("กรอกจำนวน");
+
+const price = Number(priceText);
+const quantity = parseInt(quantityText);
+const total = price * quantity;
+
+console.log("ราคาต่อชิ้น:", price);
+console.log("จำนวน:", quantity);
+console.log("ราคารวม:", total);`,
+    walkthrough: [
+      "บรรทัดที่ 1-2 รับราคากับจำนวนจากผู้ใช้ ซึ่งค่าที่ได้เริ่มเป็น string",
+      "บรรทัดที่ 4 ใช้ Number() แปลงราคาเป็นตัวเลข",
+      "บรรทัดที่ 5 ใช้ parseInt() แปลงจำนวนเป็นจำนวนเต็ม",
+      "บรรทัดที่ 6 คูณราคาและจำนวนเพื่อหาราคารวม",
+      "บรรทัดท้าย ๆ แสดงข้อมูลที่คำนวณได้ใน Console"
+    ],
+    mistakes: [
+      "ลืมแปลงค่าจาก prompt ก่อนคำนวณ",
+      "ใช้ parseInt() กับข้อมูลทศนิยมแล้วส่วนทศนิยมถูกตัด",
+      "ผู้ใช้กรอกข้อความที่ไม่ใช่ตัวเลขแล้วได้ NaN",
+      "สับสนระหว่าง + สำหรับบวกเลขกับ + สำหรับต่อข้อความ"
+    ],
+    summary:
+      "ก่อนคำนวณควรถามตัวเองว่า ข้อมูลนี้เป็น number แล้วหรือยัง ถ้ายัง ให้แปลงด้วยเครื่องมือที่เหมาะสม แล้วค่อยใช้ +, -, *, / เพื่อคำนวณ",
+    extraTasks: [
+      "เขียนโปรแกรมคำนวณคะแนนรวมจากคะแนนสอบ 2 ครั้ง",
+      "ลองเปลี่ยน Number() เป็น parseFloat() กับราคาทศนิยมแล้วสังเกตผล",
+      "เพิ่มข้อความเตือนตัวเองใน comment ว่าค่าจาก prompt เป็น string"
+    ],
+    extraQuiz: {
+      question: "ถ้าต้องการเก็บเลขทศนิยมจากข้อความ ควรใช้คำสั่งใด",
+      options: ["parseFloat()", "parseInt() เท่านั้น", "console.log()", "typeof"],
+      answer: 0,
+      explanation: "parseFloat() แปลงข้อความเป็นเลขทศนิยมได้"
+    }
+  },
+  106: {
+    learn:
+      "บทนี้เรียนการตัดสินใจของโปรแกรมด้วย if, else if และ else พร้อมตัวดำเนินการเปรียบเทียบ >, <, >=, <=, === และ !== รวมถึง nested if แบบเบื้องต้น",
+    why:
+      "โปรแกรมจริงต้องเลือกทางเดิน เช่น ถ้าคะแนนถึงเกณฑ์ให้ผ่าน ถ้ากรอกอีเมลไม่ครบให้เตือน หรือถ้าเป็น Premium ให้เปิดบทเรียน การเขียนเงื่อนไขคือหัวใจของ logic เหล่านี้",
+    concept:
+      "if คือถ้าเงื่อนไขเป็นจริงให้ทำสิ่งนี้ else if คือถ้าเงื่อนไขแรกไม่จริง ลองตรวจเงื่อนไขถัดไป else คือทางเลือกสุดท้าย ส่วน === ใช้เปรียบเทียบแบบเข้มงวดทั้งค่าและชนิดข้อมูล จึงเหมาะกับการเขียน JavaScript สมัยใหม่",
+    exampleCode: `const score = 78;
+const submittedHomework = true;
+
+if (score >= 80) {
+  console.log("ดีเยี่ยม");
+} else if (score >= 50) {
+  if (submittedHomework === true) {
+    console.log("ผ่าน");
+  } else {
+    console.log("คะแนนผ่าน แต่ยังต้องส่งการบ้าน");
+  }
+} else {
+  console.log("ควรฝึกเพิ่ม");
+}`,
+    walkthrough: [
+      "บรรทัดที่ 1-2 กำหนดคะแนนและสถานะส่งการบ้าน",
+      "โปรแกรมตรวจ score >= 80 ก่อน ถ้าจริงจะแสดงดีเยี่ยม",
+      "ถ้าไม่ถึง 80 จะมาตรวจ score >= 50",
+      "เมื่อคะแนนผ่านเกณฑ์ จะเข้า nested if เพื่อตรวจว่าส่งการบ้านแล้วหรือยัง",
+      "ถ้าไม่เข้าเงื่อนไขใดเลย จะทำงานใน else สุดท้าย"
+    ],
+    mistakes: [
+      "ใช้ = แทน === ในการเปรียบเทียบ",
+      "เรียงเงื่อนไขจากกว้างไปแคบ ทำให้บางกรณีไม่มีวันถูกตรวจ",
+      "ลืมวงเล็บปีกกาใน block ของ if",
+      "ซ้อน nested if ลึกเกินไปจนอ่านยาก"
+    ],
+    summary:
+      "เงื่อนไขช่วยให้โปรแกรมตัดสินใจได้ เริ่มจากเขียนกฎเป็นภาษาไทยก่อน เช่น ถ้าคะแนนมากกว่าหรือเท่ากับ 50 ให้ผ่าน แล้วค่อยแปลงเป็น if/else ในโค้ด",
+    extraTasks: [
+      "เพิ่มเงื่อนไข score >= 90 ให้แสดง ยอดเยี่ยมมาก",
+      "เปลี่ยน submittedHomework เป็น false แล้วอ่านผลลัพธ์",
+      "เขียนเงื่อนไขตรวจว่า userRole === \"admin\" หรือไม่"
+    ],
+    extraQuiz: {
+      question: "ทำไม === จึงเหมาะกับการเปรียบเทียบใน JavaScript",
+      options: ["ตรวจทั้งค่าและชนิดข้อมูล", "ใช้ตกแต่งข้อความ", "สร้าง array", "ทำให้ loop หยุดเสมอ"],
+      answer: 0,
+      explanation: "=== เปรียบเทียบแบบเข้มงวด จึงลดปัญหาจากการแปลงชนิดข้อมูลอัตโนมัติ"
+    }
+  },
+  107: {
+    learn:
+      "บทนี้เรียน loop หรือการทำซ้ำด้วย for และ while แบบพื้นฐาน พร้อมข้อควรระวังเรื่อง infinite loop และตัวอย่างรวมคะแนน",
+    why:
+      "งานซ้ำเกิดขึ้นตลอด เช่น แสดงรายชื่อผู้เรียนทุกคน รวมคะแนนหลายข้อ หรือสร้างตารางสูตรคูณ ถ้าไม่มี loop เราต้องเขียนคำสั่งซ้ำจำนวนมากและแก้ไขยาก",
+    concept:
+      "for loop เหมาะเมื่อรู้จำนวนรอบค่อนข้างชัด เช่น วน 1 ถึง 10 ส่วน while loop เหมาะเมื่อวนจนกว่าเงื่อนไขจะเปลี่ยน เช่น ถามรหัสผ่านจนกว่าจะถูก ทุก loop ต้องมีทางหยุด ไม่อย่างนั้นจะเกิด infinite loop",
+    exampleCode: `let total = 0;
+
+for (let i = 1; i <= 5; i++) {
+  total = total + i;
+  console.log("บวกเลข", i, "ผลรวมตอนนี้", total);
+}
+
+let countdown = 3;
+while (countdown > 0) {
+  console.log("นับถอยหลัง", countdown);
+  countdown = countdown - 1;
+}`,
+    walkthrough: [
+      "บรรทัดที่ 1 สร้าง total เพื่อเก็บผลรวม",
+      "for loop เริ่มที่ i = 1 และวนจนถึง i <= 5",
+      "ในแต่ละรอบนำ i ไปบวกเพิ่มใน total",
+      "while loop เริ่มจาก countdown = 3 และทำงานตราบใดที่ countdown > 0",
+      "บรรทัด countdown = countdown - 1 คือทางหยุดที่ทำให้ while ไม่วนตลอดไป"
+    ],
+    mistakes: [
+      "ลืมเพิ่มหรือลดค่าที่ใช้หยุด while loop",
+      "ใช้เงื่อนไข i <= 5 หรือ i < 5 ผิดจากจำนวนรอบที่ต้องการ",
+      "เปลี่ยนค่าตัวแปรนับในหลายจุดจนตามยาก",
+      "ใช้ loop ทั้งที่งานทำครั้งเดียวก็พอ"
+    ],
+    summary:
+      "loop คือเครื่องมือทำซ้ำอย่างมีระบบ for เหมาะกับจำนวนรอบที่ชัด ส่วน while เหมาะกับการวนตามเงื่อนไข จุดสำคัญคือทุก loop ต้องมีทางหยุด",
+    extraTasks: [
+      "ใช้ for loop แสดงเลขคู่ 2 ถึง 20",
+      "เขียน while loop นับถอยหลังจาก 5 ถึง 1",
+      "เพิ่มตัวแปร total เพื่อรวมคะแนนในแต่ละรอบ"
+    ],
+    extraQuiz: {
+      question: "สาเหตุหลักของ infinite loop คืออะไร",
+      options: ["เงื่อนไขไม่มีทางกลายเป็น false", "ใช้ console.log()", "ประกาศ const", "มีตัวแปรชื่อ total"],
+      answer: 0,
+      explanation: "ถ้าเงื่อนไขของ loop ไม่เคยเป็น false โปรแกรมจะวนซ้ำไม่จบ"
+    }
+  },
+  108: {
+    learn:
+      "บทนี้เรียน Array หรือรายการข้อมูลหลายค่า เช่น คะแนน รายชื่อ หรือรายการสินค้า พร้อมการใช้ index, push, pop, length และ loop เพื่ออ่านข้อมูล",
+    why:
+      "ถ้าต้องเก็บคะแนน 10 ครั้ง การสร้างตัวแปร score1 ถึง score10 จะทำให้โค้ดรกมาก Array ช่วยรวมข้อมูลประเภทเดียวกันไว้ในที่เดียวและจัดการด้วย loop ได้ง่าย",
+    concept:
+      "Array ใน JavaScript ใช้วงเล็บเหลี่ยม [] สมาชิกตัวแรกอยู่ที่ index 0 ใช้ .length ดูจำนวนสมาชิก push() เพิ่มข้อมูลท้ายรายการ และ pop() นำข้อมูลท้ายรายการออก",
+    exampleCode: `const lessons = ["console.log", "variables", "if else"];
+
+console.log("บทแรก:", lessons[0]);
+console.log("จำนวนบท:", lessons.length);
+
+lessons.push("loops");
+console.log("หลังเพิ่ม:", lessons);
+
+const lastLesson = lessons.pop();
+console.log("นำออก:", lastLesson);
+
+for (let i = 0; i < lessons.length; i++) {
+  console.log("บทเรียน:", lessons[i]);
+}`,
+    walkthrough: [
+      "บรรทัดแรกสร้าง array lessons ที่มี 3 ค่า",
+      "lessons[0] อ่านสมาชิกตัวแรก เพราะ index เริ่มจาก 0",
+      "lessons.length บอกจำนวนสมาชิกใน array",
+      "push() เพิ่ม loops ต่อท้าย array",
+      "pop() นำสมาชิกตัวท้ายออกและเก็บไว้ใน lastLesson",
+      "for loop ใช้ i อ่านสมาชิกทีละตำแหน่ง"
+    ],
+    mistakes: [
+      "ลืมว่า index เริ่มที่ 0",
+      "อ่าน index ที่ไม่มีอยู่แล้วได้ undefined",
+      "ใช้ pop() แล้วลืมว่าข้อมูลถูกนำออกจาก array จริง",
+      "วน loop ด้วย i <= array.length ทำให้เกินตำแหน่งสุดท้าย"
+    ],
+    summary:
+      "Array เหมาะกับข้อมูลเป็นรายการ เมื่อใช้ index, length และ loop ได้คล่อง ผู้เรียนจะจัดการข้อมูลหลายค่าได้เป็นระบบมากขึ้น",
+    extraTasks: [
+      "สร้าง array เก็บคะแนน 5 ค่า แล้วใช้ loop แสดงทุกคะแนน",
+      "เพิ่มคะแนนใหม่ด้วย push()",
+      "ใช้ pop() นำคะแนนล่าสุดออก แล้วแสดง array หลังเปลี่ยนแปลง"
+    ],
+    extraQuiz: {
+      question: "ถ้า array มี 3 สมาชิก index สุดท้ายคืออะไร",
+      options: ["2", "3", "1", "length"],
+      answer: 0,
+      explanation: "เพราะ index เริ่มที่ 0 array ที่มี 3 สมาชิกจึงมี index 0, 1, 2"
+    }
+  },
+  109: {
+    learn:
+      "บทนี้เรียน function ในฐานะชุดคำสั่งที่ตั้งชื่อและเรียกใช้ซ้ำได้ รวมถึง parameter, return และความต่างระหว่าง console.log กับ return",
+    why:
+      "เมื่อโค้ดยาวขึ้น การเขียนทุกอย่างต่อกันจะอ่านยาก Function ช่วยแบ่งงานเป็นชิ้นเล็ก เช่น คำนวณราคา ตรวจคะแนน หรือสร้างข้อความทักทาย ทำให้ทดสอบและแก้ไขง่ายขึ้น",
+    concept:
+      "parameter คือช่องรับข้อมูลเข้า function ส่วน return คือการส่งผลลัพธ์กลับออกไปใช้ต่อ console.log() แค่แสดงผลให้เราดู แต่ไม่ได้ส่งค่าไปให้ส่วนอื่นของโปรแกรมใช้ต่อ",
+    exampleCode: `function calculateTotal(price, quantity) {
+  const total = price * quantity;
+  return total;
+}
+
+function showResult(value) {
+  console.log("ผลลัพธ์คือ:", value);
+}
+
+const finalPrice = calculateTotal(199, 2);
+showResult(finalPrice);`,
+    walkthrough: [
+      "calculateTotal รับ price และ quantity เป็น parameter",
+      "ใน function นำ price คูณ quantity แล้วเก็บใน total",
+      "return total ส่งผลลัพธ์กลับออกจาก function",
+      "showResult รับ value แล้วใช้ console.log() แสดงผล",
+      "finalPrice ได้ค่าจาก calculateTotal ก่อนนำไปส่งให้ showResult"
+    ],
+    mistakes: [
+      "สร้าง function แล้วลืมเรียกใช้",
+      "ใช้ console.log() แทน return ทั้งที่ต้องการนำค่าไปคำนวณต่อ",
+      "ตั้งชื่อ function ไม่บอกว่าทำอะไร",
+      "ส่งจำนวน argument ไม่ตรงกับ parameter ที่ออกแบบไว้"
+    ],
+    summary:
+      "Function ทำให้โค้ดเป็นส่วนย่อยที่เรียกใช้ซ้ำได้ จำให้ได้ว่า console.log() ใช้ดูผล ส่วน return ใช้ส่งค่ากลับเพื่อให้โปรแกรมใช้ต่อ",
+    extraTasks: [
+      "สร้าง function calculateAverage(score1, score2) แล้ว return ค่าเฉลี่ย",
+      "สร้าง function getPassMessage(score) ที่ return ข้อความผ่านหรือไม่ผ่าน",
+      "ลองใช้ console.log() แสดงค่าที่ function return ออกมา"
+    ],
+    extraQuiz: {
+      question: "ถ้าต้องการนำผลลัพธ์จาก function ไปคำนวณต่อ ควรใช้คำสั่งใด",
+      options: ["return", "console.log เท่านั้น", "prompt", "typeof"],
+      answer: 0,
+      explanation: "return ส่งค่ากลับออกจาก function เพื่อให้ส่วนอื่นนำไปใช้ต่อได้"
+    }
+  },
+  110: {
+    learn:
+      "บทนี้รวมความรู้จากบทก่อนหน้าเพื่อทำ Mini Project โปรแกรมคำนวณคะแนนอย่างง่าย โดยใช้ตัวแปร array loop function และ if/else ทำงานร่วมกัน",
+    why:
+      "โปรเจกต์ช่วยให้เห็นว่าคำสั่งพื้นฐานไม่ได้แยกกันอยู่ แต่ประกอบกันเป็นโปรแกรมที่ใช้งานได้จริง เช่น ระบบสรุปคะแนน แบบทดสอบออนไลน์ หรือแอปฝึกทำโจทย์",
+    concept:
+      "เริ่มจากวางโจทย์ให้ชัด: รับชุดคะแนน คำนวณคะแนนรวม หาเฉลี่ย แล้วสรุปผลผ่าน/ไม่ผ่าน จากนั้นแบ่งงานเป็น function เล็ก ๆ เช่น calculateAverage() และ getGradeMessage() เพื่อให้โค้ดอ่านง่าย",
+    exampleCode: `function calculateAverage(scores) {
+  let total = 0;
+
+  for (let i = 0; i < scores.length; i++) {
+    total = total + scores[i];
+  }
+
+  return total / scores.length;
+}
+
+function getGradeMessage(average) {
+  if (average >= 80) {
+    return "ดีเยี่ยม";
+  } else if (average >= 60) {
+    return "ผ่าน";
+  } else {
+    return "ควรฝึกเพิ่ม";
+  }
+}
+
+const scores = [72, 85, 90, 68];
+const average = calculateAverage(scores);
+const message = getGradeMessage(average);
+
+console.log("คะแนนเฉลี่ย:", average);
+console.log("ผลสรุป:", message);`,
+    walkthrough: [
+      "calculateAverage รับ array คะแนนเข้ามา",
+      "สร้าง total เป็น 0 เพื่อสะสมคะแนน",
+      "for loop วนอ่านคะแนนทีละตัวแล้วบวกเข้า total",
+      "return total / scores.length เพื่อส่งค่าเฉลี่ยกลับ",
+      "getGradeMessage รับค่าเฉลี่ยแล้วใช้ if/else if/else เลือกข้อความ",
+      "ส่วนท้ายสร้าง scores เรียก function และแสดงผลลัพธ์ใน Console"
+    ],
+    mistakes: [
+      "ลืมตรวจว่า scores.length ไม่ใช่ 0 ก่อนหารในงานจริง",
+      "บวกคะแนนผิดเพราะใช้ index เกิน array",
+      "เขียนทุกอย่างในที่เดียวจนอ่านยาก แทนที่จะแยก function",
+      "ใช้ console.log() ใน function คำนวณทั้งที่ควร return ค่า"
+    ],
+    summary:
+      "โปรเจกต์นี้คือภาพรวมของพื้นฐาน JavaScript: เก็บข้อมูลด้วย array, วนรวมค่าด้วย loop, แยกงานด้วย function และตัดสินผลด้วย if/else ผู้เรียนควรลองปรับคะแนนและกติกาเองเพื่อฝึกคิดแบบนักพัฒนา",
+    extraTasks: [
+      "เพิ่มเกรด A/B/C เช่น >= 80 เป็น A, >= 70 เป็น B, >= 60 เป็น C",
+      "เพิ่มข้อความแนะนำ เช่น ถ้าคะแนนต่ำกว่า 60 ให้บอกว่าควรทบทวนบท loop",
+      "สร้าง array ชุดใหม่ 2 ชุดแล้วทดสอบ function เดิมซ้ำ"
+    ],
+    extraQuiz: {
+      question: "ข้อใดเป็น flow ที่เหมาะกับโปรแกรมคำนวณคะแนน",
+      options: ["เก็บคะแนน > รวมคะแนน > หาเฉลี่ย > สรุปผล", "สรุปผลก่อนรับคะแนน", "ลบ array ก่อน loop", "แสดงผลโดยไม่คำนวณ"],
+      answer: 0,
+      explanation: "ควรวาง flow จากข้อมูลเข้า ไปคำนวณ แล้วค่อยสรุปผลลัพธ์"
+    }
+  }
+};
+
+javascriptLessons.forEach((lesson) => {
+  const enhancement = javascriptLessonEnhancements[lesson.id];
+
+  if (!enhancement) {
+    return;
+  }
+
+  lesson.sections = [
+    {
+      heading: "บทนี้เรียนอะไร",
+      body: enhancement.learn
+    },
+    {
+      heading: "ทำไมเรื่องนี้สำคัญ",
+      body: enhancement.why
+    },
+    {
+      heading: "อธิบายแนวคิดแบบง่าย",
+      body: enhancement.concept
+    },
+    {
+      heading: "ตัวอย่างโค้ด JavaScript",
+      body: "ตัวอย่างนี้ออกแบบให้ copy ไปลองรันใน Console หรือเครื่องมือฝึก JavaScript ได้ทันที ก่อนรันให้ลองอ่านและเดาผลลัพธ์ด้วยตัวเองหนึ่งรอบ",
+      code: enhancement.exampleCode
+    },
+    {
+      heading: "อธิบายโค้ดทีละบรรทัด",
+      body: enhancement.walkthrough
+        .map((item, index) => `${index + 1}. ${item}`)
+        .join(" ")
+    },
+    {
+      heading: "ข้อผิดพลาดที่มือใหม่มักเจอ",
+      body: enhancement.mistakes
+        .map((item, index) => `${index + 1}. ${item}`)
+        .join(" ")
+    },
+    {
+      heading: "สรุปท้ายบท",
+      body: enhancement.summary
+    }
+  ];
+
+  lesson.exercise = {
+    ...lesson.exercise,
+    tasks: [...lesson.exercise.tasks, ...enhancement.extraTasks]
+  };
+
+  lesson.quiz = [...lesson.quiz, enhancement.extraQuiz];
+});
+
 export const lessons: Lesson[] = [...pythonLessons, ...javascriptLessons];
 
 export function getLessonBySlug(slug: string) {
