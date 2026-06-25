@@ -26,8 +26,8 @@ export const courses: Course[] = [
 ];
 
 export const futureCourses = [
-  "สร้างเว็บไซต์",
-  "HTML พื้นฐาน",
+  "สร้างเว็บไซต์ด้วย React",
+  "HTML พื้นฐาน", 
   "CSS พื้นฐาน",
   "JavaScript มือใหม่",
   "SQL เบื้องต้น"
