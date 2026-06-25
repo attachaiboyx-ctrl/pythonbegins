@@ -5,11 +5,11 @@ import {
   CheckCircle2,
   ClipboardList,
   Clock3,
-  LockKeyhole,
   PlayCircle,
   Target
 } from "lucide-react";
 import { submitQuizAction } from "@/app/actions/progress";
+import { PremiumUpgradeCard } from "@/components/PremiumUpgradeCard";
 import { canAccessLesson, getLessonBySlug, lessons } from "@/lib/lessons";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
@@ -56,12 +56,12 @@ export default async function LessonDetailPage({
                 {lesson.title}
               </h1>
               <p className="mt-4 max-w-2xl leading-7 text-slate-600">
-                บทนี้เป็นบทเรียนพรีเมียม บัญชีฟรีเรียนได้เฉพาะบทที่ 1-2
-                หากต้องการเรียนบทที่ 3-20 ให้อัปเกรดด้วย PromptPay และส่งสลิปให้แอดมินตรวจ
+                บทนี้เป็นบทเรียน Premium สำหรับผู้ที่ต้องการเรียนต่อให้ครบทั้งคอร์ส
+                บัญชี Free เรียนได้เฉพาะบทที่ 1-2 ส่วน Premium จะปลดล็อกบทที่ 1-20 พร้อมแบบฝึกหัดและแบบทดสอบทุกบท
               </p>
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
                 <Link className="btn-primary" href="/payment">
-                  ไปชำระเงิน
+                  อัปเกรดเป็น Premium
                 </Link>
                 <Link className="btn-secondary" href="/courses/python-beginner">
                   <ArrowLeft className="h-4 w-4" />
@@ -70,26 +70,7 @@ export default async function LessonDetailPage({
               </div>
             </div>
 
-            <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-              <span className="grid h-14 w-14 place-items-center rounded-lg bg-lavender-50 text-lavender-600">
-                <LockKeyhole className="h-7 w-7" />
-              </span>
-              <h2 className="mt-5 text-xl font-black text-ink">สิ่งที่จะปลดล็อก</h2>
-              <ul className="mt-4 space-y-3 text-sm font-bold leading-6 text-slate-600">
-                <li className="flex gap-2">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 text-brand-600" />
-                  บทเรียนครบ 20 บท
-                </li>
-                <li className="flex gap-2">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 text-brand-600" />
-                  แบบฝึกหัดและแบบทดสอบทุกบท
-                </li>
-                <li className="flex gap-2">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 text-brand-600" />
-                  Mini project เพื่อฝึกใช้งานจริง
-                </li>
-              </ul>
-            </div>
+            <PremiumUpgradeCard compact embedded />
           </div>
         </section>
       </div>

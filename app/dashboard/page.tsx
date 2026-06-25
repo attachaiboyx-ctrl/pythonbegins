@@ -8,6 +8,7 @@ import {
   Trophy
 } from "lucide-react";
 import { LessonCard } from "@/components/LessonCard";
+import { PremiumUpgradeCard } from "@/components/PremiumUpgradeCard";
 import { StatusBadge } from "@/components/StatusBadge";
 import { canAccessLesson, lessons } from "@/lib/lessons";
 import { prisma } from "@/lib/prisma";
@@ -136,6 +137,8 @@ export default async function DashboardPage({
           </div>
         </aside>
       </section>
+
+      {!isPremium ? <PremiumUpgradeCard /> : null}
 
       <section className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="panel p-6">

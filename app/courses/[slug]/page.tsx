@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, BookOpen, CheckCircle2, Crown, GraduationCap } from "lucide-react";
 import { LessonCard } from "@/components/LessonCard";
+import { PremiumUpgradeCard } from "@/components/PremiumUpgradeCard";
 import { courses, getCourseBySlug } from "@/lib/courses";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
@@ -33,6 +34,8 @@ export default async function CourseDetailPage({
   );
   const completedCount = progressItems.filter((progress) => progress.completed).length;
   const freeCount = course.lessons.filter((lesson) => lesson.free).length;
+  const isPremium = user?.membership === "paid" || user?.role === "admin";
+  const shouldShowPremiumUpgrade = Boolean(user && !isPremium);
 
   return (
     <div className="page-shell space-y-10">
@@ -58,9 +61,9 @@ export default async function CourseDetailPage({
               <Link className="btn-primary" href={user ? "/dashboard" : "/register"}>
                 เริ่มเรียนฟรี
               </Link>
-              {user?.membership !== "paid" && user?.role !== "admin" ? (
+              {!isPremium ? (
                 <Link className="btn-secondary" href="/payment">
-                  ปลดล็อกพรีเมียม
+                  อัปเกรดเป็น Premium
                 </Link>
               ) : null}
             </div>
@@ -93,6 +96,8 @@ export default async function CourseDetailPage({
           </div>
         </div>
       </section>
+
+      {shouldShowPremiumUpgrade ? <PremiumUpgradeCard /> : null}
 
       <section>
         <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">

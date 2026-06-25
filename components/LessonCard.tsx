@@ -20,6 +20,8 @@ export function LessonCard({
 }) {
   const unlocked = canAccessLesson(user, lesson);
   const statusLabel = getLessonStatusLabel(user, lesson);
+  const actionHref = unlocked ? `/lessons/${lesson.slug}` : "/payment";
+  const actionLabel = unlocked ? "เริ่มเรียน" : "อัปเกรดเป็น Premium";
 
   return (
     <article className="group panel flex min-h-72 flex-col overflow-hidden transition duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-2xl hover:shadow-blue-600/15">
@@ -60,6 +62,12 @@ export function LessonCard({
           {lesson.subtitle}
         </p>
 
+        {!unlocked ? (
+          <div className="mt-5 rounded-lg border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-bold leading-6 text-amber-900">
+            Premium ปลดล็อกบทนี้ พร้อมตัวอย่างโค้ด แบบฝึกหัด และแบบทดสอบท้ายบท
+          </div>
+        ) : null}
+
         {progress?.completed ? (
           <div className="mt-5 rounded-lg bg-emerald-50 px-4 py-3 text-sm font-black text-emerald-700">
             ผ่านแล้ว คะแนน {progress.quizScore ?? 0}%
@@ -70,8 +78,8 @@ export function LessonCard({
           </div>
         ) : null}
 
-        <Link className="btn-secondary mt-5 w-full" href={`/lessons/${lesson.slug}`}>
-          {unlocked ? "เริ่มเรียน" : "ดูรายละเอียด"}
+        <Link className={unlocked ? "btn-secondary mt-5 w-full" : "btn-primary mt-5 w-full"} href={actionHref}>
+          {actionLabel}
         </Link>
       </div>
     </article>
