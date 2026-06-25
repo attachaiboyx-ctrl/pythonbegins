@@ -32,10 +32,14 @@ export default async function CourseDetailPage({
   const progressByLesson = new Map(
     progressItems.map((progress) => [progress.lessonId, progress])
   );
-  const completedCount = progressItems.filter((progress) => progress.completed).length;
+  const courseLessonIds = new Set(course.lessons.map((lesson) => lesson.id));
+  const completedCount = progressItems.filter(
+    (progress) => progress.completed && courseLessonIds.has(progress.lessonId)
+  ).length;
   const freeCount = course.lessons.filter((lesson) => lesson.free).length;
   const isPremium = user?.membership === "paid" || user?.role === "admin";
   const shouldShowPremiumUpgrade = Boolean(user && !isPremium);
+  const firstLesson = course.lessons[0];
 
   return (
     <div className="page-shell space-y-10">
@@ -58,7 +62,10 @@ export default async function CourseDetailPage({
             </p>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Link className="btn-primary" href={user ? "/dashboard" : "/register"}>
+              <Link
+                className="btn-primary"
+                href={user && firstLesson ? `/lessons/${firstLesson.slug}` : "/register"}
+              >
                 เริ่มเรียนฟรี
               </Link>
               {!isPremium ? (
@@ -71,7 +78,7 @@ export default async function CourseDetailPage({
 
           <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
             {[
-              [BookOpen, `${course.lessons.length} บทเรียน`, "รวมอยู่ใน Python มือใหม่"],
+              [BookOpen, `${course.lessons.length} บทเรียน`, `รวมอยู่ในคอร์ส ${course.title}`],
               [CheckCircle2, `${completedCount} บทที่ผ่าน`, "ติดตามผลได้ใน Dashboard"],
               [Crown, `${freeCount} บทฟรี`, "บทที่เหลือใช้สิทธิ์พรีเมียม"]
             ].map(([Icon, title, text]) => {
@@ -97,12 +104,14 @@ export default async function CourseDetailPage({
         </div>
       </section>
 
-      {shouldShowPremiumUpgrade ? <PremiumUpgradeCard /> : null}
+      {shouldShowPremiumUpgrade ? (
+        <PremiumUpgradeCard courseTitle={course.title} lessonCount={course.lessons.length} />
+      ) : null}
 
       <section>
         <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
-            <p className="eyebrow">Python มือใหม่</p>
+            <p className="eyebrow">{course.title}</p>
             <h2 className="section-title mt-3">บทเรียนทั้งหมดในคอร์สนี้</h2>
           </div>
           <div className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-bold text-slate-600 shadow-sm">

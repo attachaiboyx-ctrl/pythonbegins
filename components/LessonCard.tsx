@@ -185,6 +185,76 @@ const lessonCoverThemes: Record<number, LessonCoverTheme> = {
     glow: "bg-yellow-200/40",
     pattern: "radial-gradient(circle at 18% 24%, rgba(255,255,255,0.28) 0 2px, transparent 2px 16px)",
     label: "Final project"
+  },
+  101: {
+    icon: Code2,
+    gradient: "from-yellow-400 via-amber-500 to-slate-950",
+    glow: "bg-yellow-200/40",
+    pattern: "radial-gradient(circle at 18% 24%, rgba(255,255,255,0.28) 0 2px, transparent 2px 16px)",
+    label: "JS intro"
+  },
+  102: {
+    icon: Terminal,
+    gradient: "from-slate-950 via-zinc-900 to-yellow-500",
+    glow: "bg-yellow-200/35",
+    pattern: "linear-gradient(90deg, rgba(250,204,21,0.18) 0 1px, transparent 1px 18px)",
+    label: "Console"
+  },
+  103: {
+    icon: Box,
+    gradient: "from-amber-500 via-blue-900 to-slate-950",
+    glow: "bg-amber-200/35",
+    pattern: "radial-gradient(circle at 24% 30%, rgba(255,255,255,0.22) 0 3px, transparent 3px 18px)",
+    label: "Variables"
+  },
+  104: {
+    icon: Database,
+    gradient: "from-yellow-500 via-indigo-800 to-slate-950",
+    glow: "bg-yellow-200/35",
+    pattern: "linear-gradient(135deg, rgba(255,255,255,0.14) 0 1px, transparent 1px 14px)",
+    label: "Data types"
+  },
+  105: {
+    icon: Calculator,
+    gradient: "from-cyan-500 via-blue-800 to-slate-950",
+    glow: "bg-cyan-200/30",
+    pattern: "radial-gradient(circle at 76% 28%, rgba(250,204,21,0.26) 0 3px, transparent 3px 20px)",
+    label: "Calculate"
+  },
+  106: {
+    icon: GitBranch,
+    gradient: "from-orange-400 via-yellow-600 to-slate-950",
+    glow: "bg-orange-200/35",
+    pattern: "linear-gradient(90deg, rgba(255,255,255,0.14) 0 2px, transparent 2px 18px)",
+    label: "If else"
+  },
+  107: {
+    icon: Repeat2,
+    gradient: "from-blue-950 via-indigo-800 to-yellow-500",
+    glow: "bg-blue-200/25",
+    pattern: "radial-gradient(circle at 70% 30%, rgba(255,255,255,0.22) 0 2px, transparent 2px 16px)",
+    label: "Loops"
+  },
+  108: {
+    icon: List,
+    gradient: "from-yellow-400 via-sky-800 to-slate-950",
+    glow: "bg-yellow-200/35",
+    pattern: "linear-gradient(135deg, rgba(255,255,255,0.16) 25%, transparent 25% 50%, rgba(255,255,255,0.16) 50% 75%, transparent 75%)",
+    label: "Array"
+  },
+  109: {
+    icon: Braces,
+    gradient: "from-indigo-950 via-blue-800 to-amber-500",
+    glow: "bg-amber-200/35",
+    pattern: "radial-gradient(circle at 22% 28%, rgba(255,255,255,0.22) 0 2px, transparent 2px 16px)",
+    label: "Function"
+  },
+  110: {
+    icon: Trophy,
+    gradient: "from-amber-300 via-yellow-600 to-slate-950",
+    glow: "bg-yellow-200/45",
+    pattern: "radial-gradient(circle at 18% 24%, rgba(255,255,255,0.32) 0 2px, transparent 2px 16px)",
+    label: "JS project"
   }
 };
 

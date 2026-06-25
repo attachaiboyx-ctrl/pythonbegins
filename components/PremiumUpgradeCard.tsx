@@ -5,24 +5,27 @@ import { StatusBadge } from "@/components/StatusBadge";
 type PremiumUpgradeCardProps = {
   compact?: boolean;
   embedded?: boolean;
+  courseTitle?: string;
+  lessonCount?: number;
 };
-
-const premiumBenefits = [
-  "ปลดล็อกบทเรียนทั้งหมด 20 บท",
-  "มีตัวอย่างโค้ดให้ลองทำตาม",
-  "มีแบบฝึกหัดทุกบท",
-  "มีแบบทดสอบเพื่อเช็กความเข้าใจ",
-  "เรียนซ้ำได้ตลอด",
-  "ได้รับอัปเดตบทเรียนใหม่ในคอร์สนี้ตามไปด้วย"
-];
 
 export function PremiumUpgradeCard({
   compact = false,
-  embedded = false
+  embedded = false,
+  courseTitle = "Python มือใหม่",
+  lessonCount = 20
 }: PremiumUpgradeCardProps) {
   const containerClassName = embedded
     ? "overflow-hidden rounded-lg border border-amber-200/70 bg-white shadow-sm"
     : "panel overflow-hidden";
+  const premiumBenefits = [
+    `ปลดล็อกบทเรียนทั้งหมด ${lessonCount} บท`,
+    "มีตัวอย่างโค้ดให้ลองทำตาม",
+    "มีแบบฝึกหัดทุกบท",
+    "มีแบบทดสอบเพื่อเช็กความเข้าใจ",
+    "เรียนซ้ำได้ตลอด",
+    "ได้รับอัปเดตบทเรียนใหม่ในคอร์สนี้ตามไปด้วย"
+  ];
 
   return (
     <section className={containerClassName}>
@@ -41,7 +44,7 @@ export function PremiumUpgradeCard({
             </div>
 
             <h2 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">
-              ปลดล็อก Premium เพื่อเรียน Python ได้ครบทุกบท
+              ปลดล็อก Premium เพื่อเรียน {courseTitle} ได้ครบทุกบท
             </h2>
             <p className="mt-4 max-w-3xl leading-7 text-blue-50">
               เหมาะสำหรับผู้เรียนที่อยากไปต่อจากพื้นฐานให้ครบคอร์ส พร้อมตัวอย่าง โจทย์ฝึก และแบบทดสอบที่ช่วยเช็กความเข้าใจทีละบท
@@ -55,7 +58,7 @@ export function PremiumUpgradeCard({
               </span>
               <div>
                 <div className="text-sm font-black text-amber-100">Premium access</div>
-                <div className="text-2xl font-black">20 บทเรียน</div>
+                <div className="text-2xl font-black">{lessonCount} บทเรียน</div>
               </div>
             </div>
             <p className="mt-4 text-sm font-bold leading-6 text-blue-50">

@@ -30,7 +30,7 @@ export type Lesson = {
   quiz: QuizQuestion[];
 };
 
-export const lessons: Lesson[] = [
+export const pythonLessons: Lesson[] = [
   {
     id: 1,
     slug: "hello-python",
@@ -2193,7 +2193,7 @@ const lessonDailyScenarios: Record<number, string> = {
   20: "โปรเจกต์เกมทายตัวเลขเป็นภาพรวมของการสร้างโปรแกรมขนาดเล็ก ผู้เรียนต้องวางกติกาก่อน เช่น เลขอยู่ช่วงใด ทายได้กี่ครั้ง บอกใบ้อย่างไร และจบเกมเมื่อไร จากนั้นจึงค่อยแปลงกติกาเป็นตัวแปร เงื่อนไข และ loop"
 };
 
-lessons.forEach((lesson) => {
+pythonLessons.forEach((lesson) => {
   const enhancement = lessonEnhancements[lesson.id];
   const dailyScenario = lessonDailyScenarios[lesson.id];
 
@@ -2243,6 +2243,762 @@ lessons.forEach((lesson) => {
     lesson.quiz = [...lesson.quiz, enhancement.extraQuiz];
   }
 });
+
+export const javascriptLessons: Lesson[] = [
+  {
+    id: 101,
+    slug: "javascript-introduction",
+    title: "บทที่ 1: JavaScript คืออะไร และใช้ทำอะไรได้บ้าง",
+    subtitle: "รู้จัก JavaScript ภาษาหลักของเว็บ และเห็นภาพว่านำไปสร้างอะไรได้บ้าง",
+    minutes: 20,
+    free: true,
+    badge: "เริ่มต้น",
+    accent: "bg-lemon",
+    objectives: [
+      "อธิบายได้ว่า JavaScript ใช้ทำอะไร",
+      "แยกบทบาท HTML, CSS และ JavaScript แบบง่าย ๆ",
+      "เข้าใจว่าทำไม JavaScript สำคัญกับการทำเว็บ"
+    ],
+    sections: [
+      {
+        heading: "JavaScript คืออะไร",
+        body: "JavaScript เป็นภาษาที่ทำให้เว็บไซต์โต้ตอบกับผู้ใช้ได้ เช่น กดปุ่มแล้วเปลี่ยนข้อความ ตรวจฟอร์มก่อนส่ง แสดงคะแนนเกม หรือคำนวณราคาแบบทันที ถ้าเปรียบเว็บไซต์เป็นร้านค้า HTML คือโครงร้าน CSS คือการตกแต่งร้าน และ JavaScript คือพนักงานที่ตอบสนองเมื่อลูกค้ากดหรือกรอกข้อมูล"
+      },
+      {
+        heading: "ตัวอย่างโค้ดแรก",
+        body: "โค้ดนี้ใช้ console.log() เพื่อแสดงข้อความใน Console ซึ่งเหมาะกับการฝึกและตรวจผลลัพธ์ตอนเริ่มเรียน",
+        code: `console.log("สวัสดี JavaScript");
+console.log("ฉันกำลังเรียนการเขียนโปรแกรมบนเว็บ");`
+      },
+      {
+        heading: "โค้ดทำงานทีละขั้นอย่างไร",
+        body: "บรรทัดที่ 1 ส่งข้อความแรกไปแสดงใน Console บรรทัดที่ 2 ส่งข้อความถัดไป JavaScript จะอ่านคำสั่งจากบนลงล่างเหมือนการอ่านรายการสิ่งที่ต้องทำทีละข้อ"
+      },
+      {
+        heading: "สรุปท้ายบท",
+        body: "JavaScript เป็นภาษาพื้นฐานสำหรับเว็บสมัยใหม่ เริ่มจากการแสดงข้อความใน Console ก่อน แล้วค่อยต่อยอดไปสู่การรับค่า เงื่อนไข loop และการทำโปรเจกต์"
+      }
+    ],
+    exercise: {
+      title: "แนะนำตัวด้วย JavaScript",
+      tasks: [
+        "ใช้ console.log() แสดงชื่อของตัวเอง",
+        "แสดงเหตุผลที่อยากเรียน JavaScript",
+        "แสดงสิ่งที่อยากสร้างบนเว็บ 1 อย่าง"
+      ],
+      starterCode: `console.log("ฉันชื่อ ...");
+console.log("ฉันอยากเรียน JavaScript เพราะ ...");
+console.log("ฉันอยากสร้าง ...");`
+    },
+    quiz: [
+      {
+        question: "JavaScript มักใช้ทำอะไรบนเว็บไซต์",
+        options: ["ทำให้เว็บโต้ตอบกับผู้ใช้", "เก็บรูปภาพเท่านั้น", "แทนไฟล์รูปทั้งหมด", "ปิดอินเทอร์เน็ต"],
+        answer: 0,
+        explanation: "JavaScript ช่วยให้เว็บตอบสนอง เช่น กดปุ่ม ตรวจฟอร์ม หรือคำนวณข้อมูล"
+      },
+      {
+        question: "คำสั่งใดใช้แสดงข้อความใน Console",
+        options: ["print()", "console.log()", "show.text()", "display()"],
+        answer: 1,
+        explanation: "console.log() คือคำสั่งพื้นฐานสำหรับแสดงผลใน Console ของ JavaScript"
+      },
+      {
+        question: "JavaScript อ่านคำสั่งโดยทั่วไปอย่างไร",
+        options: ["จากบนลงล่าง", "สุ่มบรรทัด", "อ่านเฉพาะบรรทัดสุดท้าย", "อ่านจากขวาไปซ้ายเสมอ"],
+        answer: 0,
+        explanation: "โดยทั่วไป JavaScript ทำงานตามลำดับคำสั่งจากบนลงล่าง"
+      }
+    ]
+  },
+  {
+    id: 102,
+    slug: "javascript-console-log",
+    title: "บทที่ 2: การแสดงผลด้วย console.log",
+    subtitle: "ฝึกแสดงข้อความ ตัวเลข และผลลัพธ์ง่าย ๆ ใน Console",
+    minutes: 22,
+    free: true,
+    badge: "ฟรี",
+    accent: "bg-skybolt",
+    objectives: [
+      "ใช้ console.log() แสดงข้อมูลหลายแบบ",
+      "รวมข้อความกับข้อมูลด้วยเครื่องหมาย +",
+      "ใช้ Console เพื่อตรวจผลลัพธ์และ debug เบื้องต้น"
+    ],
+    sections: [
+      {
+        heading: "Console คือพื้นที่ทดลอง",
+        body: "Console เป็นเหมือนสมุดจดผลลัพธ์ของโปรแกรม นักพัฒนามักใช้ดูว่าค่าที่คำนวณได้ถูกต้องไหม หรือโค้ดเดินมาถึงจุดที่ต้องการหรือเปล่า ผู้เริ่มต้นควรใช้ Console บ่อย ๆ เพราะเห็นผลทันทีและช่วยให้ไม่กลัว error"
+      },
+      {
+        heading: "ตัวอย่างโค้ด",
+        body: "ตัวอย่างนี้แสดงข้อความ ตัวเลข และประโยคที่รวมข้อมูลหลายชิ้น",
+        code: `console.log("Python Begins");
+console.log(199);
+console.log("ราคาเปิดตัว " + 199 + " บาท");`
+      },
+      {
+        heading: "โค้ดทำงานทีละขั้นอย่างไร",
+        body: "บรรทัดแรกแสดงข้อความชื่อเว็บ บรรทัดที่สองแสดงตัวเลข 199 บรรทัดที่สามนำข้อความและตัวเลขมาต่อกันด้วยเครื่องหมาย + แล้วแสดงเป็นประโยคเดียว"
+      },
+      {
+        heading: "ข้อผิดพลาดที่พบบ่อย",
+        body: "ลืมจุดระหว่าง console กับ log, ลืมวงเล็บหลัง log, ลืมเครื่องหมายคำพูดรอบข้อความ หรือสับสนระหว่างข้อความ \"199\" กับตัวเลข 199"
+      }
+    ],
+    exercise: {
+      title: "ประกาศโปรโมชันคอร์ส",
+      tasks: [
+        "แสดงชื่อคอร์ส JavaScript มือใหม่",
+        "แสดงราคา 199 บาท",
+        "รวมข้อความเป็นประโยคว่า สมัครวันนี้ราคาเปิดตัว 199 บาท"
+      ],
+      starterCode: `console.log("คอร์ส ...");
+console.log(...);
+console.log("สมัครวันนี้ราคาเปิดตัว " + ... + " บาท");`
+    },
+    quiz: [
+      {
+        question: "Console ช่วยเรื่องใดมากที่สุดสำหรับผู้เริ่มต้น",
+        options: ["ดูผลลัพธ์และตรวจโค้ด", "ชาร์จแบตเครื่อง", "ตกแต่ง CSS", "สร้างฐานข้อมูลอัตโนมัติ"],
+        answer: 0,
+        explanation: "Console ช่วยแสดงผลลัพธ์และตรวจค่าระหว่างเขียนโปรแกรม"
+      },
+      {
+        question: "console.log(\"Hello\") จะแสดงผลที่ไหน",
+        options: ["Console", "ถังขยะ", "แถบที่อยู่เว็บ", "ไฟล์รูปภาพ"],
+        answer: 0,
+        explanation: "console.log() แสดงข้อมูลใน Console ของเบราว์เซอร์หรือเครื่องมือรัน JavaScript"
+      },
+      {
+        question: "เครื่องหมาย + ใน \"ราคา \" + 199 ใช้ทำอะไร",
+        options: ["ต่อข้อความกับข้อมูล", "ลบข้อมูล", "หยุดโปรแกรม", "สร้างเงื่อนไข"],
+        answer: 0,
+        explanation: "เมื่อใช้กับข้อความ เครื่องหมาย + ใช้ต่อข้อความกับข้อมูลอื่น"
+      }
+    ]
+  },
+  {
+    id: 103,
+    slug: "javascript-variables",
+    title: "บทที่ 3: ตัวแปร let, const และ var",
+    subtitle: "เรียนรู้การเก็บข้อมูลด้วยตัวแปร และเลือกใช้ let/const ให้เหมาะสม",
+    minutes: 28,
+    free: false,
+    badge: "paid",
+    accent: "bg-lemon",
+    objectives: [
+      "สร้างตัวแปรด้วย let และ const",
+      "อธิบายความต่างระหว่างค่าที่เปลี่ยนได้และเปลี่ยนไม่ได้",
+      "หลีกเลี่ยงการใช้ var ในโค้ดใหม่เมื่อไม่จำเป็น"
+    ],
+    sections: [
+      {
+        heading: "ตัวแปรคือชื่อเรียกข้อมูล",
+        body: "ตัวแปรช่วยเก็บข้อมูลไว้ใช้ซ้ำ เช่น ชื่อผู้เรียน คะแนน หรือราคาคอร์ส ถ้าข้อมูลเปลี่ยนได้ให้ใช้ let ถ้าข้อมูลไม่ควรเปลี่ยนให้ใช้ const ส่วน var เป็นวิธีเก่าที่ควรรู้จัก แต่อาจทำให้สับสนในโปรเจกต์ใหม่"
+      },
+      {
+        heading: "ตัวอย่างโค้ด",
+        body: "ใช้ const กับค่าที่ไม่เปลี่ยน เช่น ชื่อคอร์ส และใช้ let กับค่าที่เปลี่ยนได้ เช่น คะแนน",
+        code: `const courseName = "JavaScript มือใหม่";
+let score = 0;
+
+score = 80;
+
+console.log(courseName);
+console.log("คะแนนล่าสุด:", score);`
+      },
+      {
+        heading: "โค้ดทำงานทีละขั้นอย่างไร",
+        body: "บรรทัดแรกสร้าง courseName แบบ const จึงไม่ควรเปลี่ยนชื่อคอร์ส บรรทัดที่สองสร้าง score แบบ let เพราะคะแนนอาจเปลี่ยนได้ บรรทัดต่อมาปรับ score เป็น 80 แล้วแสดงผลทั้งสองค่า"
+      },
+      {
+        heading: "ข้อผิดพลาดที่พบบ่อย",
+        body: "พยายามเปลี่ยนค่าของ const, ตั้งชื่อตัวแปรไม่สื่อความหมาย, ลืมประกาศตัวแปรก่อนใช้ หรือใช้ var โดยไม่เข้าใจขอบเขตการทำงาน"
+      }
+    ],
+    exercise: {
+      title: "ข้อมูลผู้เรียน",
+      tasks: [
+        "สร้าง const เก็บชื่อคอร์ส",
+        "สร้าง let เก็บจำนวนบทที่เรียนแล้ว",
+        "เพิ่มจำนวนบทที่เรียนแล้วและแสดงผล"
+      ],
+      starterCode: `const courseName = "JavaScript มือใหม่";
+let completedLessons = 0;
+
+completedLessons = completedLessons + 1;
+
+console.log(courseName);
+console.log(completedLessons);`
+    },
+    quiz: [
+      {
+        question: "ถ้าค่าไม่ควรถูกเปลี่ยน ควรใช้คำใด",
+        options: ["const", "let", "var เท่านั้น", "change"],
+        answer: 0,
+        explanation: "const เหมาะกับค่าที่ไม่ควรถูกกำหนดใหม่"
+      },
+      {
+        question: "ถ้าคะแนนอาจเปลี่ยนระหว่างโปรแกรม ควรใช้คำใด",
+        options: ["let", "const เสมอ", "delete", "fixed"],
+        answer: 0,
+        explanation: "let เหมาะกับค่าที่ต้องเปลี่ยนได้"
+      },
+      {
+        question: "ข้อใดเป็นชื่อตัวแปรที่อ่านง่าย",
+        options: ["studentScore", "x", "aaa", "data1data2"],
+        answer: 0,
+        explanation: "studentScore บอกความหมายชัดว่าคือคะแนนของนักเรียน"
+      }
+    ]
+  },
+  {
+    id: 104,
+    slug: "javascript-data-types",
+    title: "บทที่ 4: ชนิดข้อมูลพื้นฐาน string, number, boolean",
+    subtitle: "เข้าใจข้อความ ตัวเลข และค่าจริง/เท็จใน JavaScript",
+    minutes: 25,
+    free: false,
+    badge: "paid",
+    accent: "bg-lavender",
+    objectives: [
+      "แยก string, number และ boolean ได้",
+      "ใช้ typeof ตรวจชนิดข้อมูล",
+      "เลือกชนิดข้อมูลให้เหมาะกับงาน"
+    ],
+    sections: [
+      {
+        heading: "ข้อมูลแต่ละชนิดใช้คนละงาน",
+        body: "string คือข้อความ เช่น ชื่อผู้เรียน number คือตัวเลขที่ใช้คำนวณได้ เช่น คะแนนหรือราคา boolean คือค่า true/false ใช้แทนสถานะ เช่น ผ่านหรือยังไม่ผ่าน การเลือกชนิดข้อมูลถูกต้องช่วยลด bug ได้มาก"
+      },
+      {
+        heading: "ตัวอย่างโค้ด",
+        body: "ลองเก็บข้อมูลผู้เรียนแล้วใช้ typeof ตรวจชนิดข้อมูล",
+        code: `const studentName = "มะลิ";
+const age = 13;
+const isPremium = false;
+
+console.log(typeof studentName);
+console.log(typeof age);
+console.log(typeof isPremium);`
+      },
+      {
+        heading: "โค้ดทำงานทีละขั้นอย่างไร",
+        body: "studentName เป็น string เพราะอยู่ในเครื่องหมายคำพูด age เป็น number เพราะเป็นตัวเลข และ isPremium เป็น boolean เพราะมีค่า false จากนั้น typeof จะบอกชนิดข้อมูลของแต่ละตัวแปร"
+      },
+      {
+        heading: "ข้อผิดพลาดที่พบบ่อย",
+        body: "ใส่ตัวเลขไว้ในเครื่องหมายคำพูดจนกลายเป็น string, เขียน true/false ด้วยตัวใหญ่ผิดรูปแบบ, หรือพยายามเอาข้อความที่ไม่ใช่ตัวเลขไปคำนวณ"
+      }
+    ],
+    exercise: {
+      title: "ตรวจชนิดข้อมูล",
+      tasks: [
+        "สร้างตัวแปรชื่อผู้เรียนเป็น string",
+        "สร้างตัวแปรราคาคอร์สเป็น number",
+        "สร้างตัวแปรสถานะสมัครแล้วเป็น boolean",
+        "ใช้ typeof แสดงชนิดข้อมูลทั้งหมด"
+      ],
+      starterCode: `const name = "...";
+const price = 199;
+const enrolled = true;
+
+console.log(typeof name);
+console.log(typeof price);
+console.log(typeof enrolled);`
+    },
+    quiz: [
+      {
+        question: "\"JavaScript\" เป็นข้อมูลชนิดใด",
+        options: ["string", "number", "boolean", "array"],
+        answer: 0,
+        explanation: "ข้อความที่อยู่ในเครื่องหมายคำพูดคือ string"
+      },
+      {
+        question: "true และ false เป็นข้อมูลชนิดใด",
+        options: ["boolean", "string", "number", "function"],
+        answer: 0,
+        explanation: "boolean ใช้แทนค่าจริงหรือเท็จ"
+      },
+      {
+        question: "คำสั่ง typeof ใช้ทำอะไร",
+        options: ["ตรวจชนิดข้อมูล", "ลบตัวแปร", "สร้าง loop", "เปิดหน้าเว็บใหม่"],
+        answer: 0,
+        explanation: "typeof บอกชนิดข้อมูลของค่าหรือตัวแปร"
+      }
+    ]
+  },
+  {
+    id: 105,
+    slug: "javascript-input-calculation",
+    title: "บทที่ 5: การรับค่าและการคิดคำนวณเบื้องต้น",
+    subtitle: "รับข้อมูลด้วย prompt และแปลงเป็นตัวเลขก่อนคำนวณ",
+    minutes: 30,
+    free: false,
+    badge: "paid",
+    accent: "bg-skybolt",
+    objectives: [
+      "รับค่าจากผู้ใช้ด้วย prompt",
+      "แปลงข้อความเป็นตัวเลขด้วย Number()",
+      "คำนวณผลลัพธ์เบื้องต้น"
+    ],
+    sections: [
+      {
+        heading: "ข้อมูลจากผู้ใช้มักเริ่มเป็นข้อความ",
+        body: "เวลาใช้ prompt() ผู้ใช้พิมพ์คำตอบเข้ามา ค่าที่ได้จะเป็นข้อความเสมอ แม้หน้าตาเหมือนตัวเลข ถ้าต้องการนำไปบวก ลบ คูณ หาร ควรแปลงด้วย Number() ก่อน เหมือนเปลี่ยนข้อความบนป้ายราคาให้เครื่องคิดเงินอ่านเป็นตัวเลขจริง"
+      },
+      {
+        heading: "ตัวอย่างโค้ด",
+        body: "ตัวอย่างนี้รับคะแนนสองครั้ง แปลงเป็นตัวเลข แล้วคำนวณคะแนนรวม",
+        code: `const firstScore = Number(prompt("กรอกคะแนนครั้งที่ 1"));
+const secondScore = Number(prompt("กรอกคะแนนครั้งที่ 2"));
+
+const total = firstScore + secondScore;
+
+console.log("คะแนนรวม:", total);`
+      },
+      {
+        heading: "โค้ดทำงานทีละขั้นอย่างไร",
+        body: "prompt() เปิดกล่องให้ผู้ใช้กรอกคะแนน Number() แปลงคำตอบเป็นตัวเลข จากนั้นนำคะแนนสองตัวมาบวกกันแล้วเก็บใน total สุดท้าย console.log() แสดงคะแนนรวม"
+      },
+      {
+        heading: "ข้อผิดพลาดที่พบบ่อย",
+        body: "ลืม Number() ทำให้การบวกกลายเป็นการต่อข้อความ, ผู้ใช้กรอกข้อความที่ไม่ใช่ตัวเลข, หรือใช้ชื่อตัวแปรไม่ชัดจนสับสนว่าค่าใดคือคะแนนครั้งไหน"
+      }
+    ],
+    exercise: {
+      title: "คำนวณราคารวม",
+      tasks: [
+        "รับราคาสินค้าจากผู้ใช้",
+        "รับจำนวนสินค้า",
+        "คำนวณราคารวมและแสดงผล"
+      ],
+      starterCode: `const price = Number(prompt("ราคาสินค้า"));
+const quantity = Number(prompt("จำนวน"));
+const total = price * quantity;
+
+console.log("ราคารวม:", total);`
+    },
+    quiz: [
+      {
+        question: "prompt() คืนค่ากลับมาเป็นข้อมูลชนิดใดโดยทั่วไป",
+        options: ["string", "number เสมอ", "boolean เสมอ", "array"],
+        answer: 0,
+        explanation: "ค่าจาก prompt() เป็นข้อความ จึงควรแปลงก่อนคำนวณ"
+      },
+      {
+        question: "Number(\"10\") ได้ค่าอะไร",
+        options: ["ตัวเลข 10", "ข้อความ 10", "true", "error เสมอ"],
+        answer: 0,
+        explanation: "Number() แปลงข้อความที่เป็นตัวเลขให้เป็น number"
+      },
+      {
+        question: "ถ้าลืมแปลง \"10\" + \"5\" มักได้ผลแบบใด",
+        options: ["\"105\"", "15 เสมอ", "0", "false"],
+        answer: 0,
+        explanation: "เมื่อเป็น string เครื่องหมาย + จะต่อข้อความเข้าด้วยกัน"
+      }
+    ]
+  },
+  {
+    id: 106,
+    slug: "javascript-if-else",
+    title: "บทที่ 6: เงื่อนไข if, else if, else",
+    subtitle: "ให้โปรแกรมตัดสินใจจากเงื่อนไข เช่น ผ่าน/ไม่ผ่าน หรือระดับคะแนน",
+    minutes: 30,
+    free: false,
+    badge: "paid",
+    accent: "bg-lavender",
+    objectives: [
+      "เขียน if เพื่อตรวจเงื่อนไข",
+      "ใช้ else if ตรวจหลายกรณี",
+      "ใช้ else เป็นทางเลือกสุดท้าย"
+    ],
+    sections: [
+      {
+        heading: "โปรแกรมตัดสินใจได้เหมือนกฎในชีวิตจริง",
+        body: "ถ้าคะแนนมากกว่าหรือเท่ากับ 80 ให้ดีเยี่ยม ถ้าคะแนนมากกว่าหรือเท่ากับ 50 ให้ผ่าน ไม่เช่นนั้นให้ฝึกเพิ่ม นี่คือการคิดแบบ if/else if/else ซึ่งช่วยให้โปรแกรมเลือกทางเดินตามข้อมูลที่ได้รับ"
+      },
+      {
+        heading: "ตัวอย่างโค้ด",
+        body: "โค้ดนี้ตรวจคะแนนแล้วแสดงผลตามช่วงคะแนน",
+        code: `const score = 72;
+
+if (score >= 80) {
+  console.log("ดีเยี่ยม");
+} else if (score >= 50) {
+  console.log("ผ่าน");
+} else {
+  console.log("ฝึกเพิ่มอีกนิด");
+}`
+      },
+      {
+        heading: "โค้ดทำงานทีละขั้นอย่างไร",
+        body: "โปรแกรมตรวจ if ก่อน ถ้า score >= 80 เป็นจริงจะแสดงดีเยี่ยม ถ้าไม่จริงจะไปตรวจ else if ถ้า score >= 50 เป็นจริงจะแสดงผ่าน ถ้าทุกเงื่อนไขไม่จริงจะทำงานใน else"
+      },
+      {
+        heading: "ข้อผิดพลาดที่พบบ่อย",
+        body: "ลืมวงเล็บปีกกา, เขียนเครื่องหมายเปรียบเทียบผิด เช่น ใช้ = แทน >=, เรียงเงื่อนไขผิดจากกว้างไปแคบ หรือใส่ else หลายครั้งโดยไม่จำเป็น"
+      }
+    ],
+    exercise: {
+      title: "ระบบตัดเกรดง่าย ๆ",
+      tasks: [
+        "สร้างตัวแปร score",
+        "ถ้า score >= 80 แสดง A",
+        "ถ้า score >= 50 แสดง Pass",
+        "นอกนั้นแสดง Try again"
+      ],
+      starterCode: `const score = 65;
+
+if (score >= 80) {
+  console.log("A");
+} else if (score >= 50) {
+  console.log("Pass");
+} else {
+  console.log("Try again");
+}`
+    },
+    quiz: [
+      {
+        question: "else ทำงานเมื่อไร",
+        options: ["เมื่อเงื่อนไขก่อนหน้าทั้งหมดไม่จริง", "ทำงานก่อน if", "ทำงานเมื่อคะแนนเต็ม", "ทำงานเมื่อไม่มีตัวแปร"],
+        answer: 0,
+        explanation: "else เป็นทางเลือกสุดท้ายเมื่อ if/else if ก่อนหน้าไม่จริง"
+      },
+      {
+        question: "เครื่องหมาย >= หมายถึงอะไร",
+        options: ["มากกว่าหรือเท่ากับ", "น้อยกว่าเสมอ", "เท่ากับข้อความ", "ไม่เท่ากับ"],
+        answer: 0,
+        explanation: ">= ใช้ตรวจว่าค่าซ้ายมากกว่าหรือเท่ากับค่าขวา"
+      },
+      {
+        question: "ถ้าต้องตรวจหลายช่วงคะแนนควรใช้โครงสร้างใด",
+        options: ["if / else if / else", "console.log อย่างเดียว", "const อย่างเดียว", "comment เท่านั้น"],
+        answer: 0,
+        explanation: "else if ช่วยตรวจหลายเงื่อนไขต่อเนื่องกัน"
+      }
+    ]
+  },
+  {
+    id: 107,
+    slug: "javascript-loops",
+    title: "บทที่ 7: การใช้ loop เบื้องต้น",
+    subtitle: "ใช้ for loop เพื่อทำงานซ้ำ เช่น แสดงเลขหรือวนตรวจรายการ",
+    minutes: 32,
+    free: false,
+    badge: "paid",
+    accent: "bg-skybolt",
+    objectives: [
+      "เข้าใจว่าทำไมต้องใช้ loop",
+      "เขียน for loop แบบพื้นฐาน",
+      "อธิบายตัวนับและเงื่อนไขหยุด loop ได้"
+    ],
+    sections: [
+      {
+        heading: "loop ช่วยลดการเขียนซ้ำ",
+        body: "ถ้าต้องแสดงเลข 1 ถึง 5 เราไม่ควรเขียน console.log() 5 บรรทัดเสมอไป loop ช่วยให้เขียนคำสั่งครั้งเดียวแล้วให้โปรแกรมทำซ้ำตามจำนวนรอบ เหมือนการเช็กชื่อเพื่อนทั้งห้องทีละคน"
+      },
+      {
+        heading: "ตัวอย่างโค้ด",
+        body: "for loop นี้เริ่มจาก i = 1 ทำงานตราบใดที่ i <= 5 และเพิ่ม i ทีละ 1 หลังจบรอบ",
+        code: `for (let i = 1; i <= 5; i++) {
+  console.log("รอบที่", i);
+}`
+      },
+      {
+        heading: "โค้ดทำงานทีละขั้นอย่างไร",
+        body: "เริ่มจากสร้าง i เป็น 1 ตรวจว่า i <= 5 หรือไม่ ถ้าจริงให้แสดงผลในวงเล็บปีกกา จากนั้น i++ เพิ่มค่าอีก 1 แล้วกลับไปตรวจเงื่อนไขใหม่จนกว่าเงื่อนไขจะไม่จริง"
+      },
+      {
+        heading: "ข้อผิดพลาดที่พบบ่อย",
+        body: "ลืมเพิ่มค่า i ทำให้ loop ไม่จบ, ตั้งเงื่อนไขผิดจนรันน้อยหรือมากเกินไป, ใช้ตัวแปรนับซ้ำกับส่วนอื่นโดยไม่ตั้งใจ"
+      }
+    ],
+    exercise: {
+      title: "ตารางแม่สูตรคูณ 2",
+      tasks: [
+        "ใช้ for loop วนเลข 1 ถึง 12",
+        "คำนวณ 2 คูณเลขแต่ละรอบ",
+        "แสดงผลเป็นประโยคอ่านง่าย"
+      ],
+      starterCode: `for (let i = 1; i <= 12; i++) {
+  console.log("2 x " + i + " = " + (2 * i));
+}`
+    },
+    quiz: [
+      {
+        question: "loop เหมาะกับงานแบบใด",
+        options: ["งานที่ต้องทำซ้ำ", "งานที่ต้องทำครั้งเดียวเสมอ", "งานลบไฟล์เท่านั้น", "งานเปลี่ยนสี CSS เท่านั้น"],
+        answer: 0,
+        explanation: "loop ใช้กับงานที่ต้องทำซ้ำหลายรอบ"
+      },
+      {
+        question: "ใน for (let i = 1; i <= 5; i++) ส่วน i++ ทำอะไร",
+        options: ["เพิ่มค่า i ทีละ 1", "ลบค่า i", "หยุดโปรแกรมทันที", "เปลี่ยน i เป็นข้อความ"],
+        answer: 0,
+        explanation: "i++ คือการเพิ่มค่า i ขึ้น 1 หลังจบรอบ"
+      },
+      {
+        question: "ถ้าเงื่อนไข loop ไม่เคยเป็น false จะเกิดอะไร",
+        options: ["loop อาจวนไม่จบ", "โปรแกรมแปลเป็น HTML", "ตัวแปรหายไป", "คะแนนเพิ่มเอง"],
+        answer: 0,
+        explanation: "loop ต้องมีทางหยุด ไม่เช่นนั้นอาจวนไม่จบ"
+      }
+    ]
+  },
+  {
+    id: 108,
+    slug: "javascript-arrays",
+    title: "บทที่ 8: Array และการเก็บข้อมูลหลายค่า",
+    subtitle: "เก็บรายการข้อมูลหลายชิ้น เช่น คะแนน รายชื่อ หรือเมนูสินค้า",
+    minutes: 34,
+    free: false,
+    badge: "paid",
+    accent: "bg-lavender",
+    objectives: [
+      "สร้าง array ด้วยวงเล็บเหลี่ยม",
+      "อ่านข้อมูลด้วย index",
+      "วน loop เพื่อทำงานกับสมาชิกใน array"
+    ],
+    sections: [
+      {
+        heading: "Array คือรายการข้อมูล",
+        body: "Array เหมาะกับข้อมูลหลายชิ้นที่อยู่ในกลุ่มเดียวกัน เช่น รายชื่อเพื่อน คะแนนสอบ หรือบทเรียนที่ต้องเรียน แต่ละข้อมูลมีตำแหน่งเรียกว่า index โดย JavaScript เริ่มนับ index จาก 0"
+      },
+      {
+        heading: "ตัวอย่างโค้ด",
+        body: "ตัวอย่างนี้สร้าง array คะแนน อ่านคะแนนตัวแรก และวนแสดงคะแนนทั้งหมด",
+        code: `const scores = [80, 75, 90];
+
+console.log("คะแนนแรก:", scores[0]);
+
+for (let i = 0; i < scores.length; i++) {
+  console.log("คะแนน:", scores[i]);
+}`
+      },
+      {
+        heading: "โค้ดทำงานทีละขั้นอย่างไร",
+        body: "scores เก็บตัวเลข 3 ค่า scores[0] อ่านตัวแรกซึ่งคือ 80 จากนั้น for loop ใช้ scores.length เพื่อรู้จำนวนสมาชิก และแสดงคะแนนแต่ละตำแหน่ง"
+      },
+      {
+        heading: "ข้อผิดพลาดที่พบบ่อย",
+        body: "ลืมว่า index เริ่มจาก 0, ใช้ตำแหน่งเกินจำนวนข้อมูล, ลืมใช้ .length ใน loop หรือใส่ข้อมูลหลายชนิดปนกันจนอ่านยาก"
+      }
+    ],
+    exercise: {
+      title: "รายชื่อบทเรียน",
+      tasks: [
+        "สร้าง array เก็บชื่อบทเรียน 3 บท",
+        "แสดงบทแรก",
+        "ใช้ loop แสดงบทเรียนทั้งหมด"
+      ],
+      starterCode: `const lessons = ["console.log", "variables", "if else"];
+
+console.log(lessons[0]);
+
+for (let i = 0; i < lessons.length; i++) {
+  console.log(lessons[i]);
+}`
+    },
+    quiz: [
+      {
+        question: "Array ใช้เครื่องหมายใดในการสร้าง",
+        options: ["[]", "{}", "<>", "() เท่านั้น"],
+        answer: 0,
+        explanation: "Array ใน JavaScript สร้างด้วยวงเล็บเหลี่ยม []"
+      },
+      {
+        question: "สมาชิกตัวแรกของ array อยู่ที่ index ใด",
+        options: ["0", "1", "-1", "10"],
+        answer: 0,
+        explanation: "JavaScript เริ่มนับ index จาก 0"
+      },
+      {
+        question: "scores.length ใช้ดูอะไร",
+        options: ["จำนวนสมาชิกใน array", "คะแนนสูงสุดเสมอ", "ชนิดข้อมูล", "ชื่อ array"],
+        answer: 0,
+        explanation: ".length บอกจำนวนสมาชิกใน array"
+      }
+    ]
+  },
+  {
+    id: 109,
+    slug: "javascript-functions",
+    title: "บทที่ 9: Function เบื้องต้น",
+    subtitle: "สร้างชุดคำสั่งที่เรียกใช้ซ้ำได้ ลดโค้ดซ้ำและทำให้โปรแกรมอ่านง่าย",
+    minutes: 35,
+    free: false,
+    badge: "paid",
+    accent: "bg-skybolt",
+    objectives: [
+      "สร้าง function ด้วยคำสั่ง function",
+      "รับ parameter เพื่อส่งข้อมูลเข้า function",
+      "ใช้ return เพื่อส่งค่ากลับ"
+    ],
+    sections: [
+      {
+        heading: "Function คือชุดคำสั่งที่ตั้งชื่อได้",
+        body: "ถ้าโค้ดบางส่วนต้องใช้ซ้ำ เช่น คำนวณคะแนนรวม ทักทายผู้เรียน หรือคิดส่วนลด เราสามารถสร้าง function เพื่อเก็บคำสั่งนั้นไว้ แล้วเรียกใช้ด้วยชื่อที่ตั้งไว้ ทำให้โค้ดเป็นระเบียบและแก้ง่าย"
+      },
+      {
+        heading: "ตัวอย่างโค้ด",
+        body: "function นี้รับคะแนนสองค่า แล้ว return คะแนนรวมกลับไปให้ส่วนอื่นใช้ต่อ",
+        code: `function calculateTotal(score1, score2) {
+  const total = score1 + score2;
+  return total;
+}
+
+const result = calculateTotal(40, 55);
+console.log("คะแนนรวม:", result);`
+      },
+      {
+        heading: "โค้ดทำงานทีละขั้นอย่างไร",
+        body: "บรรทัดแรกสร้าง function ชื่อ calculateTotal และรับ score1, score2 เมื่อเรียก calculateTotal(40, 55) ค่า 40 กับ 55 จะเข้าไปใน function จากนั้นบวกกันและ return ผลลัพธ์ออกมาเก็บใน result"
+      },
+      {
+        heading: "ข้อผิดพลาดที่พบบ่อย",
+        body: "ลืมเรียกใช้ function หลังสร้าง, ลืม return ทำให้ไม่ได้ค่ากลับ, ตั้งชื่อ parameter ไม่สื่อความหมาย หรือสับสนระหว่าง console.log กับ return"
+      }
+    ],
+    exercise: {
+      title: "คำนวณส่วนลด",
+      tasks: [
+        "สร้าง function ชื่อ calculateDiscountPrice",
+        "รับราคาและส่วนลด",
+        "return ราคาหลังหักส่วนลด",
+        "เรียกใช้ function และแสดงผล"
+      ],
+      starterCode: `function calculateDiscountPrice(price, discount) {
+  return price - discount;
+}
+
+const finalPrice = calculateDiscountPrice(199, 20);
+console.log("ราคาหลังลด:", finalPrice);`
+    },
+    quiz: [
+      {
+        question: "function ช่วยเรื่องใด",
+        options: ["จัดโค้ดเป็นชุดและเรียกใช้ซ้ำ", "ลบตัวแปรทั้งหมด", "ทำให้เว็บไม่มี CSS", "ปิด Console"],
+        answer: 0,
+        explanation: "function ช่วยรวมคำสั่งเป็นชุดและเรียกใช้ซ้ำได้"
+      },
+      {
+        question: "parameter คืออะไร",
+        options: ["ข้อมูลที่ส่งเข้า function", "ปุ่มบนคีย์บอร์ด", "ไฟล์รูปภาพ", "ชนิดของ CSS"],
+        answer: 0,
+        explanation: "parameter เป็นตัวรับข้อมูลที่ function จะนำไปใช้"
+      },
+      {
+        question: "return ใช้ทำอะไร",
+        options: ["ส่งค่ากลับจาก function", "แสดงผลเสมอ", "สร้าง array", "หยุดเว็บทั้งหน้า"],
+        answer: 0,
+        explanation: "return ส่งผลลัพธ์ออกจาก function เพื่อใช้ต่อได้"
+      }
+    ]
+  },
+  {
+    id: 110,
+    slug: "javascript-score-project",
+    title: "บทที่ 10: Mini Project: โปรแกรมคำนวณคะแนนอย่างง่าย",
+    subtitle: "รวมตัวแปร การรับค่า เงื่อนไข array loop และ function เพื่อสร้างโปรแกรมเล็ก ๆ",
+    minutes: 45,
+    free: false,
+    badge: "paid",
+    accent: "bg-lemon",
+    objectives: [
+      "วางแผนโปรแกรมคำนวณคะแนน",
+      "ใช้ array และ loop รวมคะแนน",
+      "ใช้ function และ if/else สรุปผล"
+    ],
+    sections: [
+      {
+        heading: "โปรเจกต์นี้ฝึกคิดเป็นระบบ",
+        body: "เราจะสร้างโปรแกรมเก็บคะแนนหลายครั้ง คำนวณคะแนนรวมและค่าเฉลี่ย แล้วบอกว่าผู้เรียนผ่านหรือควรฝึกเพิ่ม โปรเจกต์นี้คล้ายระบบคะแนนในห้องเรียนหรือแบบทดสอบออนไลน์แบบง่าย"
+      },
+      {
+        heading: "ตัวอย่างโค้ด",
+        body: "โค้ดนี้ใช้ array เก็บคะแนน function คำนวณค่าเฉลี่ย และ if/else สรุปผล",
+        code: `function calculateAverage(scores) {
+  let total = 0;
+
+  for (let i = 0; i < scores.length; i++) {
+    total = total + scores[i];
+  }
+
+  return total / scores.length;
+}
+
+const scores = [70, 85, 90];
+const average = calculateAverage(scores);
+
+console.log("คะแนนเฉลี่ย:", average);
+
+if (average >= 60) {
+  console.log("ผ่าน");
+} else {
+  console.log("ควรฝึกเพิ่ม");
+}`
+      },
+      {
+        heading: "โค้ดทำงานทีละขั้นอย่างไร",
+        body: "เริ่มจากสร้าง function calculateAverage เพื่อรับ array คะแนน ข้างในสร้าง total เป็น 0 แล้วใช้ loop บวกคะแนนทีละตัว หลังจบ loop return ค่าเฉลี่ย จากนั้นนำค่าเฉลี่ยไปตรวจด้วย if/else ว่าผ่านหรือควรฝึกเพิ่ม"
+      },
+      {
+        heading: "สรุปท้ายบท",
+        body: "โปรเจกต์นี้รวมพื้นฐานสำคัญของ JavaScript หลายเรื่องเข้าด้วยกัน ผู้เรียนควรฝึกอธิบาย flow ของโปรแกรมด้วยภาษาตัวเองก่อน แล้วค่อยเขียนโค้ดตามขั้นตอน"
+      }
+    ],
+    exercise: {
+      title: "เพิ่มระบบเกรด",
+      tasks: [
+        "เพิ่มเงื่อนไข average >= 80 ให้แสดง ดีเยี่ยม",
+        "ถ้า average >= 60 ให้แสดง ผ่าน",
+        "นอกนั้นให้แสดง ควรฝึกเพิ่ม",
+        "ลองเปลี่ยนคะแนนใน array แล้วสังเกตผลลัพธ์"
+      ],
+      starterCode: `const scores = [60, 75, 90];
+let total = 0;
+
+for (let i = 0; i < scores.length; i++) {
+  total = total + scores[i];
+}
+
+const average = total / scores.length;
+
+if (average >= 80) {
+  console.log("ดีเยี่ยม");
+} else if (average >= 60) {
+  console.log("ผ่าน");
+} else {
+  console.log("ควรฝึกเพิ่ม");
+}`
+    },
+    quiz: [
+      {
+        question: "โปรเจกต์นี้ใช้ array เพื่ออะไร",
+        options: ["เก็บคะแนนหลายค่า", "เก็บสีเว็บเท่านั้น", "ลบ function", "แทน if/else ทั้งหมด"],
+        answer: 0,
+        explanation: "array เหมาะกับการเก็บคะแนนหลายค่าไว้ในรายการเดียว"
+      },
+      {
+        question: "total = total + scores[i] ใช้ทำอะไร",
+        options: ["รวมคะแนนทีละตัว", "ลบคะแนน", "สร้างข้อความ", "หยุด loop"],
+        answer: 0,
+        explanation: "คำสั่งนี้นำคะแนนตำแหน่งปัจจุบันมาบวกสะสมใน total"
+      },
+      {
+        question: "average >= 60 ใช้ตรวจอะไร",
+        options: ["คะแนนเฉลี่ยถึงเกณฑ์ผ่านหรือไม่", "array มีชื่อไหม", "function ถูกลบหรือไม่", "Console เปิดอยู่ไหม"],
+        answer: 0,
+        explanation: "เงื่อนไขนี้ใช้ตัดสินว่าคะแนนเฉลี่ยผ่านเกณฑ์ 60 หรือไม่"
+      }
+    ]
+  }
+];
+
+export const lessons: Lesson[] = [...pythonLessons, ...javascriptLessons];
 
 export function getLessonBySlug(slug: string) {
   return lessons.find((lesson) => lesson.slug === slug);

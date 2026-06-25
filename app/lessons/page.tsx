@@ -1,11 +1,12 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
   BookOpen,
   CheckCircle2,
-  Clock3,
   Code2,
   Crown,
+  Clock3,
   Layers3,
   Sparkles
 } from "lucide-react";
@@ -36,8 +37,8 @@ export default async function LessonsPage() {
               เลือกคอร์สที่อยากเรียน
             </h1>
             <p className="mt-4 max-w-3xl text-lg leading-8 text-slate-600">
-              บทเรียน Python ทั้งหมดถูกรวมไว้ในคอร์ส “Python มือใหม่”
-              เพื่อให้เรียนเป็นเส้นทางเดียวชัดเจน และเตรียมรองรับคอร์สภาษาอื่นในอนาคต
+              เลือกเส้นทางเรียนที่เหมาะกับเป้าหมายของคุณ ทั้ง Python และ JavaScript
+              ถูกจัดเป็นคอร์สชัดเจน เรียงจากพื้นฐานไปสู่โปรเจกต์จริง
             </p>
           </div>
 
@@ -49,7 +50,7 @@ export default async function LessonsPage() {
               {courses.length} คอร์สพร้อมเรียน
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-slate-500">
-              เริ่มจาก Python แล้วต่อยอดเป็น HTML, CSS, JavaScript และ SQL ได้ในอนาคต
+              เริ่มจากพื้นฐาน แล้วค่อยต่อยอดไปสู่การทำเว็บและโปรเจกต์จริงได้ในอนาคต
             </p>
           </div>
         </div>
@@ -127,25 +128,46 @@ export default async function LessonsPage() {
                       </div>
                     </div>
 
-                    <div className="rounded-lg bg-gradient-to-br from-brand-600 via-blue-500 to-lavender-600 p-5 text-white">
-                      <Clock3 className="h-7 w-7" />
-                      <p className="mt-4 text-sm font-black uppercase tracking-[0.18em] text-blue-100">
-                        Course path
-                      </p>
-                      <p className="mt-2 text-2xl font-black">
-                        บทที่ 1-2 ฟรี
-                      </p>
-                      <p className="mt-2 text-sm font-bold leading-6 text-blue-50">
-                        สมาชิกพรีเมียมเรียนบทที่ 3-20 ได้
-                      </p>
-                      <Link
-                        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-black text-brand-700 transition hover:-translate-y-0.5"
-                        href={`/courses/${course.slug}`}
-                      >
-                        เข้าเรียนคอร์สนี้
-                        <ArrowRight className="h-4 w-4" />
-                      </Link>
-                    </div>
+                    {course.logoImage ? (
+                      <div className="rounded-lg border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-3 shadow-sm">
+                        <div className="grid aspect-[4/3] place-items-center overflow-hidden rounded-lg bg-white p-4 shadow-inner">
+                          <Image
+                            alt={`โลโก้คอร์ส ${course.title}`}
+                            className="h-full w-full object-contain transition duration-300 group-hover:scale-105"
+                            height={420}
+                            src={course.logoImage}
+                            width={560}
+                          />
+                        </div>
+                        <Link
+                          className="btn-primary mt-4 w-full"
+                          href={`/courses/${course.slug}`}
+                        >
+                          เข้าเรียนคอร์สนี้
+                          <ArrowRight className="h-4 w-4" />
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className={`rounded-lg bg-gradient-to-br ${course.accent} p-5 text-white`}>
+                        <Clock3 className="h-7 w-7" />
+                        <p className="mt-4 text-sm font-black uppercase tracking-[0.18em] text-blue-100">
+                          Course path
+                        </p>
+                        <p className="mt-2 text-2xl font-black">
+                          บทที่ 1-2 ฟรี
+                        </p>
+                        <p className="mt-2 text-sm font-bold leading-6 text-blue-50">
+                          สมาชิกพรีเมียมเรียนบทที่ 3-{course.lessons.length} ได้
+                        </p>
+                        <Link
+                          className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-black text-brand-700 transition hover:-translate-y-0.5"
+                          href={`/courses/${course.slug}`}
+                        >
+                          เข้าเรียนคอร์สนี้
+                          <ArrowRight className="h-4 w-4" />
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 </article>
               );

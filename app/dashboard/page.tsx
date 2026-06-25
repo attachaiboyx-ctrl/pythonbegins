@@ -10,7 +10,7 @@ import {
 import { LessonCard } from "@/components/LessonCard";
 import { PremiumUpgradeCard } from "@/components/PremiumUpgradeCard";
 import { StatusBadge } from "@/components/StatusBadge";
-import { canAccessLesson, lessons } from "@/lib/lessons";
+import { canAccessLesson, pythonLessons } from "@/lib/lessons";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 
@@ -37,8 +37,8 @@ export default async function DashboardPage({
     progressItems.map((progress) => [progress.lessonId, progress])
   );
   const completedCount = progressItems.filter((progress) => progress.completed).length;
-  const progressPercent = Math.round((completedCount / lessons.length) * 100);
-  const unlockedLessons = lessons.filter((lesson) => canAccessLesson(user, lesson));
+  const progressPercent = Math.round((completedCount / pythonLessons.length) * 100);
+  const unlockedLessons = pythonLessons.filter((lesson) => canAccessLesson(user, lesson));
   const nextLesson =
     unlockedLessons.find((lesson) => !progressByLesson.get(lesson.id)?.completed) ||
     unlockedLessons[0];
@@ -93,7 +93,7 @@ export default async function DashboardPage({
               {[
                 [CheckCircle2, completedCount, "บทที่เรียนผ่านแล้ว"],
                 [BookOpenCheck, unlockedLessons.length, "บทที่เปิดให้เรียน"],
-                [Trophy, lessons.length, "บทเรียนทั้งหมด"]
+                [Trophy, pythonLessons.length, "บทเรียนทั้งหมด"]
               ].map(([Icon, value, label]) => {
                 const ItemIcon = Icon as typeof CheckCircle2;
 
@@ -205,7 +205,7 @@ export default async function DashboardPage({
           </Link>
         </div>
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {lessons.map((lesson) => (
+          {pythonLessons.map((lesson) => (
             <LessonCard
               key={lesson.id}
               lesson={lesson}

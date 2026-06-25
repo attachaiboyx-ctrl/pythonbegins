@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { submitQuizAction } from "@/app/actions/progress";
 import { PremiumUpgradeCard } from "@/components/PremiumUpgradeCard";
+import { getCourseByLessonSlug } from "@/lib/courses";
 import { canAccessLesson, getLessonBySlug, lessons } from "@/lib/lessons";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
@@ -34,6 +35,10 @@ export default async function LessonDetailPage({
     notFound();
   }
 
+  const course = getCourseByLessonSlug(lesson.slug);
+  const courseHref = course ? `/courses/${course.slug}` : "/courses";
+  const courseTitle = course?.title || "คอร์สทั้งหมด";
+  const courseLessonCount = course?.lessons.length || lessons.length;
   const unlocked = canAccessLesson(user, lesson);
   const progress = await prisma.lessonProgress.findUnique({
     where: {
@@ -57,20 +62,25 @@ export default async function LessonDetailPage({
               </h1>
               <p className="mt-4 max-w-2xl leading-7 text-slate-600">
                 บทนี้เป็นบทเรียน Premium สำหรับผู้ที่ต้องการเรียนต่อให้ครบทั้งคอร์ส
-                บัญชี Free เรียนได้เฉพาะบทที่ 1-2 ส่วน Premium จะปลดล็อกบทที่ 1-20 พร้อมแบบฝึกหัดและแบบทดสอบทุกบท
+                บัญชี Free เรียนได้เฉพาะบทที่ 1-2 ส่วน Premium จะปลดล็อกบทที่ 1-{courseLessonCount} พร้อมแบบฝึกหัดและแบบทดสอบทุกบท
               </p>
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
                 <Link className="btn-primary" href="/payment">
                   อัปเกรดเป็น Premium
                 </Link>
-                <Link className="btn-secondary" href="/courses/python-beginner">
+                <Link className="btn-secondary" href={courseHref}>
                   <ArrowLeft className="h-4 w-4" />
-                  กลับไปคอร์ส Python มือใหม่
+                  กลับไปคอร์ส {courseTitle}
                 </Link>
               </div>
             </div>
 
-            <PremiumUpgradeCard compact embedded />
+            <PremiumUpgradeCard
+              compact
+              courseTitle={courseTitle}
+              embedded
+              lessonCount={courseLessonCount}
+            />
           </div>
         </section>
       </div>
@@ -163,9 +173,9 @@ export default async function LessonDetailPage({
           <div className="panel p-5">
             <p className="eyebrow">Navigation</p>
             <div className="mt-4 flex flex-col gap-3">
-              <Link className="btn-secondary" href="/courses/python-beginner">
+              <Link className="btn-secondary" href={courseHref}>
                 <ArrowLeft className="h-4 w-4" />
-                กลับคอร์ส Python มือใหม่
+                กลับคอร์ส {courseTitle}
               </Link>
               <Link className="btn-secondary" href="/dashboard">
                 ไป Dashboard

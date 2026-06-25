@@ -11,7 +11,7 @@ import {
   Users
 } from "lucide-react";
 import { LessonCard } from "@/components/LessonCard";
-import { lessons } from "@/lib/lessons";
+import { pythonLessons } from "@/lib/lessons";
 import { getCurrentUser } from "@/lib/session";
 
 const features = [
@@ -73,7 +73,7 @@ export default async function HomePage() {
 
             <div className="mt-8 grid grid-cols-3 gap-3 rounded-lg border border-slate-200 bg-white/80 p-3 shadow-sm backdrop-blur">
               {[
-                [String(lessons.length), "บทเรียน"],
+                [String(pythonLessons.length), "บทเรียน"],
                 ["2", "บทฟรี"],
                 ["60%", "คะแนนผ่าน"]
               ].map(([value, label]) => (
@@ -161,7 +161,7 @@ export default async function HomePage() {
           </div>
 
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            {lessons.slice(0, 4).map((lesson) => (
+            {pythonLessons.slice(0, 4).map((lesson) => (
               <LessonCard key={lesson.id} lesson={lesson} user={user} />
             ))}
           </div>
