@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { LockKeyhole, Mail } from "lucide-react";
@@ -19,28 +18,17 @@ export default async function LoginPage({
 
   return (
     <div className="page-shell grid min-h-[calc(100vh-120px)] place-items-center">
-      <section className="grid w-full max-w-6xl overflow-hidden rounded-lg border border-slate-200 bg-white shadow-course lg:grid-cols-[0.48fr_0.52fr]">
-        <div className="relative flex min-h-[280px] items-center justify-center overflow-hidden bg-gradient-to-br from-slate-950 via-brand-950 to-lavender-700 p-4 sm:min-h-[360px] sm:p-6 lg:min-h-[600px] lg:p-8">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(124,58,237,0.32),transparent_34rem),radial-gradient(circle_at_bottom_right,rgba(37,99,235,0.28),transparent_30rem)]" />
-          <div className="relative h-[210px] w-full max-w-[720px] sm:h-[290px] lg:h-[500px]">
-            <Image
-              priority
-              alt="โปรโมชันคอร์ส Python Begins สำหรับผู้เริ่มต้น"
-              className="object-contain drop-shadow-2xl"
-              fill
-              sizes="(min-width: 1024px) 48vw, 100vw"
-              src="/images/login-python-begins-promo.png"
-            />
-          </div>
-          <div className="pointer-events-none absolute inset-0 bg-lavender-600/10" />
-          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/85 via-slate-950/35 to-transparent p-5 text-white sm:p-7 lg:p-8">
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-100">
-              Welcome back
+      <section className="grid w-full max-w-5xl overflow-hidden rounded-lg border border-slate-200 bg-white shadow-course lg:grid-cols-[0.42fr_0.58fr]">
+        <div className="relative overflow-hidden bg-[#050505] px-6 py-8 text-white sm:px-8 sm:py-10 lg:min-h-[480px] lg:px-10">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_24rem)]" />
+          <div className="relative max-w-md">
+            <p className="text-xs font-black uppercase tracking-[0.22em] text-slate-400">
+              WELCOME BACK
             </p>
-            <h1 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl">
+            <h1 className="mt-4 text-3xl font-black tracking-tight text-white sm:text-4xl">
               กลับมาเรียน Python ต่อ
             </h1>
-            <p className="mt-4 max-w-md leading-7 text-blue-50">
+            <p className="mt-4 leading-7 text-slate-300">
               เข้าสู่ระบบเพื่อเปิด Dashboard ดูความคืบหน้า และเรียนบทต่อไปได้ทันที
             </p>
           </div>
