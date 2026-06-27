@@ -126,6 +126,119 @@ export default async function PaymentPage({
         </div>
       ) : null}
 
+      {!isPaid ? (
+        <div className="py-2 text-center">
+          <div className="flex items-center gap-4">
+            <div className="h-px flex-1 bg-slate-200" />
+            <div className="flex items-center gap-2 text-sm font-black text-slate-600">
+              <Landmark className="h-4 w-4 shrink-0" />
+              ชำระด้วยการโอนผ่าน PromptPay และอัปโหลดสลิป
+            </div>
+            <div className="h-px flex-1 bg-slate-200" />
+          </div>
+          <p className="mx-auto mt-3 max-w-2xl text-sm font-bold leading-6 text-slate-500">
+            โอนผ่าน PromptPay แล้วอัปโหลดสลิปให้แอดมินตรวจ เหมาะสำหรับผู้ที่ต้องการชำระแบบเดิม
+          </p>
+        </div>
+      ) : null}
+
+      {!isPaid ? (
+        <section className="grid gap-6 lg:grid-cols-[0.82fr_1.18fr]">
+          <div className="panel p-6">
+            <div className="mb-5 flex items-center gap-3">
+              <span className="grid h-11 w-11 place-items-center rounded-lg bg-brand-50 text-brand-700">
+                <QrCode className="h-5 w-5" />
+              </span>
+              <div>
+                <p className="font-black text-ink">PromptPay QR</p>
+                <p className="text-sm font-bold text-slate-500">สแกนด้วยแอปธนาคาร</p>
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-slate-200 bg-white p-4 text-center shadow-sm">
+              <Image
+                alt="PromptPay QR"
+                className="mx-auto h-auto w-full max-w-xs rounded-lg"
+                height={420}
+                src={`/api/promptpay-qr?amount=${settings.price}`}
+                unoptimized
+                width={420}
+              />
+            </div>
+
+            <div className="mt-5 space-y-2 text-sm font-bold text-slate-700">
+              <div className="flex justify-between gap-4 rounded-lg bg-slate-50 px-4 py-3">
+                <span>ยอดชำระ</span>
+                <span>{settings.price.toLocaleString("th-TH")} บาท</span>
+              </div>
+              <div className="flex justify-between gap-4 rounded-lg bg-slate-50 px-4 py-3">
+                <span>PromptPay</span>
+                <span>{settings.promptpayId}</span>
+              </div>
+              <div className="flex justify-between gap-4 rounded-lg bg-slate-50 px-4 py-3">
+                <span>ชื่อบัญชี</span>
+                <span>{settings.merchantName}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="panel p-6">
+            <div className="flex items-start gap-3">
+              <span className="grid h-11 w-11 place-items-center rounded-lg bg-lavender-50 text-lavender-600">
+                <FileUp className="h-5 w-5" />
+              </span>
+              <div>
+                <p className="eyebrow">Upload slip</p>
+                <h2 className="mt-2 text-2xl font-black text-ink">
+                  ส่งหลักฐานให้แอดมินตรวจ
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  รองรับ PNG, JPG, WEBP หรือ PDF ขนาดไม่เกิน 1MB
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-6 grid gap-3 sm:grid-cols-3">
+              {[
+                [CreditCard, "1. โอนเงิน"],
+                [FileUp, "2. อัปโหลดสลิป"],
+                [ShieldCheck, "3. รอตรวจ"]
+              ].map(([Icon, label]) => {
+                const StepIcon = Icon as typeof CreditCard;
+                return (
+                  <div key={String(label)} className="rounded-lg bg-slate-50 p-4 text-sm font-black text-slate-700">
+                    <StepIcon className="mb-3 h-5 w-5 text-brand-600" />
+                    {String(label)}
+                  </div>
+                );
+              })}
+            </div>
+
+            <PaymentSlipForm
+              action={uploadSlipAction}
+              amount={settings.price}
+              isPaid={isPaid}
+            />
+          </div>
+        </section>
+      ) : null}
+
+      {!isPaid ? (
+        <div className="py-2 text-center">
+          <div className="flex items-center gap-4">
+            <div className="h-px flex-1 bg-slate-200" />
+            <div className="flex items-center gap-2 text-sm font-black text-slate-600">
+              <CreditCard className="h-4 w-4 shrink-0" />
+              อีกช่องทาง: ชำระอัตโนมัติผ่าน Payment Gateway
+            </div>
+            <div className="h-px flex-1 bg-slate-200" />
+          </div>
+          <p className="mx-auto mt-3 max-w-2xl text-sm font-bold leading-6 text-slate-500">
+            สแกน QR ผ่านระบบ Opn/Omise ระบบจะตรวจสอบและปลดล็อก Premium ให้อัตโนมัติหลังชำระสำเร็จ
+          </p>
+        </div>
+      ) : null}
+
       <GatewayPaymentCard
         key={`${selectedGatewayTransaction?.id || "new"}-${selectedGatewayTransaction?.status || "idle"}-${isPaid}`}
         action={createGatewayPaymentAction}
@@ -133,98 +246,6 @@ export default async function PaymentPage({
         price={settings.price}
         transaction={selectedGatewayTransaction}
       />
-
-      {!isPaid ? (
-        <div className="flex items-center gap-4 py-2">
-          <div className="h-px flex-1 bg-slate-200" />
-          <div className="flex items-center gap-2 text-center text-sm font-black text-slate-500">
-            <Landmark className="h-4 w-4" />
-            ช่องทางสำรอง: โอนและอัปโหลดสลิป
-          </div>
-          <div className="h-px flex-1 bg-slate-200" />
-        </div>
-      ) : null}
-
-      {!isPaid ? (
-      <section className="grid gap-6 lg:grid-cols-[0.82fr_1.18fr]">
-        <div className="panel p-6">
-          <div className="mb-5 flex items-center gap-3">
-            <span className="grid h-11 w-11 place-items-center rounded-lg bg-brand-50 text-brand-700">
-              <QrCode className="h-5 w-5" />
-            </span>
-            <div>
-              <p className="font-black text-ink">PromptPay QR</p>
-              <p className="text-sm font-bold text-slate-500">สแกนด้วยแอปธนาคาร</p>
-            </div>
-          </div>
-
-          <div className="rounded-lg border border-slate-200 bg-white p-4 text-center shadow-sm">
-            <Image
-              alt="PromptPay QR"
-              className="mx-auto h-auto w-full max-w-xs rounded-lg"
-              height={420}
-              src={`/api/promptpay-qr?amount=${settings.price}`}
-              unoptimized
-              width={420}
-            />
-          </div>
-
-          <div className="mt-5 space-y-2 text-sm font-bold text-slate-700">
-            <div className="flex justify-between gap-4 rounded-lg bg-slate-50 px-4 py-3">
-              <span>ยอดชำระ</span>
-              <span>{settings.price.toLocaleString("th-TH")} บาท</span>
-            </div>
-            <div className="flex justify-between gap-4 rounded-lg bg-slate-50 px-4 py-3">
-              <span>PromptPay</span>
-              <span>{settings.promptpayId}</span>
-            </div>
-            <div className="flex justify-between gap-4 rounded-lg bg-slate-50 px-4 py-3">
-              <span>ชื่อบัญชี</span>
-              <span>{settings.merchantName}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="panel p-6">
-          <div className="flex items-start gap-3">
-            <span className="grid h-11 w-11 place-items-center rounded-lg bg-lavender-50 text-lavender-600">
-              <FileUp className="h-5 w-5" />
-            </span>
-            <div>
-              <p className="eyebrow">Upload slip</p>
-              <h2 className="mt-2 text-2xl font-black text-ink">
-                ส่งหลักฐานให้แอดมินตรวจ
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                รองรับ PNG, JPG, WEBP หรือ PDF ขนาดไม่เกิน 1MB
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-6 grid gap-3 sm:grid-cols-3">
-            {[
-              [CreditCard, "1. โอนเงิน"],
-              [FileUp, "2. อัปโหลดสลิป"],
-              [ShieldCheck, "3. รอตรวจ"]
-            ].map(([Icon, label]) => {
-              const StepIcon = Icon as typeof CreditCard;
-              return (
-                <div key={String(label)} className="rounded-lg bg-slate-50 p-4 text-sm font-black text-slate-700">
-                  <StepIcon className="mb-3 h-5 w-5 text-brand-600" />
-                  {String(label)}
-                </div>
-              );
-            })}
-          </div>
-
-          <PaymentSlipForm
-            action={uploadSlipAction}
-            amount={settings.price}
-            isPaid={isPaid}
-          />
-        </div>
-      </section>
-      ) : null}
 
       <section className="panel p-6">
         <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">

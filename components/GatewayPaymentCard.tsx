@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   Sparkles
 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
@@ -130,17 +131,17 @@ export function GatewayPaymentCard({
           <div className="flex flex-wrap items-center gap-3">
             <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-black text-blue-100">
               <Sparkles className="h-3.5 w-3.5" />
-              ชำระอัตโนมัติผ่าน Opn Payments
+              Payment Gateway โดย Opn Payments
             </span>
             <span className="rounded-full border border-amber-300/50 bg-amber-300/15 px-3 py-1 text-xs font-black text-amber-100">
               Test mode
             </span>
           </div>
           <h2 className="mt-4 text-3xl font-black tracking-tight">
-            PromptPay Gateway
+            ชำระอัตโนมัติผ่าน PromptPay QR
           </h2>
           <p className="mt-3 max-w-2xl leading-7 text-blue-100">
-            ชำระอัตโนมัติ ระบบจะตรวจสอบและปลดล็อก Premium หลังชำระสำเร็จ
+            สแกนจ่ายผ่านแอปธนาคาร ระบบจะตรวจสอบการชำระเงินและปลดล็อก Premium ให้อัตโนมัติหลังชำระสำเร็จ
           </p>
         </div>
         <div className="rounded-lg border border-white/15 bg-white/10 px-6 py-4 text-center backdrop-blur-sm">
@@ -155,10 +156,13 @@ export function GatewayPaymentCard({
           <div className="flex items-start gap-4 rounded-lg border border-emerald-200 bg-emerald-50 p-5">
             <CheckCircle2 className="mt-0.5 h-7 w-7 shrink-0 text-emerald-600" />
             <div>
-              <h3 className="text-xl font-black text-emerald-900">บัญชีนี้เป็น Premium แล้ว</h3>
+              <h3 className="text-xl font-black text-emerald-900">ชำระเงินสำเร็จแล้ว</h3>
               <p className="mt-2 leading-7 text-emerald-800">
-                ระบบยืนยันการชำระเงินเรียบร้อยแล้ว คุณสามารถเข้าเรียนบทพรีเมียมได้ทันที
+                ระบบปลดล็อก Premium ให้คุณเรียบร้อยแล้ว สามารถกลับไปเรียนต่อได้ทันที
               </p>
+              <Link className="btn-primary mt-4" href="/dashboard">
+                ไปที่ Dashboard
+              </Link>
             </div>
           </div>
         ) : transaction && isPending && transaction.qrCodeUrl ? (
@@ -177,7 +181,7 @@ export function GatewayPaymentCard({
               </span>
               <h3 className="mt-4 text-2xl font-black text-ink">สแกน QR ด้วยแอปธนาคาร</h3>
               <p className="mt-3 leading-7 text-slate-600">
-                หลังชำระเงิน ระบบจะรอ webhook จาก Opn และตรวจสอบ charge อีกครั้งก่อนปลดล็อก Premium หน้านี้เช็กสถานะให้ทุก 10 วินาที
+                หลังชำระเงิน ระบบจะรอการยืนยันจาก Opn และตรวจสอบรายการให้อัตโนมัติ อาจใช้เวลาประมาณ 10–30 วินาที
               </p>
               <div className="mt-5 space-y-2 text-sm font-bold text-slate-600">
                 <div className="flex justify-between gap-4 rounded-lg bg-slate-50 px-4 py-3">
@@ -191,7 +195,7 @@ export function GatewayPaymentCard({
               </div>
               <div className="mt-5 flex items-start gap-3 rounded-lg border border-blue-100 bg-brand-50 p-4 text-sm font-bold leading-6 text-brand-800">
                 <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0" />
-                อย่าปิดหน้าจอธนาคารจนกว่าการชำระเงินจะเสร็จสมบูรณ์ และไม่ต้องอัปโหลดสลิปสำหรับรายการนี้
+                ช่องทางนี้ไม่ต้องอัปโหลดสลิป ระบบจะปลดล็อก Premium ให้อัตโนมัติเมื่อรายการชำระเงินสำเร็จ
               </div>
             </div>
           </div>
@@ -199,9 +203,9 @@ export function GatewayPaymentCard({
           <div className="flex flex-col items-start gap-4 rounded-lg border border-red-200 bg-red-50 p-5 sm:flex-row">
             <CircleAlert className="mt-0.5 h-7 w-7 shrink-0 text-red-600" />
             <div className="flex-1">
-              <h3 className="text-xl font-black text-red-900">{statusText(status)}</h3>
+              <h3 className="text-xl font-black text-red-900">ชำระเงินไม่สำเร็จ</h3>
               <p className="mt-2 leading-7 text-red-800">
-                ยังไม่มีการเปลี่ยนสถานะสมาชิก คุณสามารถสร้าง QR ใหม่หรือใช้ช่องทางอัปโหลดสลิปด้านล่าง
+                ระบบยังไม่พบการชำระเงินสำเร็จ คุณสามารถสร้าง QR ใหม่อีกครั้ง หรือเลือกโอนผ่าน PromptPay แล้วอัปโหลดสลิปด้านล่างได้
               </p>
               <form action={action} className="mt-4">
                 <GatewaySubmitButton retry />
