@@ -112,7 +112,7 @@ export function MobileNavMenu({ user }: MobileNavMenuProps) {
                 </MobileMenuLink>
                 <MobileMenuLink href="/live" onNavigate={closeMenu}>
                   <Radio className="h-4 w-4" />
-                  ห้องเรียนสด
+                  ห้องเรียนสด Premium
                 </MobileMenuLink>
                 <MobileMenuLink href="/settings" onNavigate={closeMenu}>
                   <Settings className="h-4 w-4" />

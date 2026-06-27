@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Clock3, Crown, LockKeyhole, Radio, RefreshCw } from "lucide-react";
-import { StatusBadge } from "@/components/StatusBadge";
+import { Clock3, Radio, RefreshCw } from "lucide-react";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 
@@ -33,11 +33,15 @@ function LiveStatusBadge({ isActive }: { isActive: boolean }) {
 
 export default async function LivePage() {
   const user = await requireUser();
+
+  if (user.role !== "admin" && user.membership !== "paid") {
+    redirect("/payment");
+  }
+
   const activeSession = await prisma.liveSession.findFirst({
     where: { isActive: true },
     orderBy: { updatedAt: "desc" }
   });
-  const canWatch = user.role === "admin" || user.membership === "paid";
 
   return (
     <div className="page-shell space-y-6 sm:space-y-8">
@@ -68,35 +72,7 @@ export default async function LivePage() {
         </div>
       </section>
 
-      {!canWatch && activeSession ? (
-        <section className="panel mx-auto max-w-3xl overflow-hidden">
-          <div className="border-b border-amber-100 bg-gradient-to-r from-amber-50 via-white to-violet-50 p-6 sm:p-8">
-            <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
-              <div className="grid h-14 w-14 shrink-0 place-items-center rounded-lg bg-slate-950 text-amber-300 shadow-lg shadow-violet-900/15">
-                <LockKeyhole className="h-7 w-7" />
-              </div>
-              <div>
-                <div className="flex flex-wrap items-center gap-3">
-                  <h2 className="text-2xl font-black text-ink">ห้องเรียนสดสำหรับสมาชิก Premium</h2>
-                  <StatusBadge membership="paid" />
-                </div>
-                <p className="mt-3 leading-7 text-slate-600">
-                  อัปเกรดเพื่อดูไลฟ์สดและเรียนบทเรียนพรีเมียมทั้งหมดด้วยบัญชีของคุณ
-                </p>
-                <div className="mt-5 flex flex-wrap gap-3">
-                  <Link className="btn-primary" href="/payment">
-                    <Crown className="h-4 w-4" />
-                    อัปเกรดเป็น Premium
-                  </Link>
-                  <Link className="btn-secondary" href="/help">
-                    ดูวิธีชำระเงิน
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      ) : activeSession ? (
+      {activeSession ? (
         <section className="panel mx-auto max-w-6xl overflow-hidden">
           <div className="border-b border-slate-100 p-5 sm:p-6">
             <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
