@@ -7,8 +7,7 @@ import {
   Loader2,
   QrCode,
   RefreshCw,
-  ShieldCheck,
-  Sparkles
+  ShieldCheck
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -129,10 +128,6 @@ export function GatewayPaymentCard({
       <div className="grid gap-6 bg-gradient-to-br from-slate-950 via-indigo-950 to-brand-800 p-6 text-white sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
         <div>
           <div className="flex flex-wrap items-center gap-3">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-black text-blue-100">
-              <Sparkles className="h-3.5 w-3.5" />
-              Payment Gateway โดย Opn Payments
-            </span>
             <span className="rounded-full border border-amber-300/50 bg-amber-300/15 px-3 py-1 text-xs font-black text-amber-100">
               Test mode
             </span>
