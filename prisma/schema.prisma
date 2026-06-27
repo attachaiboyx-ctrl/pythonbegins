@@ -17,6 +17,7 @@ model User {
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
   paymentSlips  PaymentSlip[]
+  paymentTransactions PaymentTransaction[]
   lessonProgress LessonProgress[]
 }
 
@@ -61,4 +62,26 @@ model LiveSession {
 
   @@index([isActive])
   @@index([updatedAt])
+}
+
+model PaymentTransaction {
+  id               String    @id @default(cuid())
+  userId           String
+  provider         String    @default("omise")
+  providerChargeId String?   @unique
+  providerEventId  String?   @unique
+  amount           Int
+  currency         String    @default("THB")
+  status           String    @default("pending")
+  paymentMethod    String    @default("promptpay_gateway")
+  qrCodeUrl        String?
+  failureCode      String?
+  paidAt           DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
 }

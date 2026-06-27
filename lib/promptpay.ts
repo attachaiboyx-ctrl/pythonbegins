@@ -1,3 +1,5 @@
+import { COURSE_PRICE_THB } from "@/lib/payment-config";
+
 export type PaymentSettings = {
   promptpayId: string;
   price: number;
@@ -44,7 +46,7 @@ function crc16CcittFalse(payload: string) {
 export function getPaymentSettings(): PaymentSettings {
   return {
     promptpayId: process.env.PROMPTPAY_ID || "0812345678",
-    price: Number(process.env.COURSE_PRICE || "399"),
+    price: COURSE_PRICE_THB,
     merchantName: process.env.MERCHANT_NAME || "Python Beginner Academy"
   };
 }

@@ -1,7 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
-import { CheckCircle2, CreditCard, FileUp, QrCode, ShieldCheck } from "lucide-react";
+import {
+  CheckCircle2,
+  CreditCard,
+  FileUp,
+  Landmark,
+  QrCode,
+  ShieldCheck
+} from "lucide-react";
+import { createGatewayPaymentAction } from "@/app/actions/gateway-payment";
 import { uploadSlipAction } from "@/app/actions/payment";
+import { GatewayPaymentCard } from "@/components/GatewayPaymentCard";
 import { PaymentSlipForm } from "@/components/PaymentSlipForm";
 import { getPaymentSettings } from "@/lib/promptpay";
 import { prisma } from "@/lib/prisma";
@@ -19,20 +28,52 @@ function statusClass(status: string) {
   return "border-blue-200 bg-brand-50 text-brand-700";
 }
 
+function gatewayStatusText(status: string) {
+  if (status === "successful") return "ชำระสำเร็จ";
+  if (status === "failed") return "ไม่สำเร็จ";
+  if (status === "cancelled") return "ยกเลิกแล้ว";
+  return "รอชำระ";
+}
+
+function gatewayStatusClass(status: string) {
+  if (status === "successful") return "border-emerald-200 bg-emerald-50 text-emerald-700";
+  if (status === "failed" || status === "cancelled") {
+    return "border-red-200 bg-red-50 text-red-700";
+  }
+  return "border-amber-200 bg-amber-50 text-amber-700";
+}
+
 export default async function PaymentPage({
   searchParams
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{
+    error?: string;
+    gateway?: string;
+    gatewayError?: string;
+    gatewayMessage?: string;
+  }>;
 }) {
   const query = await searchParams;
   const user = await requireUser();
   const settings = getPaymentSettings();
-  const slips = await prisma.paymentSlip.findMany({
-    where: { userId: user.id },
-    orderBy: { createdAt: "desc" },
-    take: 8
-  });
+  const [slips, gatewayTransactions] = await Promise.all([
+    prisma.paymentSlip.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+      take: 8
+    }),
+    prisma.paymentTransaction.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+      take: 8
+    })
+  ]);
   const isPaid = user.membership === "paid" || user.role === "admin";
+  const selectedGatewayTransaction =
+    gatewayTransactions.find((transaction) => transaction.id === query.gateway) ||
+    gatewayTransactions.find((transaction) => transaction.status === "pending") ||
+    gatewayTransactions[0] ||
+    null;
 
   return (
     <div className="page-shell space-y-8">
@@ -40,13 +81,13 @@ export default async function PaymentPage({
         <div className="grid gap-8 bg-gradient-to-br from-brand-700 to-lavender-600 p-6 text-white sm:p-8 lg:grid-cols-[1fr_0.42fr] lg:items-center">
           <div>
             <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-100">
-              Secure manual checkout
+              Secure checkout
             </p>
             <h1 className="mt-3 text-4xl font-black tracking-tight sm:text-5xl">
               อัปเกรดเป็นพรีเมียม
             </h1>
             <p className="mt-4 max-w-3xl leading-7 text-blue-50">
-              สแกน PromptPay QR แล้วอัปโหลดสลิป แอดมินจะตรวจและเปิดสิทธิ์เรียนครบทุกบทให้แบบ manual
+              เลือกชำระอัตโนมัติผ่าน Opn Payments หรือโอน PromptPay และอัปโหลดสลิปเป็นช่องทางสำรอง
             </p>
           </div>
           <div className="rounded-lg bg-white p-5 text-ink">
@@ -73,6 +114,38 @@ export default async function PaymentPage({
         </div>
       ) : null}
 
+      {query.gatewayMessage ? (
+        <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-bold text-emerald-800">
+          {query.gatewayMessage}
+        </div>
+      ) : null}
+
+      {query.gatewayError ? (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-5 py-4 text-sm font-bold text-red-700">
+          {query.gatewayError}
+        </div>
+      ) : null}
+
+      <GatewayPaymentCard
+        key={`${selectedGatewayTransaction?.id || "new"}-${selectedGatewayTransaction?.status || "idle"}-${isPaid}`}
+        action={createGatewayPaymentAction}
+        isPaid={isPaid}
+        price={settings.price}
+        transaction={selectedGatewayTransaction}
+      />
+
+      {!isPaid ? (
+        <div className="flex items-center gap-4 py-2">
+          <div className="h-px flex-1 bg-slate-200" />
+          <div className="flex items-center gap-2 text-center text-sm font-black text-slate-500">
+            <Landmark className="h-4 w-4" />
+            ช่องทางสำรอง: โอนและอัปโหลดสลิป
+          </div>
+          <div className="h-px flex-1 bg-slate-200" />
+        </div>
+      ) : null}
+
+      {!isPaid ? (
       <section className="grid gap-6 lg:grid-cols-[0.82fr_1.18fr]">
         <div className="panel p-6">
           <div className="mb-5 flex items-center gap-3">
@@ -149,6 +222,42 @@ export default async function PaymentPage({
             amount={settings.price}
             isPaid={isPaid}
           />
+        </div>
+      </section>
+      ) : null}
+
+      <section className="panel p-6">
+        <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+          <div>
+            <p className="eyebrow">Gateway history</p>
+            <h2 className="mt-2 text-2xl font-black text-ink">
+              ประวัติการชำระอัตโนมัติ
+            </h2>
+          </div>
+          <span className="text-sm font-bold text-slate-500">Opn Payments · Test mode</span>
+        </div>
+
+        <div className="grid gap-3">
+          {gatewayTransactions.length === 0 ? (
+            <p className="rounded-lg bg-slate-50 px-4 py-3 text-sm font-bold text-slate-600">
+              ยังไม่มีรายการชำระผ่าน Payment Gateway
+            </p>
+          ) : (
+            gatewayTransactions.map((transaction) => (
+              <div
+                key={transaction.id}
+                className="grid gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 sm:grid-cols-[0.7fr_1fr_auto] sm:items-center"
+              >
+                <span>{(transaction.amount / 100).toLocaleString("th-TH")} บาท</span>
+                <span className="break-all font-mono text-xs text-slate-500">
+                  {transaction.providerChargeId || "กำลังสร้าง Charge ID"}
+                </span>
+                <span className={`w-fit rounded-full border px-3 py-1 text-xs font-black ${gatewayStatusClass(transaction.status)}`}>
+                  {gatewayStatusText(transaction.status)}
+                </span>
+              </div>
+            ))
+          )}
         </div>
       </section>
 

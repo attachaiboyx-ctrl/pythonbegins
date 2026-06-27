@@ -7,7 +7,8 @@ import {
   Radio,
   ReceiptText,
   UserRound,
-  UsersRound
+  UsersRound,
+  WalletCards
 } from "lucide-react";
 import { reviewSlipAction, setMembershipAction } from "@/app/actions/admin";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -97,6 +98,28 @@ function formatThaiDate(date: Date) {
   }).format(date);
 }
 
+function formatThaiDateTime(date: Date) {
+  return new Intl.DateTimeFormat("th-TH", {
+    dateStyle: "medium",
+    timeStyle: "short"
+  }).format(date);
+}
+
+function gatewayStatusText(status: string) {
+  if (status === "successful") return "สำเร็จ";
+  if (status === "failed") return "ไม่สำเร็จ";
+  if (status === "cancelled") return "ยกเลิก";
+  return "รอชำระ";
+}
+
+function gatewayStatusClass(status: string) {
+  if (status === "successful") return "border-emerald-200 bg-emerald-50 text-emerald-700";
+  if (status === "failed" || status === "cancelled") {
+    return "border-red-200 bg-red-50 text-red-700";
+  }
+  return "border-amber-200 bg-amber-50 text-amber-700";
+}
+
 export default async function AdminPage({
   searchParams
 }: {
@@ -113,7 +136,15 @@ export default async function AdminPage({
   const activeMemberFilter = getMemberFilter(query.member);
   const slipWhere = activeFilter === "all" ? undefined : { status: activeFilter };
 
-  const [slips, users, pendingCount, approvedCount, rejectedCount, allCount] = await Promise.all([
+  const [
+    slips,
+    users,
+    pendingCount,
+    approvedCount,
+    rejectedCount,
+    allCount,
+    gatewayTransactions
+  ] = await Promise.all([
     prisma.paymentSlip.findMany({
       where: slipWhere,
       include: {
@@ -143,7 +174,19 @@ export default async function AdminPage({
     prisma.paymentSlip.count({ where: { status: "pending" } }),
     prisma.paymentSlip.count({ where: { status: "approved" } }),
     prisma.paymentSlip.count({ where: { status: "rejected" } }),
-    prisma.paymentSlip.count()
+    prisma.paymentSlip.count(),
+    prisma.paymentTransaction.findMany({
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true
+          }
+        }
+      },
+      orderBy: { createdAt: "desc" },
+      take: 100
+    })
   ]);
 
   const filterCounts: Record<SlipFilter, number> = {
@@ -279,6 +322,76 @@ export default async function AdminPage({
             </div>
             <div className="mt-1 text-sm font-black text-slate-600">สมาชิก Free</div>
           </div>
+        </div>
+      </section>
+
+      <section className="panel p-6 sm:p-7">
+        <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+          <div>
+            <p className="eyebrow">Payment gateway</p>
+            <h2 className="section-title mt-3">รายการชำระผ่าน Opn</h2>
+            <p className="mt-2 text-sm font-bold leading-6 text-slate-500">
+              ข้อมูลส่วนนี้อ่านอย่างเดียว สถานะสำเร็จมาจาก webhook และการตรวจ charge กับ Opn เท่านั้น
+            </p>
+          </div>
+          <div className="flex items-center gap-2 rounded-lg bg-brand-50 px-4 py-3 text-sm font-black text-brand-700">
+            <WalletCards className="h-5 w-5" />
+            {gatewayTransactions.length.toLocaleString("th-TH")} รายการ
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[940px] border-separate border-spacing-y-2 text-left text-sm">
+            <thead>
+              <tr className="text-slate-500">
+                <th className="px-3 py-2">ผู้ใช้</th>
+                <th className="px-3 py-2">อีเมล</th>
+                <th className="px-3 py-2">ยอดเงิน</th>
+                <th className="px-3 py-2">Provider Charge ID</th>
+                <th className="px-3 py-2">สถานะ</th>
+                <th className="px-3 py-2">วันที่จ่าย</th>
+              </tr>
+            </thead>
+            <tbody>
+              {gatewayTransactions.length === 0 ? (
+                <tr className="bg-slate-50">
+                  <td
+                    className="rounded-lg px-3 py-6 text-center font-bold text-slate-500"
+                    colSpan={6}
+                  >
+                    ยังไม่มีรายการชำระผ่าน Payment Gateway
+                  </td>
+                </tr>
+              ) : (
+                gatewayTransactions.map((transaction) => (
+                  <tr key={transaction.id} className="bg-slate-50">
+                    <td className="rounded-l-lg px-3 py-3 font-black text-ink">
+                      {transaction.user.name}
+                    </td>
+                    <td className="px-3 py-3 font-bold text-slate-600">
+                      {transaction.user.email}
+                    </td>
+                    <td className="px-3 py-3 font-black text-slate-700">
+                      {(transaction.amount / 100).toLocaleString("th-TH")} {transaction.currency}
+                    </td>
+                    <td className="max-w-64 break-all px-3 py-3 font-mono text-xs text-slate-500">
+                      {transaction.providerChargeId || "-"}
+                    </td>
+                    <td className="px-3 py-3">
+                      <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-black ${gatewayStatusClass(transaction.status)}`}>
+                        {gatewayStatusText(transaction.status)}
+                      </span>
+                    </td>
+                    <td className="rounded-r-lg px-3 py-3 font-bold text-slate-600">
+                      {transaction.paidAt
+                        ? formatThaiDateTime(transaction.paidAt)
+                        : "ยังไม่ชำระ"}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </section>
 
