@@ -49,3 +49,16 @@ model PaymentSlip {
   @@index([userId])
   @@index([status])
 }
+
+model LiveSession {
+  id             String   @id @default(cuid())
+  title          String
+  description    String?
+  youtubeVideoId String
+  isActive       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([updatedAt])
+}

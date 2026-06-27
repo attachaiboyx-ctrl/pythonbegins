@@ -3,6 +3,7 @@ import {
   BookOpen,
   CreditCard,
   LayoutDashboard,
+  Radio,
   Settings,
   Shield
 } from "lucide-react";
@@ -45,6 +46,10 @@ export async function NavBar() {
               <Link className="inline-flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-brand-50 hover:text-brand-700" href="/dashboard">
                 <LayoutDashboard className="h-4 w-4" />
                 Dashboard
+              </Link>
+              <Link className="inline-flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-brand-50 hover:text-brand-700" href="/live">
+                <Radio className="h-4 w-4" />
+                ห้องเรียนสด
               </Link>
               <Link className="inline-flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-brand-50 hover:text-brand-700" href="/settings">
                 <Settings className="h-4 w-4" />

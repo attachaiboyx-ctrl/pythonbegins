@@ -4,6 +4,7 @@ import {
   AlertCircle,
   CheckCircle2,
   Crown,
+  Radio,
   ReceiptText,
   UserRound,
   UsersRound
@@ -199,6 +200,13 @@ export default async function AdminPage({
               <div className="mt-3 text-3xl font-black">{premiumCount}</div>
               <div className="text-sm font-bold text-blue-100">สมาชิกพรีเมียม</div>
             </div>
+            <Link
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/20 bg-white px-4 py-3 text-sm font-black text-brand-700 shadow-sm transition hover:bg-blue-50 sm:col-span-2"
+              href="/admin/live"
+            >
+              <Radio className="h-4 w-4" />
+              จัดการห้องเรียนสด
+            </Link>
           </div>
         </div>
       </section>
