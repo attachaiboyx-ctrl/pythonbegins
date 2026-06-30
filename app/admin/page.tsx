@@ -704,7 +704,7 @@ export default async function AdminPage({
                 name="title"
                 required
                 type="text"
-                defaultValue="โปร 199 บาท เหลือวันสุดท้าย"
+                defaultValue="Premium 399 บาท ปลดล็อกคอร์สหลักทั้งหมดใน Python Begins"
               />
             </label>
 

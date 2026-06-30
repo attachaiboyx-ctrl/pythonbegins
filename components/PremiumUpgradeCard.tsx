@@ -39,7 +39,7 @@ export function PremiumUpgradeCard({
               <StatusBadge membership="paid" role="student" />
               <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-black text-amber-100 backdrop-blur">
                 <Sparkles className="h-3.5 w-3.5" />
-                ราคาเปิดตัว 199 บาท
+                Premium 399 บาท
               </span>
             </div>
 

@@ -1,4 +1,13 @@
 import { javascriptLessons, pythonLessons, type Lesson } from "@/lib/lessons";
+import {
+  cssLessons,
+  gitLessons,
+  htmlLessons,
+  nextjsLessons,
+  reactLessons,
+  realWebProjectLessons,
+  sqlLessons
+} from "@/lib/upcoming-lessons";
 
 export type Course = {
   slug: string;
@@ -7,6 +16,7 @@ export type Course = {
   description: string;
   level: string;
   status: "available" | "coming-soon";
+  premiumOnly?: boolean;
   lessons: Lesson[];
   accent: string;
   logoImage?: string;
@@ -50,12 +60,12 @@ export const upcomingCourses: Course[] = [
     subtitle: "เริ่มวางโครงสร้างหน้าเว็บอย่างถูกต้อง",
     description:
       "เรียนโครงสร้างหน้าเว็บตั้งแต่ศูนย์ เตรียมพื้นฐานก่อนเข้าสู่การทำเว็บจริง",
-    level: "Coming Soon",
-    status: "coming-soon",
-    lessons: [],
+    level: "Premium",
+    status: "available",
+    premiumOnly: true,
+    lessons: htmlLessons,
     accent: "from-orange-500 via-rose-500 to-slate-950",
     iconLabel: "HTML",
-    launchLabel: "เปิด 1 กรกฎาคมนี้"
   },
   {
     slug: "css-basics",
@@ -63,12 +73,12 @@ export const upcomingCourses: Course[] = [
     subtitle: "แต่งหน้าเว็บให้สวยและใช้งานได้ทุกหน้าจอ",
     description:
       "แต่งหน้าเว็บให้สวยงาม จัด layout สี ฟอนต์ และ responsive เบื้องต้น",
-    level: "Coming Soon",
-    status: "coming-soon",
-    lessons: [],
+    level: "Premium",
+    status: "available",
+    premiumOnly: true,
+    lessons: cssLessons,
     accent: "from-sky-500 via-indigo-500 to-lavender-700",
     iconLabel: "CSS",
-    launchLabel: "เปิด 1 กรกฎาคมนี้"
   },
   {
     slug: "git-github",
@@ -76,12 +86,12 @@ export const upcomingCourses: Course[] = [
     subtitle: "เก็บเวอร์ชันโค้ดและอัปโปรเจกต์แบบนักพัฒนา",
     description:
       "เรียนการเก็บเวอร์ชันโค้ด อัปโปรเจกต์ขึ้น GitHub และทำงานแบบนักพัฒนา",
-    level: "Coming Soon",
-    status: "coming-soon",
-    lessons: [],
+    level: "Premium",
+    status: "available",
+    premiumOnly: true,
+    lessons: gitLessons,
     accent: "from-slate-950 via-slate-800 to-violet-700",
     iconLabel: "Git",
-    launchLabel: "เปิด 1 กรกฎาคมนี้"
   },
   {
     slug: "react-basics",
@@ -89,12 +99,12 @@ export const upcomingCourses: Course[] = [
     subtitle: "เริ่มสร้าง UI แบบ component",
     description:
       "เริ่มสร้าง UI แบบ component และเข้าใจพื้นฐาน React สำหรับทำเว็บยุคใหม่",
-    level: "Coming Soon",
-    status: "coming-soon",
-    lessons: [],
+    level: "Premium",
+    status: "available",
+    premiumOnly: true,
+    lessons: reactLessons,
     accent: "from-cyan-400 via-blue-500 to-slate-950",
     iconLabel: "React",
-    launchLabel: "เปิด 1 กรกฎาคมนี้"
   },
   {
     slug: "nextjs-basics",
@@ -102,12 +112,12 @@ export const upcomingCourses: Course[] = [
     subtitle: "ต่อยอด React ไปสู่เว็บจริง",
     description:
       "ต่อยอด React ไปสู่การทำเว็บจริงด้วย Next.js และโครงสร้างโปรเจกต์แบบมืออาชีพ",
-    level: "Coming Soon",
-    status: "coming-soon",
-    lessons: [],
+    level: "Premium",
+    status: "available",
+    premiumOnly: true,
+    lessons: nextjsLessons,
     accent: "from-slate-950 via-zinc-900 to-brand-700",
     iconLabel: "Next.js",
-    launchLabel: "เปิด 1 กรกฎาคมนี้"
   },
   {
     slug: "sql-database",
@@ -115,12 +125,12 @@ export const upcomingCourses: Course[] = [
     subtitle: "เข้าใจฐานข้อมูลสำหรับระบบจริง",
     description:
       "เรียนพื้นฐานฐานข้อมูล ตาราง ข้อมูล และการ query สำหรับทำระบบจริง",
-    level: "Coming Soon",
-    status: "coming-soon",
-    lessons: [],
+    level: "Premium",
+    status: "available",
+    premiumOnly: true,
+    lessons: sqlLessons,
     accent: "from-emerald-500 via-teal-600 to-slate-950",
     iconLabel: "SQL",
-    launchLabel: "เปิด 1 กรกฎาคมนี้"
   },
   {
     slug: "real-web-project",
@@ -128,12 +138,12 @@ export const upcomingCourses: Course[] = [
     subtitle: "ฝึกทำเว็บจริงตั้งแต่ต้นจนขึ้นออนไลน์",
     description:
       "ฝึกทำเว็บจริงแบบเป็นขั้นตอน ตั้งแต่หน้าเว็บ ระบบผู้ใช้ ไปจนถึงการนำขึ้นออนไลน์",
-    level: "Coming Soon",
-    status: "coming-soon",
-    lessons: [],
+    level: "Premium",
+    status: "available",
+    premiumOnly: true,
+    lessons: realWebProjectLessons,
     accent: "from-amber-400 via-orange-500 to-slate-950",
     iconLabel: "Project",
-    launchLabel: "เปิด 1 กรกฎาคมนี้"
   }
 ];
 
@@ -146,7 +156,7 @@ export function getCourseBySlug(slug: string) {
 }
 
 export function getCourseByLessonSlug(lessonSlug: string) {
-  return courses.find((course) =>
+  return courseCatalog.find((course) =>
     course.lessons.some((lesson) => lesson.slug === lessonSlug)
   );
 }

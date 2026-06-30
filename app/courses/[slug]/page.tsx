@@ -33,11 +33,12 @@ export default async function CourseDetailPage({
     notFound();
   }
 
+  const user = await getCurrentUser();
+
   if (course.status === "coming-soon") {
-    return <ComingSoonCoursePage course={course} />;
+    return <ComingSoonCoursePage canPreview={user?.role === "admin"} course={course} />;
   }
 
-  const user = await getCurrentUser();
   const progressItems = user
     ? await prisma.lessonProgress.findMany({
         where: { userId: user.id }
@@ -52,8 +53,25 @@ export default async function CourseDetailPage({
   ).length;
   const freeCount = course.lessons.filter((lesson) => lesson.free).length;
   const isPremium = user?.membership === "paid" || user?.role === "admin";
+  const hasCourseAccess = !course.premiumOnly || isPremium;
   const shouldShowPremiumUpgrade = Boolean(user && !isPremium);
   const firstLesson = course.lessons[0];
+  const primaryHref = !user
+    ? "/register"
+    : hasCourseAccess && firstLesson
+      ? `/lessons/${firstLesson.slug}`
+      : "/payment";
+  const primaryLabel = !user
+    ? course.premiumOnly
+      ? "สมัครสมาชิกเพื่อเรียน"
+      : "เริ่มเรียนฟรี"
+    : hasCourseAccess
+      ? "เริ่มเรียน"
+      : "อัปเกรดเพื่อเรียน";
+  const accessStatTitle = course.premiumOnly ? "Premium" : `${freeCount} บทฟรี`;
+  const accessStatText = course.premiumOnly
+    ? "เปิดครบทุกบทสำหรับ Premium และ Admin"
+    : "บทที่เหลือใช้สิทธิ์พรีเมียม";
 
   return (
     <div className="page-shell space-y-10">
@@ -68,6 +86,12 @@ export default async function CourseDetailPage({
               กลับหน้าคอร์สทั้งหมด
             </Link>
             <p className="eyebrow mt-6">Course curriculum</p>
+            {course.premiumOnly ? (
+              <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-black text-amber-800">
+                <Crown className="h-3.5 w-3.5" />
+                Premium • เปิดให้เรียนแล้ว
+              </div>
+            ) : null}
             <h1 className="mt-3 text-4xl font-black tracking-tight text-ink sm:text-5xl">
               {course.title}
             </h1>
@@ -78,11 +102,11 @@ export default async function CourseDetailPage({
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Link
                 className="btn-primary"
-                href={user && firstLesson ? `/lessons/${firstLesson.slug}` : "/register"}
+                href={primaryHref}
               >
-                เริ่มเรียนฟรี
+                {primaryLabel}
               </Link>
-              {!isPremium ? (
+              {!isPremium && !course.premiumOnly ? (
                 <Link className="btn-secondary" href="/payment">
                   อัปเกรดเป็น Premium
                 </Link>
@@ -94,7 +118,7 @@ export default async function CourseDetailPage({
             {[
               [BookOpen, `${course.lessons.length} บทเรียน`, `รวมอยู่ในคอร์ส ${course.title}`],
               [CheckCircle2, `${completedCount} บทที่ผ่าน`, "ติดตามผลได้ใน Dashboard"],
-              [Crown, `${freeCount} บทฟรี`, "บทที่เหลือใช้สิทธิ์พรีเมียม"]
+              [Crown, accessStatTitle, accessStatText]
             ].map(([Icon, title, text]) => {
               const ItemIcon = Icon as typeof BookOpen;
 
@@ -149,7 +173,13 @@ export default async function CourseDetailPage({
   );
 }
 
-function ComingSoonCoursePage({ course }: { course: Course }) {
+function ComingSoonCoursePage({
+  canPreview,
+  course
+}: {
+  canPreview: boolean;
+  course: Course;
+}) {
   return (
     <div className="page-shell space-y-8">
       <section className="panel overflow-hidden">
@@ -224,6 +254,47 @@ function ComingSoonCoursePage({ course }: { course: Course }) {
           </div>
         </div>
       </section>
+
+      {canPreview && course.lessons.length > 0 ? (
+        <section className="panel p-6 sm:p-8">
+          <p className="eyebrow">Admin preview</p>
+          <div className="mt-3 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+            <div>
+              <h2 className="text-2xl font-black text-ink">ตรวจเนื้อหาก่อนเปิดคอร์ส</h2>
+              <p className="mt-2 text-sm font-bold leading-6 text-slate-600">
+                ลิงก์พรีวิวนี้แสดงเฉพาะ Admin สมาชิก Free และ Premium ยังเปิดบทเรียนไม่ได้
+              </p>
+            </div>
+            <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-black text-amber-800">
+              {course.lessons.length} บทพร้อมตรวจ
+            </span>
+          </div>
+
+          <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {course.lessons.map((lesson, index) => (
+              <Link
+                key={lesson.id}
+                className="group rounded-lg border border-slate-200 bg-white p-4 transition hover:border-brand-300 hover:bg-brand-50"
+                href={`/lessons/${lesson.slug}`}
+              >
+                <div className="flex items-start gap-3">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-brand-100 text-sm font-black text-brand-700">
+                    {index + 1}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="font-black leading-6 text-ink group-hover:text-brand-700">
+                      {lesson.title}
+                    </p>
+                    <p className="mt-1 text-sm font-bold leading-5 text-slate-500">
+                      {lesson.minutes} นาที • มี diagram และ quiz
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }

@@ -187,7 +187,7 @@ export default async function HomePage() {
             </div>
             <div className="rounded-lg bg-white p-5 text-ink">
               <div className="text-sm font-black text-brand-700">Premium course</div>
-              <div className="mt-2 text-4xl font-black">199 บาท</div>
+              <div className="mt-2 text-4xl font-black">399 บาท</div>
               <p className="mt-2 text-sm leading-6 text-slate-600">
                 เหมาะสำหรับผู้เรียนส่วนตัวหรือผู้ปกครองที่ต้องการซื้อให้ลูกเรียน
               </p>

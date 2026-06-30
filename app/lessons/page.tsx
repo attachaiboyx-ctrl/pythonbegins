@@ -2,7 +2,6 @@ import Link from "next/link";
 import {
   ArrowRight,
   BookOpen,
-  CalendarDays,
   CheckCircle2,
   Code2,
   Crown,
@@ -11,12 +10,13 @@ import {
   Sparkles
 } from "lucide-react";
 import { CourseLogoPanel } from "@/components/CourseLogoPanel";
-import { courseCatalog, courses, upcomingCourses } from "@/lib/courses";
+import { courseCatalog, upcomingCourses } from "@/lib/courses";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 
 export default async function LessonsPage() {
   const user = await getCurrentUser();
+  const isPremium = user?.membership === "paid" || user?.role === "admin";
   const progressItems = user
     ? await prisma.lessonProgress.findMany({
         where: { userId: user.id }
@@ -48,10 +48,10 @@ export default async function LessonsPage() {
               <Layers3 className="h-6 w-6" />
             </span>
             <p className="mt-4 text-2xl font-black text-ink">
-              {courses.length} คอร์สพร้อมเรียน
+              {courseCatalog.length} คอร์สพร้อมเรียน
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-slate-500">
-              พร้อมอีก {upcomingCourses.length} คอร์สใหม่ที่จะเปิดในวันที่ 1 กรกฎาคมนี้
+              รวม {upcomingCourses.length} คอร์ส Premium ใหม่ที่เปิดให้เรียนแล้ว
             </p>
           </div>
         </div>
@@ -72,13 +72,18 @@ export default async function LessonsPage() {
         <div className="grid gap-5 lg:grid-cols-[1fr_0.38fr]">
           <div className="grid gap-5">
             {courseCatalog.map((course) => {
-              const isComingSoon = course.status === "coming-soon";
-              const completedCount = isComingSoon
-                ? 0
-                : course.lessons.filter((lesson) => completedLessonIds.has(lesson.id)).length;
-              const freeCount = isComingSoon
-                ? 0
-                : course.lessons.filter((lesson) => lesson.free).length;
+              const completedCount = course.lessons.filter((lesson) =>
+                completedLessonIds.has(lesson.id)
+              ).length;
+              const freeCount = course.lessons.filter((lesson) => lesson.free).length;
+              const isLockedForUser = Boolean(course.premiumOnly && !isPremium);
+              const actionHref = !user
+                ? course.premiumOnly
+                  ? "/register"
+                  : `/courses/${course.slug}`
+                : isLockedForUser
+                  ? "/payment"
+                  : `/courses/${course.slug}`;
 
               return (
                 <article
@@ -89,22 +94,22 @@ export default async function LessonsPage() {
                     <div>
                       <div
                         className={`mb-5 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-black ${
-                          isComingSoon
-                            ? "border-amber-200 bg-amber-50 text-amber-700"
+                          course.premiumOnly
+                            ? "border-amber-200 bg-amber-50 text-amber-800"
                             : "border-brand-100 bg-brand-50 text-brand-700"
                         }`}
                       >
-                        {isComingSoon ? (
-                          <LockKeyhole className="h-3.5 w-3.5" />
+                        {course.premiumOnly ? (
+                          <Crown className="h-3.5 w-3.5" />
                         ) : (
                           <Code2 className="h-3.5 w-3.5" />
                         )}
                         {course.level}
                       </div>
-                      {isComingSoon ? (
-                        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-slate-950 px-3 py-1 text-xs font-black text-white shadow-sm">
-                          <CalendarDays className="h-3.5 w-3.5 text-amber-300" />
-                          {course.launchLabel || "เปิด 1 กรกฎาคมนี้"}
+                      {course.premiumOnly ? (
+                        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          เปิดให้เรียนแล้ว
                         </div>
                       ) : null}
                       <h3 className="text-3xl font-black tracking-tight text-ink group-hover:text-brand-700">
@@ -117,38 +122,7 @@ export default async function LessonsPage() {
                         {course.description}
                       </p>
 
-                      {isComingSoon ? (
-                        <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                          <div className="rounded-lg bg-slate-50 p-4">
-                            <CalendarDays className="h-5 w-5 text-amber-600" />
-                            <div className="mt-3 text-lg font-black text-ink">
-                              1 ก.ค.
-                            </div>
-                            <div className="text-sm font-bold text-slate-600">
-                              วันเปิดคอร์ส
-                            </div>
-                          </div>
-                          <div className="rounded-lg bg-slate-50 p-4">
-                            <LockKeyhole className="h-5 w-5 text-slate-600" />
-                            <div className="mt-3 text-lg font-black text-ink">
-                              ยังไม่เปิด
-                            </div>
-                            <div className="text-sm font-bold text-slate-600">
-                              ล็อกไว้ทุกสิทธิ์
-                            </div>
-                          </div>
-                          <div className="rounded-lg bg-slate-50 p-4">
-                            <Crown className="h-5 w-5 text-lavender-600" />
-                            <div className="mt-3 text-lg font-black text-ink">
-                              เตรียมเปิด
-                            </div>
-                            <div className="text-sm font-bold text-slate-600">
-                              ไม่มีบทเรียนให้เข้าก่อนเปิด
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                      <div className="mt-6 grid gap-3 sm:grid-cols-3">
                           <div className="rounded-lg bg-slate-50 p-4">
                             <BookOpen className="h-5 w-5 text-brand-600" />
                             <div className="mt-3 text-2xl font-black text-ink">
@@ -176,30 +150,29 @@ export default async function LessonsPage() {
                               ปลดล็อกครบทุกบท
                             </div>
                           </div>
-                        </div>
-                      )}
+                      </div>
                     </div>
 
                     <div>
-                      <CourseLogoPanel course={course} locked={isComingSoon} />
-                      {isComingSoon ? (
-                        <button
-                          className="mt-4 inline-flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-lg border border-slate-200 bg-slate-100 px-5 py-3 text-sm font-black text-slate-500 shadow-sm"
-                          disabled
-                          type="button"
-                        >
-                          เร็ว ๆ นี้
+                      <CourseLogoPanel course={course} locked={isLockedForUser} />
+                      <Link
+                        className={isLockedForUser ? "btn-secondary mt-4 w-full" : "btn-primary mt-4 w-full"}
+                        href={actionHref}
+                      >
+                        {isLockedForUser ? (
                           <LockKeyhole className="h-4 w-4" />
-                        </button>
-                      ) : (
-                        <Link
-                          className="btn-primary mt-4 w-full"
-                          href={`/courses/${course.slug}`}
-                        >
-                          เข้าเรียนคอร์สนี้
+                        ) : null}
+                        {!user && course.premiumOnly
+                          ? "สมัครสมาชิกเพื่อเรียน"
+                          : isLockedForUser
+                            ? "อัปเกรดเพื่อเรียน"
+                            : course.premiumOnly
+                              ? "เริ่มเรียน"
+                              : "เข้าเรียนคอร์สนี้"}
+                        {!isLockedForUser ? (
                           <ArrowRight className="h-4 w-4" />
-                        </Link>
-                      )}
+                        ) : null}
+                      </Link>
                     </div>
                   </div>
                 </article>
@@ -210,20 +183,21 @@ export default async function LessonsPage() {
           <aside className="panel p-6">
             <p className="eyebrow">Update</p>
             <h3 className="mt-3 text-2xl font-black text-ink">
-              อัปเดตใหม่ 1 กรกฎาคม
+              7 คอร์ส Premium เปิดแล้ว
             </h3>
             <p className="mt-3 text-sm font-bold leading-6 text-slate-600">
-              กำลังเตรียมเปิด {upcomingCourses.length} คอร์สใหม่ในสายทำเว็บและโปรเจกต์จริง
-              การ์ดคอร์สจะแสดงไว้ล่วงหน้า แต่ยังล็อกไว้สำหรับทุกคนจนกว่าจะเปิดตัว
+              เรียนต่อจากพื้นฐานเว็บไปจนถึงการทำโปรเจกต์จริง ครบทั้ง HTML, CSS,
+              Git, React, Next.js, SQL และการวางระบบเว็บ
             </p>
 
-            <div className="mt-5 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm font-bold leading-6 text-amber-800">
+            <div className="mt-5 rounded-lg border border-violet-200 bg-violet-50 p-4 text-sm font-bold leading-6 text-violet-800">
               <div className="flex items-center gap-2 font-black">
-                <LockKeyhole className="h-4 w-4" />
-                ยังไม่มีบทเรียนให้เข้าใช้งาน
+                <Crown className="h-4 w-4" />
+                สำหรับสมาชิก Premium
               </div>
-              <p className="mt-2 text-amber-700">
-                Python และ JavaScript ยังเข้าเรียนได้ตามปกติ ส่วนคอร์สใหม่จะแสดงสถานะ Coming Soon
+              <p className="mt-2 text-violet-700">
+                อัปเกรด Premium เพื่อเข้าเรียนคอร์สใหม่ทั้ง {upcomingCourses.length} คอร์ส
+                พร้อมตัวอย่างโค้ด แบบฝึกหัด และ Quiz ทุกบท
               </p>
             </div>
           </aside>

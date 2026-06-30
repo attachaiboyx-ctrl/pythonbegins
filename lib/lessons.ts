@@ -1,4 +1,5 @@
 import type { CurrentUser } from "@/lib/session";
+import { upcomingLessons } from "@/lib/upcoming-lessons";
 
 export type QuizQuestion = {
   question: string;
@@ -6,6 +7,29 @@ export type QuizQuestion = {
   answer: number;
   explanation: string;
 };
+
+export type LessonDiagramType =
+  | "html-document"
+  | "html-page-elements"
+  | "html-form"
+  | "css-box-model"
+  | "css-flexbox"
+  | "css-responsive"
+  | "git-workflow"
+  | "git-branch"
+  | "git-push"
+  | "react-tree"
+  | "react-props"
+  | "react-state"
+  | "next-app-router"
+  | "next-server-client"
+  | "next-request-flow"
+  | "sql-table"
+  | "sql-relation"
+  | "sql-query"
+  | "project-roadmap"
+  | "project-sitemap"
+  | "project-user-flow";
 
 export type Lesson = {
   id: number;
@@ -21,6 +45,7 @@ export type Lesson = {
     heading: string;
     body: string;
     code?: string;
+    diagram?: LessonDiagramType;
   }[];
   exercise: {
     title: string;
@@ -3517,13 +3542,14 @@ javascriptLessons.forEach((lesson) => {
 });
 
 export const lessons: Lesson[] = [...pythonLessons, ...javascriptLessons];
+export const allLessons: Lesson[] = [...lessons, ...upcomingLessons];
 
 export function getLessonBySlug(slug: string) {
-  return lessons.find((lesson) => lesson.slug === slug);
+  return allLessons.find((lesson) => lesson.slug === slug);
 }
 
 export function getLessonById(id: number) {
-  return lessons.find((lesson) => lesson.id === id);
+  return allLessons.find((lesson) => lesson.id === id);
 }
 
 export function canAccessLesson(user: Pick<CurrentUser, "role" | "membership"> | null, lesson: Lesson) {

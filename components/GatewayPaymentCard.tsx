@@ -212,7 +212,7 @@ export function GatewayPaymentCard({
             <div>
               <h3 className="text-xl font-black text-ink">พร้อมชำระผ่าน PromptPay Gateway</h3>
               <p className="mt-2 max-w-2xl leading-7 text-slate-600">
-                กดสร้าง QR แล้วสแกนชำระ 199 บาท ระบบจะอัปเกรดบัญชีเมื่อ Opn ยืนยันว่ารายการสำเร็จจริง
+                กดสร้าง QR แล้วสแกนชำระ 399 บาท ระบบจะอัปเกรดบัญชีเมื่อ Opn ยืนยันว่ารายการสำเร็จจริง
               </p>
             </div>
             <form action={action}>

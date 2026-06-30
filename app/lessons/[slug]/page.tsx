@@ -10,13 +10,14 @@ import {
 } from "lucide-react";
 import { submitQuizAction } from "@/app/actions/progress";
 import { PremiumUpgradeCard } from "@/components/PremiumUpgradeCard";
+import { LessonDiagram } from "@/components/LessonDiagram";
 import { getCourseByLessonSlug } from "@/lib/courses";
-import { canAccessLesson, getLessonBySlug, lessons } from "@/lib/lessons";
+import { allLessons, canAccessLesson, getLessonBySlug, lessons } from "@/lib/lessons";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 
 export function generateStaticParams() {
-  return lessons.map((lesson) => ({ slug: lesson.slug }));
+  return allLessons.map((lesson) => ({ slug: lesson.slug }));
 }
 
 export default async function LessonDetailPage({
@@ -39,6 +40,7 @@ export default async function LessonDetailPage({
   const courseHref = course ? `/courses/${course.slug}` : "/courses";
   const courseTitle = course?.title || "คอร์สทั้งหมด";
   const courseLessonCount = course?.lessons.length || lessons.length;
+
   const unlocked = canAccessLesson(user, lesson);
   const progress = await prisma.lessonProgress.findUnique({
     where: {
@@ -49,6 +51,9 @@ export default async function LessonDetailPage({
     }
   });
   const score = query.score ? Number(query.score) : null;
+  const lessonNumber = course
+    ? course.lessons.findIndex((courseLesson) => courseLesson.id === lesson.id) + 1
+    : lesson.id;
 
   if (!unlocked) {
     return (
@@ -94,7 +99,7 @@ export default async function LessonDetailPage({
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-100">
-                Lesson {lesson.id}
+                Lesson {lessonNumber}
               </p>
               <h1 className="mt-3 text-4xl font-black tracking-tight">
                 {lesson.title}
@@ -125,7 +130,8 @@ export default async function LessonDetailPage({
           {lesson.sections.map((section) => (
             <article key={section.heading} className="panel p-6 sm:p-8">
               <h2 className="text-2xl font-black text-ink">{section.heading}</h2>
-              <p className="mt-3 leading-8 text-slate-600">{section.body}</p>
+              <p className="mt-3 whitespace-pre-line leading-8 text-slate-600">{section.body}</p>
+              {section.diagram ? <LessonDiagram type={section.diagram} /> : null}
               {section.code ? (
                 <pre className="code-window mt-5">
                   <code>{section.code}</code>
