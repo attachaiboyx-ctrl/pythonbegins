@@ -10,6 +10,8 @@ export type Course = {
   lessons: Lesson[];
   accent: string;
   logoImage?: string;
+  iconLabel?: string;
+  launchLabel?: string;
 };
 
 export const courses: Course[] = [
@@ -23,7 +25,8 @@ export const courses: Course[] = [
     status: "available",
     lessons: pythonLessons,
     accent: "from-brand-600 via-blue-500 to-lavender-600",
-    logoImage: "/images/python-course-logo.png"
+    logoImage: "/images/python-course-logo.png",
+    iconLabel: "PY"
   },
   {
     slug: "javascript-beginner",
@@ -35,19 +38,111 @@ export const courses: Course[] = [
     status: "available",
     lessons: javascriptLessons,
     accent: "from-yellow-400 via-amber-500 to-slate-950",
-    logoImage: "/images/javascript-course-logo.png"
+    logoImage: "/images/javascript-course-logo.png",
+    iconLabel: "JS"
   }
 ];
 
-export const futureCourses = [
-  "สร้างเว็บไซต์ด้วย React",
-  "HTML พื้นฐาน", 
-  "CSS พื้นฐาน",
-  "SQL เบื้องต้น"
+export const upcomingCourses: Course[] = [
+  {
+    slug: "html-basics",
+    title: "HTML พื้นฐาน",
+    subtitle: "เริ่มวางโครงสร้างหน้าเว็บอย่างถูกต้อง",
+    description:
+      "เรียนโครงสร้างหน้าเว็บตั้งแต่ศูนย์ เตรียมพื้นฐานก่อนเข้าสู่การทำเว็บจริง",
+    level: "Coming Soon",
+    status: "coming-soon",
+    lessons: [],
+    accent: "from-orange-500 via-rose-500 to-slate-950",
+    iconLabel: "HTML",
+    launchLabel: "เปิด 1 กรกฎาคมนี้"
+  },
+  {
+    slug: "css-basics",
+    title: "CSS พื้นฐาน",
+    subtitle: "แต่งหน้าเว็บให้สวยและใช้งานได้ทุกหน้าจอ",
+    description:
+      "แต่งหน้าเว็บให้สวยงาม จัด layout สี ฟอนต์ และ responsive เบื้องต้น",
+    level: "Coming Soon",
+    status: "coming-soon",
+    lessons: [],
+    accent: "from-sky-500 via-indigo-500 to-lavender-700",
+    iconLabel: "CSS",
+    launchLabel: "เปิด 1 กรกฎาคมนี้"
+  },
+  {
+    slug: "git-github",
+    title: "Git & GitHub",
+    subtitle: "เก็บเวอร์ชันโค้ดและอัปโปรเจกต์แบบนักพัฒนา",
+    description:
+      "เรียนการเก็บเวอร์ชันโค้ด อัปโปรเจกต์ขึ้น GitHub และทำงานแบบนักพัฒนา",
+    level: "Coming Soon",
+    status: "coming-soon",
+    lessons: [],
+    accent: "from-slate-950 via-slate-800 to-violet-700",
+    iconLabel: "Git",
+    launchLabel: "เปิด 1 กรกฎาคมนี้"
+  },
+  {
+    slug: "react-basics",
+    title: "React เบื้องต้น",
+    subtitle: "เริ่มสร้าง UI แบบ component",
+    description:
+      "เริ่มสร้าง UI แบบ component และเข้าใจพื้นฐาน React สำหรับทำเว็บยุคใหม่",
+    level: "Coming Soon",
+    status: "coming-soon",
+    lessons: [],
+    accent: "from-cyan-400 via-blue-500 to-slate-950",
+    iconLabel: "React",
+    launchLabel: "เปิด 1 กรกฎาคมนี้"
+  },
+  {
+    slug: "nextjs-basics",
+    title: "Next.js เบื้องต้น",
+    subtitle: "ต่อยอด React ไปสู่เว็บจริง",
+    description:
+      "ต่อยอด React ไปสู่การทำเว็บจริงด้วย Next.js และโครงสร้างโปรเจกต์แบบมืออาชีพ",
+    level: "Coming Soon",
+    status: "coming-soon",
+    lessons: [],
+    accent: "from-slate-950 via-zinc-900 to-brand-700",
+    iconLabel: "Next.js",
+    launchLabel: "เปิด 1 กรกฎาคมนี้"
+  },
+  {
+    slug: "sql-database",
+    title: "SQL / Database",
+    subtitle: "เข้าใจฐานข้อมูลสำหรับระบบจริง",
+    description:
+      "เรียนพื้นฐานฐานข้อมูล ตาราง ข้อมูล และการ query สำหรับทำระบบจริง",
+    level: "Coming Soon",
+    status: "coming-soon",
+    lessons: [],
+    accent: "from-emerald-500 via-teal-600 to-slate-950",
+    iconLabel: "SQL",
+    launchLabel: "เปิด 1 กรกฎาคมนี้"
+  },
+  {
+    slug: "real-web-project",
+    title: "โปรเจกต์ทำเว็บจริง",
+    subtitle: "ฝึกทำเว็บจริงตั้งแต่ต้นจนขึ้นออนไลน์",
+    description:
+      "ฝึกทำเว็บจริงแบบเป็นขั้นตอน ตั้งแต่หน้าเว็บ ระบบผู้ใช้ ไปจนถึงการนำขึ้นออนไลน์",
+    level: "Coming Soon",
+    status: "coming-soon",
+    lessons: [],
+    accent: "from-amber-400 via-orange-500 to-slate-950",
+    iconLabel: "Project",
+    launchLabel: "เปิด 1 กรกฎาคมนี้"
+  }
 ];
 
+export const courseCatalog: Course[] = [...courses, ...upcomingCourses];
+
+export const futureCourses = upcomingCourses.map((course) => course.title);
+
 export function getCourseBySlug(slug: string) {
-  return courses.find((course) => course.slug === slug);
+  return courseCatalog.find((course) => course.slug === slug);
 }
 
 export function getCourseByLessonSlug(lessonSlug: string) {
