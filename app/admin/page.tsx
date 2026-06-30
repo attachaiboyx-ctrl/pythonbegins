@@ -4,13 +4,19 @@ import {
   AlertCircle,
   CheckCircle2,
   Crown,
+  Megaphone,
   Radio,
   ReceiptText,
+  Send,
   UserRound,
   UsersRound,
   WalletCards
 } from "lucide-react";
-import { reviewSlipAction, setMembershipAction } from "@/app/actions/admin";
+import {
+  reviewSlipAction,
+  sendNotificationAction,
+  setMembershipAction
+} from "@/app/actions/admin";
 import { StatusBadge } from "@/components/StatusBadge";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/session";
@@ -670,6 +676,116 @@ export default async function AdminPage({
             </div>
           </div>
         ) : null}
+      </section>
+
+      <section className="panel p-6 sm:p-7">
+        <div className="mb-5 flex flex-col justify-between gap-3 lg:flex-row lg:items-start">
+          <div>
+            <p className="eyebrow">Broadcast notification</p>
+            <h2 className="section-title mt-3">ส่งประกาศให้สมาชิก</h2>
+            <p className="mt-2 max-w-3xl text-sm font-bold leading-6 text-slate-500">
+              การส่งประกาศจะไปแสดงในกระดิ่งแจ้งเตือนของผู้ใช้ตามกลุ่มที่เลือก
+              โปรดตรวจข้อความและกลุ่มผู้รับให้ถูกต้องก่อนกดส่ง
+            </p>
+          </div>
+          <div className="inline-flex items-center gap-2 rounded-lg bg-brand-50 px-4 py-3 text-sm font-black text-brand-700">
+            <Megaphone className="h-5 w-5" />
+            Admin broadcast
+          </div>
+        </div>
+
+        <form action={sendNotificationAction} className="grid gap-5 lg:grid-cols-[1fr_0.36fr]">
+          <div className="space-y-4">
+            <label className="block">
+              <span className="text-sm font-black text-slate-700">Title</span>
+              <input
+                className="input mt-2"
+                maxLength={120}
+                name="title"
+                required
+                type="text"
+                defaultValue="โปร 199 บาท เหลือวันสุดท้าย"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-sm font-black text-slate-700">Message</span>
+              <textarea
+                className="input mt-2 min-h-32"
+                maxLength={800}
+                name="message"
+                required
+                defaultValue="หลังหมดโปรจะปรับเป็น 399 บาท และจะเพิ่มคอร์ส HTML, CSS, Git, React, Next.js, SQL และโปรเจกต์ทำเว็บจริง"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-sm font-black text-slate-700">
+                Link optional
+              </span>
+              <input
+                className="input mt-2"
+                name="link"
+                placeholder="/payment"
+                type="text"
+                defaultValue="/payment"
+              />
+              <span className="mt-2 block text-xs font-bold text-slate-500">
+                ใช้ path ภายในเว็บเท่านั้น เช่น /payment หรือ /lessons
+              </span>
+            </label>
+          </div>
+
+          <div className="space-y-4">
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+              <p className="text-sm font-black text-slate-700">กลุ่มผู้รับ</p>
+              <div className="mt-4 space-y-3 text-sm font-bold text-slate-700">
+                {[
+                  ["free", "สมาชิก Free ทั้งหมด", memberCounts.free],
+                  ["premium", "สมาชิก Premium ทั้งหมด", memberCounts.premium],
+                  ["all", "สมาชิกทั้งหมด", memberCounts.all]
+                ].map(([value, label, count]) => (
+                  <label
+                    key={String(value)}
+                    className="flex cursor-pointer items-center justify-between gap-3 rounded-lg bg-white px-3 py-3 shadow-sm"
+                  >
+                    <span className="flex items-center gap-2">
+                      <input
+                        className="h-4 w-4 accent-brand-600"
+                        defaultChecked={value === "free"}
+                        name="targetGroup"
+                        type="radio"
+                        value={String(value)}
+                      />
+                      {String(label)}
+                    </span>
+                    <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-black text-slate-500">
+                      {Number(count).toLocaleString("th-TH")}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm font-bold leading-6 text-amber-800">
+              <input
+                className="mt-1 h-4 w-4 accent-amber-600"
+                name="confirm"
+                required
+                type="checkbox"
+                value="yes"
+              />
+              <span>
+                ยืนยันว่าตรวจข้อความและกลุ่มผู้รับแล้ว การกดส่งจะสร้างแจ้งเตือนจริงให้สมาชิก
+              </span>
+            </label>
+
+            <button className="btn-primary w-full" type="submit">
+              <Send className="h-4 w-4" />
+              ส่งแจ้งเตือน
+            </button>
+          </div>
+        </form>
       </section>
     </div>
   );

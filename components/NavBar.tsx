@@ -12,9 +12,26 @@ import { LogoutButton } from "@/components/LogoutButton";
 import { MobileNavMenu } from "@/components/MobileNavMenu";
 import { PremiumNotificationBell } from "@/components/PremiumNotificationBell";
 import { StatusBadge } from "@/components/StatusBadge";
+import { prisma } from "@/lib/prisma";
 
 export async function NavBar() {
   const user = await getCurrentUser();
+  const initialNotifications = user
+    ? await prisma.userNotification.findMany({
+        where: { userId: user.id },
+        orderBy: { createdAt: "desc" },
+        take: 30,
+        select: {
+          id: true,
+          title: true,
+          message: true,
+          link: true,
+          type: true,
+          isRead: true,
+          createdAt: true
+        }
+      })
+    : [];
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl">
@@ -82,6 +99,10 @@ export async function NavBar() {
           {user ? (
             <>
               <PremiumNotificationBell
+                initialNotifications={initialNotifications.map((notification) => ({
+                  ...notification,
+                  createdAt: notification.createdAt.toISOString()
+                }))}
                 membership={user.membership}
                 role={user.role}
                 userId={user.id}

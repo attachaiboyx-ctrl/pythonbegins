@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { Bell, CheckCircle2, Radio, Sparkles } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type PremiumNotificationBellProps = {
   userId: string;
   role: string;
   membership: string;
+  initialNotifications?: DatabaseNotification[];
 };
 
 type UserStatusResponse = {
@@ -17,7 +18,18 @@ type UserStatusResponse = {
   isPremium: boolean;
 };
 
+export type DatabaseNotification = {
+  id: string;
+  title: string;
+  message: string;
+  link: string | null;
+  type: string;
+  isRead: boolean;
+  createdAt: string;
+};
+
 const POLLING_INTERVAL_MS = 10_000;
+const NOTIFICATION_POLLING_INTERVAL_MS = 30_000;
 const noticeTitle = "การชำระเงินได้รับการอนุมัติแล้ว";
 const noticeBody =
   "คุณเป็นสมาชิกพรีเมียมแล้ว สามารถเริ่มเรียนคอร์ส Python มือใหม่ได้ทันที";
@@ -41,7 +53,8 @@ const liveAnnouncement = {
 export function PremiumNotificationBell({
   userId,
   role,
-  membership
+  membership,
+  initialNotifications = []
 }: PremiumNotificationBellProps) {
   const isAdmin = role === "admin";
   const [isPremium, setIsPremium] = useState(membership === "paid");
@@ -53,6 +66,9 @@ export function PremiumNotificationBell({
   const [hasLiveAnnouncement, setHasLiveAnnouncement] = useState(false);
   const [hasUnreadLiveAnnouncement, setHasUnreadLiveAnnouncement] =
     useState(false);
+  const [databaseNotifications, setDatabaseNotifications] = useState<
+    DatabaseNotification[]
+  >(initialNotifications);
   const [isOpen, setIsOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const storageKey = useMemo(
@@ -67,13 +83,54 @@ export function PremiumNotificationBell({
     () => `python-begins-notification:${userId}:${liveAnnouncement.id}`,
     [userId]
   );
+  const unreadDatabaseCount = databaseNotifications.filter(
+    (notification) => !notification.isRead
+  ).length;
   const unreadCount =
     (hasUnread ? 1 : 0) +
     (hasUnreadCourseAnnouncement ? 1 : 0) +
-    (hasUnreadLiveAnnouncement ? 1 : 0);
+    (hasUnreadLiveAnnouncement ? 1 : 0) +
+    unreadDatabaseCount;
   const hasAnyNotification =
-    hasNotice || hasCourseAnnouncement || hasLiveAnnouncement;
+    hasNotice ||
+    hasCourseAnnouncement ||
+    hasLiveAnnouncement ||
+    databaseNotifications.length > 0;
   const canAccessLive = isAdmin || isPremium;
+
+  const loadDatabaseNotifications = useCallback(async () => {
+    try {
+      const response = await fetch("/api/notifications", {
+        cache: "no-store",
+        credentials: "same-origin"
+      });
+
+      if (!response.ok) {
+        return;
+      }
+
+      const data = (await response.json()) as {
+        notifications?: DatabaseNotification[];
+      };
+
+      setDatabaseNotifications(data.notifications || []);
+    } catch {
+      // Keep existing notifications unchanged if the request fails.
+    }
+  }, []);
+
+  useEffect(() => {
+    loadDatabaseNotifications();
+
+    const intervalId = window.setInterval(
+      loadDatabaseNotifications,
+      NOTIFICATION_POLLING_INTERVAL_MS
+    );
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [loadDatabaseNotifications, userId]);
 
   useEffect(() => {
     if (localStorage.getItem(courseAnnouncementStorageKey) === "read") {
@@ -170,6 +227,40 @@ export function PremiumNotificationBell({
     }
   }
 
+  async function markDatabaseNotificationsAsRead({
+    ids,
+    markAllRead = false
+  }: {
+    ids?: string[];
+    markAllRead?: boolean;
+  }) {
+    if (!markAllRead && (!ids || ids.length === 0)) {
+      return;
+    }
+
+    setDatabaseNotifications((current) =>
+      current.map((notification) =>
+        markAllRead || ids?.includes(notification.id)
+          ? { ...notification, isRead: true }
+          : notification
+      )
+    );
+
+    try {
+      await fetch("/api/notifications", {
+        body: JSON.stringify(markAllRead ? { markAllRead: true } : { ids }),
+        cache: "no-store",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        method: "PATCH"
+      });
+    } catch {
+      // The next polling tick will reconcile if marking as read fails.
+    }
+  }
+
   function markUnreadNotificationsAsRead() {
     if (hasUnread) {
       markPremiumAsRead();
@@ -182,6 +273,10 @@ export function PremiumNotificationBell({
     if (hasUnreadLiveAnnouncement) {
       markLiveAnnouncementAsRead();
     }
+
+    if (unreadDatabaseCount > 0) {
+      void markDatabaseNotificationsAsRead({ markAllRead: true });
+    }
   }
 
   function toggleDropdown() {
@@ -189,6 +284,7 @@ export function PremiumNotificationBell({
       const nextOpen = !current;
 
       if (nextOpen) {
+        void loadDatabaseNotifications();
         markUnreadNotificationsAsRead();
       }
 
@@ -252,6 +348,57 @@ export function PremiumNotificationBell({
         <div className="absolute right-0 top-12 z-50 w-[min(23rem,calc(100vw-2rem))] rounded-lg border border-slate-200 bg-white p-4 text-left shadow-2xl shadow-blue-600/10">
           {hasAnyNotification ? (
             <div className="space-y-4">
+              {databaseNotifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className={`rounded-lg border p-4 ${
+                    notification.isRead
+                      ? "border-slate-200 bg-white"
+                      : "border-brand-100 bg-gradient-to-br from-white to-brand-50"
+                  }`}
+                >
+                  <div className="flex gap-3">
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-700">
+                      <Bell className="h-5 w-5" />
+                    </span>
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="font-black text-ink">
+                          {notification.title}
+                        </p>
+                        {!notification.isRead ? (
+                          <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-red-700">
+                            ใหม่
+                          </span>
+                        ) : null}
+                      </div>
+                      <p className="mt-1 text-sm font-bold leading-6 text-slate-600">
+                        {notification.message}
+                      </p>
+                      <p className="mt-2 text-xs font-bold text-slate-400">
+                        {new Intl.DateTimeFormat("th-TH", {
+                          dateStyle: "medium",
+                          timeStyle: "short"
+                        }).format(new Date(notification.createdAt))}
+                      </p>
+                    </div>
+                  </div>
+                  {notification.link ? (
+                    <Link
+                      className="btn-primary mt-4 w-full px-4 py-2"
+                      href={notification.link}
+                      onClick={() =>
+                        void markDatabaseNotificationsAsRead({
+                          ids: [notification.id]
+                        })
+                      }
+                    >
+                      เปิดรายละเอียด
+                    </Link>
+                  ) : null}
+                </div>
+              ))}
+
               {hasLiveAnnouncement ? (
                 <div className="rounded-lg border border-violet-100 bg-gradient-to-br from-white to-violet-50 p-4">
                   <div className="flex gap-3">

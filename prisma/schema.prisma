@@ -19,6 +19,7 @@ model User {
   paymentSlips  PaymentSlip[]
   paymentTransactions PaymentTransaction[]
   lessonProgress LessonProgress[]
+  notifications UserNotification[]
 }
 
 model LessonProgress {
@@ -83,5 +84,23 @@ model PaymentTransaction {
 
   @@index([userId])
   @@index([status])
+  @@index([createdAt])
+}
+
+model UserNotification {
+  id        String    @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  link      String?
+  type      String    @default("admin_broadcast")
+  isRead    Boolean   @default(false)
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, isRead])
   @@index([createdAt])
 }
