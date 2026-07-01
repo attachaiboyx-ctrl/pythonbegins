@@ -11,8 +11,11 @@ import {
 import { createGatewayPaymentAction } from "@/app/actions/gateway-payment";
 import { uploadSlipAction } from "@/app/actions/payment";
 import { GatewayPaymentCard } from "@/components/GatewayPaymentCard";
+import {
+  PaymentProductSelector,
+  type PaymentProductType
+} from "@/components/PaymentProductSelector";
 import { PaymentSlipForm } from "@/components/PaymentSlipForm";
-import { SpecialCourseBadge } from "@/components/SpecialCourseBadge";
 import { getPaymentSettings } from "@/lib/promptpay";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
@@ -45,21 +48,8 @@ function gatewayStatusClass(status: string) {
 }
 
 const LANDING_PAGE_PRICE = 200;
-const premiumCourseNames = [
-  "Python มือใหม่",
-  "JavaScript มือใหม่",
-  "HTML พื้นฐาน",
-  "CSS พื้นฐาน",
-  "Git & GitHub",
-  "React เบื้องต้น",
-  "Next.js เบื้องต้น",
-  "SQL / Database",
-  "โปรเจกต์ทำเว็บจริง"
-];
 
-type ProductType = "premium" | "landing-page-begins";
-
-function getSelectedProduct(product?: string): ProductType {
+function getSelectedProduct(product?: string): PaymentProductType {
   return product === "landing-page-begins" ? product : "premium";
 }
 
@@ -145,70 +135,12 @@ export default async function PaymentPage({
         </div>
       </section>
 
-      <section className="panel p-6 sm:p-7">
-        <div>
-          <p className="eyebrow">Choose product</p>
-          <h2 className="mt-3 text-2xl font-black text-ink">เลือกสินค้าที่ต้องการชำระ</h2>
-          <p className="mt-2 text-sm font-bold leading-6 text-slate-500">
-            QR และฟอร์มสลิปด้านล่างจะเปลี่ยนยอดเงินตามรายการที่เลือก
-          </p>
-        </div>
-
-        <div className="mt-5 grid gap-4 lg:grid-cols-2">
-          <Link
-            className={`rounded-lg border-2 p-5 transition ${
-              !isLandingSelected
-                ? "border-brand-500 bg-gradient-to-br from-brand-50 to-lavender-50 shadow-lg shadow-blue-600/10"
-                : "border-slate-200 bg-white hover:border-brand-200"
-            }`}
-            href="/payment?product=premium"
-          >
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <div className="text-xl font-black text-ink">Premium</div>
-                <div className="mt-1 text-3xl font-black text-brand-700">399 บาท</div>
-              </div>
-              <span className="rounded-full bg-gradient-to-r from-brand-600 to-lavender-600 px-3 py-1 text-xs font-black text-white">
-                {!isLandingSelected ? "เลือกอยู่" : isPaid ? "มีสิทธิ์แล้ว" : "เลือก"}
-              </span>
-            </div>
-            <p className="mt-3 font-bold text-slate-700">
-              ปลดล็อกคอร์สหลัก 9 คอร์สใน Python Begins
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {premiumCourseNames.map((courseName) => (
-                <span key={courseName} className="rounded-full bg-white px-3 py-1 text-xs font-bold text-slate-600 shadow-sm">
-                  {courseName}
-                </span>
-              ))}
-            </div>
-          </Link>
-
-          <Link
-            className={`rounded-lg border-2 p-5 transition ${
-              isLandingSelected
-                ? "border-cyan-500 bg-gradient-to-br from-cyan-50 to-blue-50 shadow-lg shadow-cyan-600/10"
-                : "border-slate-200 bg-white hover:border-cyan-200"
-            }`}
-            href="/payment?product=landing-page-begins"
-          >
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <SpecialCourseBadge />
-                <div className="mt-3 text-xl font-black text-ink">Landing Page Begins</div>
-                <div className="mt-1 text-3xl font-black text-cyan-700">200 บาท</div>
-              </div>
-              <span className="rounded-full bg-cyan-700 px-3 py-1 text-xs font-black text-white">
-                {isLandingSelected ? "เลือกอยู่" : ownsLanding ? "มีสิทธิ์แล้ว" : "เลือก"}
-              </span>
-            </div>
-            <p className="mt-3 font-bold text-slate-700">
-              คอร์ส Landing Page แยก สำหรับสร้างผลงานเว็บหน้าเดียว
-            </p>
-            <p className="mt-3 text-sm font-black text-cyan-800">ไม่รวมใน Premium</p>
-          </Link>
-        </div>
-      </section>
+      <PaymentProductSelector
+        isPremium={isPaid}
+        ownsLanding={ownsLanding}
+        premiumPrice={settings.price}
+        selectedProduct={selectedProduct}
+      />
 
       {isSelectedOwned ? (
         <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-bold text-emerald-800">
@@ -273,7 +205,7 @@ export default async function PaymentPage({
 
             <div className="rounded-lg border border-slate-200 bg-white p-4 text-center shadow-sm">
               <Image
-                alt="PromptPay QR"
+                alt={`PromptPay QR สำหรับ ${selectedProductTitle} ยอด ${selectedPrice.toLocaleString("th-TH")} บาท`}
                 className="mx-auto h-auto w-full max-w-xs rounded-lg"
                 height={420}
                 src={`/api/promptpay-qr?amount=${selectedPrice}`}
@@ -283,17 +215,21 @@ export default async function PaymentPage({
             </div>
 
             <div className="mt-5 space-y-2 text-sm font-bold text-slate-700">
-              <div className="flex justify-between gap-4 rounded-lg bg-slate-50 px-4 py-3">
+              <div className="flex flex-col gap-1 rounded-lg bg-slate-50 px-4 py-3 sm:flex-row sm:justify-between sm:gap-4">
                 <span>ยอดชำระ</span>
                 <span>{selectedPrice.toLocaleString("th-TH")} บาท</span>
               </div>
-              <div className="flex justify-between gap-4 rounded-lg bg-slate-50 px-4 py-3">
-                <span>PromptPay</span>
-                <span>{settings.promptpayId}</span>
+              <div className="flex flex-col gap-1 rounded-lg bg-slate-50 px-4 py-3 sm:flex-row sm:justify-between sm:gap-4">
+                <span>วิธีชำระ</span>
+                <span>สแกน QR PromptPay</span>
               </div>
-              <div className="flex justify-between gap-4 rounded-lg bg-slate-50 px-4 py-3">
-                <span>ชื่อบัญชี</span>
+              <div className="flex flex-col gap-1 rounded-lg bg-slate-50 px-4 py-3 sm:flex-row sm:justify-between sm:gap-4">
+                <span>ผู้รับเงิน</span>
                 <span>{settings.merchantName}</span>
+              </div>
+              <div className="flex items-start gap-2 rounded-lg border border-blue-100 bg-brand-50 px-4 py-3 text-brand-800">
+                <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
+                <span>ตรวจสอบชื่อผู้รับเงินในแอปธนาคารก่อนยืนยันการชำระ</span>
               </div>
             </div>
           </div>
