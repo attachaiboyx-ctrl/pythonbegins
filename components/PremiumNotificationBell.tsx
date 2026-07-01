@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, CheckCircle2, Radio, Sparkles } from "lucide-react";
+import { Bell, CheckCircle2, Sparkles } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 type PremiumNotificationBellProps = {
@@ -33,22 +33,10 @@ const NOTIFICATION_POLLING_INTERVAL_MS = 30_000;
 const noticeTitle = "การชำระเงินได้รับการอนุมัติแล้ว";
 const noticeBody =
   "คุณเป็นสมาชิกพรีเมียมแล้ว สามารถเริ่มเรียนคอร์ส Python มือใหม่ได้ทันที";
-const courseAnnouncement = {
-  id: "javascript-beginner-launch-001",
-  type: "course-update",
-  title: "เปิดคอร์สใหม่แล้ว!",
-  message:
-    "JavaScript มือใหม่ พร้อมเรียนแล้ว เริ่มจากพื้นฐาน เหมาะสำหรับผู้เริ่มต้น",
-  href: "/courses/javascript-beginner",
-  label: "ดูคอร์ส JavaScript"
-};
-const liveAnnouncement = {
-  id: "live-classroom-premium-001",
-  type: "premium-feature",
-  title: "ห้องเรียนสดสำหรับสมาชิก Premium",
-  message:
-    "อัปเกรดเป็น Premium เพื่อเข้าห้องเรียนสด ทบทวนเนื้อหา และดูตัวอย่างการเขียนโค้ดแบบเป็นขั้นตอน"
-};
+const LEGACY_STATIC_NOTIFICATION_IDS = [
+  "javascript-beginner-launch-001",
+  "live-classroom-premium-001"
+] as const;
 
 export function PremiumNotificationBell({
   userId,
@@ -60,12 +48,6 @@ export function PremiumNotificationBell({
   const [isPremium, setIsPremium] = useState(membership === "paid");
   const [hasNotice, setHasNotice] = useState(false);
   const [hasUnread, setHasUnread] = useState(false);
-  const [hasCourseAnnouncement, setHasCourseAnnouncement] = useState(false);
-  const [hasUnreadCourseAnnouncement, setHasUnreadCourseAnnouncement] =
-    useState(false);
-  const [hasLiveAnnouncement, setHasLiveAnnouncement] = useState(false);
-  const [hasUnreadLiveAnnouncement, setHasUnreadLiveAnnouncement] =
-    useState(false);
   const [databaseNotifications, setDatabaseNotifications] = useState<
     DatabaseNotification[]
   >(initialNotifications);
@@ -75,28 +57,12 @@ export function PremiumNotificationBell({
     () => `python-begins-premium-approved:${userId}`,
     [userId]
   );
-  const courseAnnouncementStorageKey = useMemo(
-    () => `python-begins-notification:${userId}:${courseAnnouncement.id}`,
-    [userId]
-  );
-  const liveAnnouncementStorageKey = useMemo(
-    () => `python-begins-notification:${userId}:${liveAnnouncement.id}`,
-    [userId]
-  );
   const unreadDatabaseCount = databaseNotifications.filter(
     (notification) => !notification.isRead
   ).length;
-  const unreadCount =
-    (hasUnread ? 1 : 0) +
-    (hasUnreadCourseAnnouncement ? 1 : 0) +
-    (hasUnreadLiveAnnouncement ? 1 : 0) +
-    unreadDatabaseCount;
+  const unreadCount = (hasUnread ? 1 : 0) + unreadDatabaseCount;
   const hasAnyNotification =
-    hasNotice ||
-    hasCourseAnnouncement ||
-    hasLiveAnnouncement ||
-    databaseNotifications.length > 0;
-  const canAccessLive = isAdmin || isPremium;
+    hasNotice || databaseNotifications.length > 0;
 
   const loadDatabaseNotifications = useCallback(async () => {
     try {
@@ -133,26 +99,12 @@ export function PremiumNotificationBell({
   }, [loadDatabaseNotifications, userId]);
 
   useEffect(() => {
-    if (localStorage.getItem(courseAnnouncementStorageKey) === "read") {
-      setHasCourseAnnouncement(false);
-      setHasUnreadCourseAnnouncement(false);
-      return;
+    for (const notificationId of LEGACY_STATIC_NOTIFICATION_IDS) {
+      localStorage.removeItem(
+        `python-begins-notification:${userId}:${notificationId}`
+      );
     }
-
-    setHasCourseAnnouncement(true);
-    setHasUnreadCourseAnnouncement(true);
-  }, [courseAnnouncementStorageKey]);
-
-  useEffect(() => {
-    if (localStorage.getItem(liveAnnouncementStorageKey) === "read") {
-      setHasLiveAnnouncement(false);
-      setHasUnreadLiveAnnouncement(false);
-      return;
-    }
-
-    setHasLiveAnnouncement(true);
-    setHasUnreadLiveAnnouncement(true);
-  }, [liveAnnouncementStorageKey]);
+  }, [userId]);
 
   useEffect(() => {
     if (isAdmin || isPremium) {
@@ -209,24 +161,6 @@ export function PremiumNotificationBell({
     setShowToast(false);
   }
 
-  function markCourseAnnouncementAsRead({ hide = false } = {}) {
-    localStorage.setItem(courseAnnouncementStorageKey, "read");
-    setHasUnreadCourseAnnouncement(false);
-
-    if (hide) {
-      setHasCourseAnnouncement(false);
-    }
-  }
-
-  function markLiveAnnouncementAsRead({ hide = false } = {}) {
-    localStorage.setItem(liveAnnouncementStorageKey, "read");
-    setHasUnreadLiveAnnouncement(false);
-
-    if (hide) {
-      setHasLiveAnnouncement(false);
-    }
-  }
-
   async function markDatabaseNotificationsAsRead({
     ids,
     markAllRead = false
@@ -264,14 +198,6 @@ export function PremiumNotificationBell({
   function markUnreadNotificationsAsRead() {
     if (hasUnread) {
       markPremiumAsRead();
-    }
-
-    if (hasUnreadCourseAnnouncement) {
-      markCourseAnnouncementAsRead();
-    }
-
-    if (hasUnreadLiveAnnouncement) {
-      markLiveAnnouncementAsRead();
     }
 
     if (unreadDatabaseCount > 0) {
@@ -398,92 +324,6 @@ export function PremiumNotificationBell({
                   ) : null}
                 </div>
               ))}
-
-              {hasLiveAnnouncement ? (
-                <div className="rounded-lg border border-violet-100 bg-gradient-to-br from-white to-violet-50 p-4">
-                  <div className="flex gap-3">
-                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-brand-100 to-lavender-100 text-violet-700">
-                      <Radio className="h-5 w-5" />
-                    </span>
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="font-black text-ink">
-                          {liveAnnouncement.title}
-                        </p>
-                        <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-violet-800">
-                          Premium
-                        </span>
-                      </div>
-                      <p className="mt-1 text-sm font-bold leading-6 text-slate-600">
-                        {liveAnnouncement.message}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                    <Link
-                      className="btn-primary flex-1 px-4 py-2"
-                      href={canAccessLive ? "/live" : "/payment"}
-                      onClick={() =>
-                        markLiveAnnouncementAsRead({ hide: true })
-                      }
-                    >
-                      {canAccessLive ? "เข้าห้องเรียนสด" : "อัปเกรด Premium"}
-                    </Link>
-                    <button
-                      className="btn-secondary px-4 py-2"
-                      onClick={() =>
-                        markLiveAnnouncementAsRead({ hide: true })
-                      }
-                      type="button"
-                    >
-                      ปิด
-                    </button>
-                  </div>
-                </div>
-              ) : null}
-
-              {hasCourseAnnouncement ? (
-                <div className="rounded-lg border border-amber-100 bg-gradient-to-br from-white to-amber-50 p-4">
-                  <div className="flex gap-3">
-                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-amber-100 to-lavender-100 text-amber-700">
-                      <Sparkles className="h-5 w-5" />
-                    </span>
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="font-black text-ink">
-                          {courseAnnouncement.title}
-                        </p>
-                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-amber-800">
-                          {courseAnnouncement.type}
-                        </span>
-                      </div>
-                      <p className="mt-1 text-sm font-bold leading-6 text-slate-600">
-                        {courseAnnouncement.message}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                    <Link
-                      className="btn-primary flex-1 px-4 py-2"
-                      href={courseAnnouncement.href}
-                      onClick={() =>
-                        markCourseAnnouncementAsRead({ hide: true })
-                      }
-                    >
-                      {courseAnnouncement.label}
-                    </Link>
-                    <button
-                      className="btn-secondary px-4 py-2"
-                      onClick={() =>
-                        markCourseAnnouncementAsRead({ hide: true })
-                      }
-                      type="button"
-                    >
-                      ปิด
-                    </button>
-                  </div>
-                </div>
-              ) : null}
 
               {hasNotice ? (
                 <div className="rounded-lg border border-brand-100 bg-white p-4">

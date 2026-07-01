@@ -12,13 +12,17 @@ import { LogoutButton } from "@/components/LogoutButton";
 import { MobileNavMenu } from "@/components/MobileNavMenu";
 import { PremiumNotificationBell } from "@/components/PremiumNotificationBell";
 import { StatusBadge } from "@/components/StatusBadge";
+import { NOTIFICATION_FEED_RESET_AT } from "@/lib/notification-feed";
 import { prisma } from "@/lib/prisma";
 
 export async function NavBar() {
   const user = await getCurrentUser();
   const initialNotifications = user
     ? await prisma.userNotification.findMany({
-        where: { userId: user.id },
+        where: {
+          userId: user.id,
+          createdAt: { gte: NOTIFICATION_FEED_RESET_AT }
+        },
         orderBy: { createdAt: "desc" },
         take: 30,
         select: {

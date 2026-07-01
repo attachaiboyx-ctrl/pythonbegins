@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { NOTIFICATION_FEED_RESET_AT } from "@/lib/notification-feed";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 
@@ -10,7 +11,10 @@ export async function GET() {
   }
 
   const notifications = await prisma.userNotification.findMany({
-    where: { userId: user.id },
+    where: {
+      userId: user.id,
+      createdAt: { gte: NOTIFICATION_FEED_RESET_AT }
+    },
     orderBy: { createdAt: "desc" },
     take: 30,
     select: {
