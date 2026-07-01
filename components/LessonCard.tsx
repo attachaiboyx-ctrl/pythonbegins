@@ -276,13 +276,21 @@ export function LessonCard({
   progress
 }: {
   lesson: Lesson;
-  user: Pick<CurrentUser, "role" | "membership"> | null;
+  user: Pick<CurrentUser, "role" | "membership" | "courseAccesses"> | null;
   progress?: LessonProgress;
 }) {
   const unlocked = canAccessLesson(user, lesson);
   const statusLabel = getLessonStatusLabel(user, lesson);
-  const actionHref = unlocked ? `/lessons/${lesson.slug}` : "/payment";
-  const actionLabel = unlocked ? "เริ่มเรียน" : "อัปเกรดเป็น Premium";
+  const actionHref = unlocked
+    ? `/lessons/${lesson.slug}`
+    : lesson.purchaseCourseSlug
+      ? `/courses/${lesson.purchaseCourseSlug}/payment`
+      : "/payment";
+  const actionLabel = unlocked
+    ? "เริ่มเรียน"
+    : lesson.purchaseCourseSlug
+      ? "ซื้อคอร์สนี้ 200 บาท"
+      : "อัปเกรดเป็น Premium";
   const coverTheme = getLessonCoverTheme(lesson.id);
   const CoverIcon = coverTheme.icon;
 
@@ -298,7 +306,7 @@ export function LessonCard({
         <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/20 to-transparent" />
         <div className="relative flex items-start justify-between gap-3">
           <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-black backdrop-blur">
-            บทที่ {lesson.id}
+            บทที่ {lesson.order ?? lesson.id}
           </span>
           <span className="grid h-10 w-10 place-items-center rounded-lg bg-white/20 backdrop-blur">
             {unlocked ? <PlayCircle className="h-5 w-5" /> : <LockKeyhole className="h-5 w-5" />}

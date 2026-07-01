@@ -17,6 +17,7 @@ export type CurrentUser = {
   email: string;
   role: string;
   membership: string;
+  courseAccesses: { courseSlug: string }[];
 };
 
 function getSecret() {
@@ -109,7 +110,10 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
       name: true,
       email: true,
       role: true,
-      membership: true
+      membership: true,
+      courseAccesses: {
+        select: { courseSlug: true }
+      }
     }
   });
 }

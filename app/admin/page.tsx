@@ -88,6 +88,12 @@ function slipStatusText(status: string) {
   return "รอตรวจ";
 }
 
+function slipProductText(productType: string) {
+  return productType === "landing-page-begins"
+    ? "Landing Page Begins 200 บาท"
+    : "Premium 399 บาท";
+}
+
 function isPdfSlipUrl(imageUrl: string) {
   const lowerUrl = imageUrl.toLowerCase();
   const urlWithoutQuery = lowerUrl.split(/[?#]/)[0];
@@ -487,6 +493,9 @@ export default async function AdminPage({
                       </div>
 
                       <div className="mt-4 grid gap-2 text-sm font-bold text-slate-700">
+                        <div className="rounded-lg border border-cyan-100 bg-cyan-50 px-4 py-3 text-cyan-800">
+                          สินค้า: {slipProductText(slip.productType)}
+                        </div>
                         <div className="rounded-lg bg-slate-50 px-4 py-3">
                           ยอด {slip.amount.toLocaleString("th-TH")} บาท
                         </div>
@@ -521,7 +530,9 @@ export default async function AdminPage({
                               value="approved"
                             >
                               <CheckCircle2 className="h-4 w-4" />
-                              อนุมัติพรีเมียม
+                              {slip.productType === "landing-page-begins"
+                                ? "อนุมัติคอร์ส Landing Page"
+                                : "อนุมัติพรีเมียม"}
                             </button>
                             <button
                               className="btn-secondary"

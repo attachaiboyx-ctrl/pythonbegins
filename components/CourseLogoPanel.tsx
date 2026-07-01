@@ -218,6 +218,15 @@ function CourseMark({ course }: { course: Course }) {
       return <SqlLogo />;
     case "real-web-project":
       return <ProjectLogo />;
+    case "landing-page-begins":
+      return (
+        <div className="text-center text-slate-950">
+          <div className="text-6xl font-black tracking-tight text-cyan-600">LP</div>
+          <div className="mt-2 text-sm font-black uppercase tracking-[0.16em]">
+            Landing Page Begins
+          </div>
+        </div>
+      );
     default:
       return <span className="text-4xl font-black text-slate-800">{course.iconLabel || "Code"}</span>;
   }

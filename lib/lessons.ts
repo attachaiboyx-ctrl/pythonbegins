@@ -1,5 +1,9 @@
 import type { CurrentUser } from "@/lib/session";
 import { upcomingLessons } from "@/lib/upcoming-lessons";
+import {
+  landingPageLessons,
+  supplementalPremiumLessons
+} from "@/lib/supplemental-lessons";
 
 export type QuizQuestion = {
   question: string;
@@ -40,6 +44,8 @@ export type Lesson = {
   free: boolean;
   badge: string;
   accent: string;
+  order?: number;
+  purchaseCourseSlug?: string;
   objectives: string[];
   sections: {
     heading: string;
@@ -3542,7 +3548,19 @@ javascriptLessons.forEach((lesson) => {
 });
 
 export const lessons: Lesson[] = [...pythonLessons, ...javascriptLessons];
-export const allLessons: Lesson[] = [...lessons, ...upcomingLessons];
+const retiredDraftLessonSlugs = new Set([
+  "nextjs-page-request-flow",
+  "project-sitemap-pages",
+  "project-user-flow"
+]);
+export const allLessons: Lesson[] = [
+  ...lessons,
+  ...upcomingLessons.filter(
+    (lesson) => !retiredDraftLessonSlugs.has(lesson.slug)
+  ),
+  ...supplementalPremiumLessons,
+  ...landingPageLessons
+];
 
 export function getLessonBySlug(slug: string) {
   return allLessons.find((lesson) => lesson.slug === slug);
@@ -3552,7 +3570,19 @@ export function getLessonById(id: number) {
   return allLessons.find((lesson) => lesson.id === id);
 }
 
-export function canAccessLesson(user: Pick<CurrentUser, "role" | "membership"> | null, lesson: Lesson) {
+export function canAccessLesson(
+  user: Pick<CurrentUser, "role" | "membership" | "courseAccesses"> | null,
+  lesson: Lesson
+) {
+  if (lesson.purchaseCourseSlug) {
+    return Boolean(
+      user?.role === "admin" ||
+        user?.courseAccesses.some(
+          (access) => access.courseSlug === lesson.purchaseCourseSlug
+        )
+    );
+  }
+
   if (lesson.free) {
     return true;
   }
@@ -3560,10 +3590,15 @@ export function canAccessLesson(user: Pick<CurrentUser, "role" | "membership"> |
   return user?.role === "admin" || user?.membership === "paid";
 }
 
-export function getLessonStatusLabel(user: Pick<CurrentUser, "role" | "membership"> | null, lesson: Lesson) {
+export function getLessonStatusLabel(
+  user: Pick<CurrentUser, "role" | "membership" | "courseAccesses"> | null,
+  lesson: Lesson
+) {
   if (canAccessLesson(user, lesson)) {
     return lesson.free ? "ฟรี" : "ปลดล็อกแล้ว";
   }
 
-    return "สำหรับสมาชิกพรีเมียม";
+  return lesson.purchaseCourseSlug
+    ? "คอร์สแยก"
+    : "สำหรับสมาชิกพรีเมียม";
 }

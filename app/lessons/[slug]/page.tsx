@@ -11,6 +11,7 @@ import {
 import { submitQuizAction } from "@/app/actions/progress";
 import { PremiumUpgradeCard } from "@/components/PremiumUpgradeCard";
 import { LessonDiagram } from "@/components/LessonDiagram";
+import { SpecialCourseBadge } from "@/components/SpecialCourseBadge";
 import { getCourseByLessonSlug } from "@/lib/courses";
 import { allLessons, canAccessLesson, getLessonBySlug, lessons } from "@/lib/lessons";
 import { prisma } from "@/lib/prisma";
@@ -54,6 +55,10 @@ export default async function LessonDetailPage({
   const lessonNumber = course
     ? course.lessons.findIndex((courseLesson) => courseLesson.id === lesson.id) + 1
     : lesson.id;
+  const isSeparateCourseLesson = Boolean(lesson.purchaseCourseSlug);
+  const lockedActionHref = isSeparateCourseLesson
+    ? `/courses/${lesson.purchaseCourseSlug}/payment`
+    : "/payment";
 
   if (!unlocked) {
     return (
@@ -61,17 +66,24 @@ export default async function LessonDetailPage({
         <section className="panel overflow-hidden">
           <div className="grid gap-8 bg-gradient-to-br from-brand-50 via-white to-lavender-50 p-6 sm:p-8 lg:grid-cols-[1fr_0.7fr]">
             <div>
-              <p className="eyebrow">Premium lesson</p>
+              {isSeparateCourseLesson ? (
+                <SpecialCourseBadge />
+              ) : (
+                <p className="eyebrow">Premium lesson</p>
+              )}
               <h1 className="mt-3 text-4xl font-black tracking-tight text-ink">
                 {lesson.title}
               </h1>
               <p className="mt-4 max-w-2xl leading-7 text-slate-600">
-                บทนี้เป็นบทเรียน Premium สำหรับผู้ที่ต้องการเรียนต่อให้ครบทั้งคอร์ส
-                บัญชี Free เรียนได้เฉพาะบทที่ 1-2 ส่วน Premium จะปลดล็อกบทที่ 1-{courseLessonCount} พร้อมแบบฝึกหัดและแบบทดสอบทุกบท
+                {isSeparateCourseLesson
+                  ? "บทนี้อยู่ใน Landing Page Begins ซึ่งเป็นคอร์สซื้อแยก 200 บาทและไม่รวมใน Premium เมื่อแอดมินอนุมัติสลิปแล้ว คุณจะเข้าเรียนทั้ง 10 บทของคอร์สนี้ได้"
+                  : `บทนี้เป็นบทเรียน Premium สำหรับผู้ที่ต้องการเรียนต่อให้ครบทั้งคอร์ส บัญชี Free เรียนได้เฉพาะบทฟรี ส่วน Premium จะปลดล็อกบทที่ 1-${courseLessonCount} พร้อมแบบฝึกหัดและแบบทดสอบทุกบท`}
               </p>
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                <Link className="btn-primary" href="/payment">
-                  อัปเกรดเป็น Premium
+                <Link className="btn-primary" href={lockedActionHref}>
+                  {isSeparateCourseLesson
+                    ? "ซื้อคอร์สนี้ 200 บาท"
+                    : "อัปเกรดเป็น Premium"}
                 </Link>
                 <Link className="btn-secondary" href={courseHref}>
                   <ArrowLeft className="h-4 w-4" />
@@ -80,12 +92,25 @@ export default async function LessonDetailPage({
               </div>
             </div>
 
-            <PremiumUpgradeCard
-              compact
-              courseTitle={courseTitle}
-              embedded
-              lessonCount={courseLessonCount}
-            />
+            {isSeparateCourseLesson ? (
+              <div className="rounded-lg border border-cyan-200 bg-white p-6 shadow-sm">
+                <p className="text-sm font-black text-cyan-700">LANDING PAGE BEGINS</p>
+                <p className="mt-3 text-4xl font-black text-slate-950">200 บาท</p>
+                <p className="mt-3 text-sm font-bold leading-6 text-slate-600">
+                  ซื้อครั้งเดียวเพื่อปลดล็อกคอร์สนี้โดยเฉพาะ สถานะ Premium เดิมของบัญชีจะไม่เปลี่ยน
+                </p>
+                <Link className="btn-primary mt-5 w-full" href={lockedActionHref}>
+                  ดูวิธีชำระเงิน
+                </Link>
+              </div>
+            ) : (
+              <PremiumUpgradeCard
+                compact
+                courseTitle={courseTitle}
+                embedded
+                lessonCount={courseLessonCount}
+              />
+            )}
           </div>
         </section>
       </div>

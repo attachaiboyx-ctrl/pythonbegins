@@ -5,107 +5,153 @@ import {
   BookOpenCheck,
   CheckCircle2,
   Code2,
-  FolderKanban,
+  Crown,
+  GraduationCap,
   Laptop,
-  Sparkles,
-  Users
+  Sparkles
 } from "lucide-react";
-import { LessonCard } from "@/components/LessonCard";
-import { pythonLessons } from "@/lib/lessons";
-import { getCurrentUser } from "@/lib/session";
+import { CourseLogoPanel } from "@/components/CourseLogoPanel";
+import { SpecialCourseBadge } from "@/components/SpecialCourseBadge";
+import { premiumCourses, separateCourses } from "@/lib/courses";
 
-const features = [
-  {
-    title: "เหมาะสำหรับมือใหม่",
-    description: "เริ่มจากศูนย์ ไม่ต้องมีพื้นฐานเขียนโปรแกรมมาก่อน",
-    icon: Users
-  },
-  {
-    title: "เรียนเป็นขั้นตอน",
-    description: "บทเรียนเรียงจากง่ายไปยาก พร้อมสรุปและแบบฝึกหัดทุกบท",
-    icon: BookOpenCheck
-  },
-  {
-    title: "ฝึกทำโปรเจกต์จริง",
-    description: "ต่อยอดเป็นเกมทายเลขและแอปแบบทดสอบเพื่อเห็นภาพการใช้งานจริง",
-    icon: FolderKanban
-  },
-  {
-    title: "เรียนได้ทุกอุปกรณ์",
-    description: "ออกแบบ responsive สำหรับมือถือ แท็บเล็ต และคอมพิวเตอร์",
-    icon: Laptop
-  }
+const premiumBenefits = [
+  "บทเรียนภาษาไทย เข้าใจง่าย",
+  "ตัวอย่างโค้ดที่นำไปทดลองได้",
+  "แบบฝึกหัดท้ายบท",
+  "Quiz สำหรับทบทวน",
+  "เรียนผ่านเว็บได้ทุกอุปกรณ์",
+  "มีคอร์สใหม่ทยอยเพิ่ม"
 ];
 
-export default async function HomePage() {
-  const user = await getCurrentUser();
+export default function HomePage() {
+  const premiumLessonCount = premiumCourses.reduce(
+    (total, course) => total + course.lessons.length,
+    0
+  );
+  const separateCourse = separateCourses[0];
 
   return (
     <div>
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-50 via-white to-lavender-50" />
-        <div className="page-shell relative grid min-h-[calc(100vh-76px)] items-center gap-12 py-12 lg:grid-cols-[0.95fr_1.05fr] lg:py-16">
-          <div className="max-w-2xl">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-brand-100 bg-white px-4 py-2 text-sm font-black text-brand-700 shadow-sm">
+      <section className="relative isolate min-h-[620px] overflow-hidden">
+        <Image
+          alt="แพลตฟอร์มเรียนเขียนโปรแกรม Python Begins"
+          className="-z-20 object-cover object-center"
+          fill
+          priority
+          src="/images/course-hero.png"
+        />
+        <div className="absolute inset-0 -z-10 bg-slate-950/80" />
+        <div className="page-shell flex min-h-[620px] items-center py-16">
+          <div className="max-w-3xl text-white">
+            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/30 bg-cyan-300/10 px-4 py-2 text-sm font-black text-cyan-100 backdrop-blur">
               <Sparkles className="h-4 w-4" />
-              Python สำหรับมือใหม่
+              Online course platform สำหรับมือใหม่
             </div>
-
-            <h1 className="text-4xl font-black leading-tight tracking-tight text-ink sm:text-5xl lg:text-6xl">
-              เริ่มต้นเขียนโปรแกรมด้วย Python
+            <h1 className="mt-6 text-4xl font-black leading-tight sm:text-5xl lg:text-6xl">
+              เริ่มเรียนเขียนโปรแกรมและทำเว็บจากศูนย์
             </h1>
-            <p className="mt-6 text-lg leading-8 text-slate-600 sm:text-xl">
-              เรียนรู้ Python ตั้งแต่ศูนย์ ผ่านบทเรียนที่เข้าใจง่าย พร้อมแบบฝึกหัดและโปรเจกต์จริง
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200 sm:text-xl">
+              เรียนพื้นฐานการเขียนโปรแกรม การทำเว็บ และเครื่องมือสำหรับนักพัฒนา
+              ผ่านบทเรียนภาษาไทยที่เข้าใจง่าย มีตัวอย่างโค้ด แบบฝึกหัด Quiz
+              และโปรเจกต์ให้ฝึกจริง
             </p>
-            <p className="mt-3 text-base leading-7 text-slate-500">
-              เรียน Python ตั้งแต่พื้นฐาน เหมาะสำหรับผู้ที่ไม่เคยเขียนโปรแกรมมาก่อน
-            </p>
-
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link className="btn-primary px-6 py-4" href={user ? "/dashboard" : "/register"}>
-                เริ่มเรียนฟรี
-                <ArrowRight className="h-4 w-4" />
+              <Link className="btn-primary px-6 py-4" href="/lessons">
+                ดูหลักสูตรทั้งหมด <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link className="btn-secondary px-6 py-4" href="/lessons">
-                ดูหลักสูตร
+              <Link className="inline-flex items-center justify-center rounded-lg border border-white/30 bg-white/10 px-6 py-4 text-sm font-black text-white backdrop-blur transition hover:bg-white/20" href="/payment">
+                ดู Premium 399 บาท
               </Link>
             </div>
-
-            <div className="mt-8 grid grid-cols-3 gap-3 rounded-lg border border-slate-200 bg-white/80 p-3 shadow-sm backdrop-blur">
+            <div className="mt-10 grid max-w-2xl grid-cols-3 gap-3">
               {[
-                [String(pythonLessons.length), "บทเรียน"],
-                ["2", "บทฟรี"],
-                ["60%", "คะแนนผ่าน"]
+                [String(premiumCourses.length), "คอร์สหลัก"],
+                [String(premiumLessonCount), "บทเรียน"],
+                ["1", "คอร์สแยก"]
               ].map(([value, label]) => (
-                <div key={label} className="rounded-lg bg-slate-50 px-4 py-3 text-center">
-                  <div className="text-2xl font-black text-ink">{value}</div>
-                  <div className="mt-1 text-xs font-bold text-slate-500">{label}</div>
+                <div key={label} className="rounded-lg border border-white/15 bg-white/10 p-4 text-center backdrop-blur">
+                  <div className="text-2xl font-black">{value}</div>
+                  <div className="mt-1 text-xs font-bold text-slate-300">{label}</div>
                 </div>
               ))}
             </div>
           </div>
+        </div>
+      </section>
 
-          <div className="relative">
-            <div className="absolute -inset-4 rounded-[2rem] bg-gradient-to-br from-brand-200/70 to-lavender-200/70 blur-2xl" />
-            <div className="panel relative overflow-hidden p-3">
-              <Image
-                priority
-                alt="ผู้เรียนกำลังเรียน Python ผ่านแล็ปท็อป"
-                className="h-auto w-full rounded-lg object-cover"
-                height={1024}
-                src="/images/course-hero.png"
-                width={1792}
-              />
-            </div>
-            <div className="absolute -bottom-5 left-5 hidden rounded-lg border border-slate-200 bg-white px-5 py-4 shadow-course sm:block">
-              <div className="flex items-center gap-3">
-                <span className="grid h-11 w-11 place-items-center rounded-lg bg-brand-50 text-brand-700">
-                  <Code2 className="h-5 w-5" />
-                </span>
-                <div>
-                  <p className="font-black text-ink">Beginner friendly</p>
-                  <p className="text-sm font-bold text-slate-500">เรียนง่าย ทำตามได้จริง</p>
+      <section className="page-shell py-14">
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+          <div>
+            <p className="eyebrow">Premium curriculum</p>
+            <h2 className="section-title mt-3">คอร์สหลักทั้งหมดใน Python Begins</h2>
+            <p className="mt-4 max-w-3xl leading-7 text-slate-600">
+              เรียงเนื้อหาจากพื้นฐาน Python และ JavaScript ไปจนถึง HTML, CSS,
+              Git, React, Next.js, SQL และโปรเจกต์ทำเว็บจริง
+            </p>
+          </div>
+          <div className="inline-flex items-center gap-2 rounded-lg bg-amber-50 px-4 py-3 text-sm font-black text-amber-800">
+            <Crown className="h-4 w-4" />
+            {premiumLessonCount} บทเรียน
+          </div>
+        </div>
+
+        <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {premiumCourses.map((course) => (
+            <article key={course.slug} className="panel group flex flex-col overflow-hidden transition duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-xl">
+              <div className={`bg-gradient-to-br ${course.accent} p-1`} />
+              <CourseLogoPanel course={course} />
+              <div className="flex flex-1 flex-col border-t border-slate-100 p-5">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1 text-xs font-black text-amber-800">
+                    <Crown className="h-3.5 w-3.5" /> Premium
+                  </span>
+                  <span className="text-sm font-black text-slate-500">
+                    {course.lessons.length} บท
+                  </span>
                 </div>
+                <h3 className="mt-4 text-xl font-black text-ink">{course.title}</h3>
+                <p className="mt-2 flex-1 text-sm leading-6 text-slate-600">
+                  {course.description}
+                </p>
+                <Link className="btn-secondary mt-5 w-full" href={`/courses/${course.slug}`}>
+                  ดูคอร์ส <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="bg-white py-14">
+        <div className="page-shell py-0">
+          <div className="panel overflow-hidden border-amber-200">
+            <div className="grid gap-8 bg-gradient-to-br from-slate-950 via-brand-900 to-violet-950 p-7 text-white sm:p-10 lg:grid-cols-[1fr_0.36fr] lg:items-center">
+              <div>
+                <p className="inline-flex items-center gap-2 rounded-full bg-amber-300/15 px-4 py-2 text-sm font-black text-amber-200">
+                  <Crown className="h-4 w-4" /> Premium access
+                </p>
+                <h2 className="mt-5 text-3xl font-black sm:text-4xl">Premium 399 บาท</h2>
+                <p className="mt-4 max-w-3xl leading-7 text-blue-100">
+                  ปลดล็อกคอร์สหลัก {premiumCourses.length} คอร์สใน Python Begins รวม {premiumLessonCount} บทเรียน
+                  สำหรับผู้เริ่มต้นที่อยากเรียนเขียนโปรแกรมและต่อยอดสู่การทำเว็บจริง
+                </p>
+                <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {premiumBenefits.map((benefit) => (
+                    <div key={benefit} className="flex items-start gap-2 rounded-lg bg-white/10 px-4 py-3 text-sm font-bold text-blue-50">
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300" />
+                      {benefit}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="rounded-lg bg-white p-6 text-slate-950">
+                <GraduationCap className="h-8 w-8 text-brand-700" />
+                <div className="mt-4 text-sm font-black text-brand-700">คอร์สหลัก Premium</div>
+                <div className="mt-1 text-4xl font-black">399 บาท</div>
+                <p className="mt-3 text-sm font-bold leading-6 text-slate-600">
+                  Landing Page Begins เป็นคอร์สแยกและไม่รวมในแพ็กเกจนี้
+                </p>
+                <Link className="btn-primary mt-5 w-full" href="/payment">ดูวิธีชำระเงิน</Link>
               </div>
             </div>
           </div>
@@ -113,90 +159,42 @@ export default async function HomePage() {
       </section>
 
       <section className="page-shell py-14">
-        <div className="mx-auto max-w-3xl text-center">
-          <p className="eyebrow">Why this course</p>
-          <h2 className="section-title mt-3">ออกแบบมาเพื่อคนเริ่มต้นจริง ๆ</h2>
-          <p className="mt-4 leading-7 text-slate-600">
-            โครงสร้างคอร์สเหมาะกับผู้เรียนทุกวัย ผู้ปกครองสามารถซื้อให้ลูกเรียนได้
-            และผู้ใหญ่ที่อยากเริ่มสายเทคโนโลยีก็เรียนตามได้อย่างมั่นใจ
-          </p>
-        </div>
-
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {features.map((feature) => {
-            const Icon = feature.icon;
-
-            return (
-              <article
-                key={feature.title}
-                className="panel p-6 transition duration-300 hover:-translate-y-1 hover:border-brand-200"
-              >
-                <span className="grid h-12 w-12 place-items-center rounded-lg bg-gradient-to-br from-brand-50 to-lavender-50 text-brand-700">
-                  <Icon className="h-6 w-6" />
-                </span>
-                <h3 className="mt-5 text-lg font-black text-ink">{feature.title}</h3>
-                <p className="mt-3 text-sm leading-6 text-slate-600">
-                  {feature.description}
-                </p>
-              </article>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="bg-white py-14">
-        <div className="page-shell py-0">
-          <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-            <div>
-              <p className="eyebrow">Curriculum</p>
-              <h2 className="section-title mt-3">บทเรียน Python ที่เรียนต่อได้ทันที</h2>
-              <p className="mt-4 max-w-2xl leading-7 text-slate-600">
-                เริ่มจากคำสั่งพื้นฐาน ตัวแปร เงื่อนไข loop ไปจนถึง mini project
-                ที่ช่วยให้เห็นภาพการเขียนโปรแกรมจริง
-              </p>
+        <div className="grid gap-8 overflow-hidden rounded-lg border border-cyan-200 bg-gradient-to-br from-cyan-50 via-white to-blue-50 p-6 shadow-course sm:p-8 lg:grid-cols-[0.38fr_0.62fr] lg:items-center">
+          <div className="rounded-lg bg-gradient-to-br from-cyan-500 via-blue-600 to-slate-950 p-8 text-center text-white">
+            <div className="text-7xl font-black tracking-tight">LP</div>
+            <div className="mt-2 text-sm font-black uppercase tracking-[0.18em]">Landing Page Begins</div>
+          </div>
+          <div>
+            <SpecialCourseBadge />
+            <h2 className="mt-4 text-3xl font-black text-ink">Landing Page Begins</h2>
+            <p className="mt-3 leading-7 text-slate-600">{separateCourse.description}</p>
+            <div className="mt-5 flex flex-wrap items-center gap-3">
+              <span className="text-3xl font-black text-cyan-800">200 บาท</span>
+              <span className="rounded-full bg-slate-950 px-3 py-1 text-xs font-black text-white">ไม่รวมใน Premium</span>
+              <span className="text-sm font-bold text-slate-600">{separateCourse.lessons.length} บทเรียน</span>
             </div>
-            <Link className="btn-secondary" href="/lessons">
-              ดูหลักสูตรทั้งหมด
+            <Link className="btn-primary mt-6" href="/courses/landing-page-begins">
+              ดูรายละเอียดคอร์ส <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            {pythonLessons.slice(0, 4).map((lesson) => (
-              <LessonCard key={lesson.id} lesson={lesson} user={user} />
-            ))}
-          </div>
         </div>
       </section>
 
-      <section className="page-shell py-14">
-        <div className="panel overflow-hidden bg-gradient-to-r from-brand-700 to-lavender-600 p-8 text-white sm:p-10">
-          <div className="grid gap-8 lg:grid-cols-[1fr_0.38fr] lg:items-center">
-            <div>
-              <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-black">
-                <CheckCircle2 className="h-4 w-4" />
-                พร้อมเริ่มเรียนวันนี้
-               
-              </p>
-              <h2 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">
-                ปลดล็อกทุกบทเรียน พร้อมแบบฝึกหัดและโปรเจกต์จริง
-              </h2>
-              <p className="mt-4 max-w-2xl leading-7 text-blue-50">
-                สมาชิกฟรีเริ่มเรียนบทที่ 1-2 ได้ทันที และอัปเกรดเป็นพรีเมียมด้วย PromptPay
-                เพื่อเรียนครบทุกบทแบบต่อเนื่อง
-              </p>
-            </div>
-            <div className="rounded-lg bg-white p-5 text-ink">
-              <div className="text-sm font-black text-brand-700">Premium course</div>
-              <div className="mt-2 text-4xl font-black">399 บาท</div>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                เหมาะสำหรับผู้เรียนส่วนตัวหรือผู้ปกครองที่ต้องการซื้อให้ลูกเรียน
-              </p>
-              <Link className="btn-primary mt-5 w-full" href="/payment">
-                อัปเกรดเป็นพรีเมียม
-              </Link>
-            </div>
-          </div>
-        </div>
+      <section className="page-shell grid gap-4 py-8 sm:grid-cols-3">
+        {[
+          [Code2, "เริ่มจากพื้นฐาน", "เนื้อหาภาษาไทยและตัวอย่างที่ทำตามได้"],
+          [BookOpenCheck, "ฝึกทุกบท", "มีแบบฝึกหัดและ Quiz สำหรับทบทวน"],
+          [Laptop, "รองรับทุกหน้าจอ", "อ่านบทเรียนได้ทั้งมือถือ แท็บเล็ต และคอมพิวเตอร์"]
+        ].map(([Icon, title, description]) => {
+          const ItemIcon = Icon as typeof Code2;
+          return (
+            <article key={String(title)} className="panel p-6">
+              <ItemIcon className="h-7 w-7 text-brand-700" />
+              <h3 className="mt-4 text-lg font-black text-ink">{String(title)}</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600">{String(description)}</p>
+            </article>
+          );
+        })}
       </section>
     </div>
   );

@@ -8,18 +8,19 @@ datasource db {
 }
 
 model User {
-  id            String           @id @default(cuid())
-  name          String
-  email         String           @unique
-  passwordHash  String
-  role          String           @default("student")
-  membership    String           @default("free")
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-  paymentSlips  PaymentSlip[]
+  id                  String               @id @default(cuid())
+  name                String
+  email               String               @unique
+  passwordHash        String
+  role                String               @default("student")
+  membership          String               @default("free")
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  paymentSlips        PaymentSlip[]
   paymentTransactions PaymentTransaction[]
-  lessonProgress LessonProgress[]
-  notifications UserNotification[]
+  lessonProgress      LessonProgress[]
+  notifications       UserNotification[]
+  courseAccesses      UserCourseAccess[]
 }
 
 model LessonProgress {
@@ -40,6 +41,7 @@ model PaymentSlip {
   id          String    @id @default(cuid())
   userId      String
   amount      Int
+  productType String    @default("premium")
   imageUrl    String
   note        String?
   status      String    @default("pending")
@@ -50,6 +52,20 @@ model PaymentSlip {
 
   @@index([userId])
   @@index([status])
+  @@index([productType])
+}
+
+model UserCourseAccess {
+  id         String   @id @default(cuid())
+  userId     String
+  courseSlug String
+  grantedBy  String?
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseSlug])
+  @@index([userId])
+  @@index([courseSlug])
 }
 
 model LiveSession {
@@ -98,7 +114,7 @@ model UserNotification {
   readAt    DateTime?
   createdAt DateTime  @default(now())
 
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([userId, isRead])

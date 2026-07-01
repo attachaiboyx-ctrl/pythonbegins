@@ -12,12 +12,14 @@ type PaymentSlipFormProps = {
   action: (formData: FormData) => void | Promise<void>;
   amount: number;
   isPaid: boolean;
+  productType?: string;
 };
 
 export function PaymentSlipForm({
   action,
   amount,
-  isPaid
+  isPaid,
+  productType = "premium"
 }: PaymentSlipFormProps) {
   return (
     <form
@@ -26,6 +28,7 @@ export function PaymentSlipForm({
       encType="multipart/form-data"
     >
       <input name="amount" type="hidden" value={amount} />
+      <input name="productType" type="hidden" value={productType} />
       <PaymentSlipFormFields isPaid={isPaid} />
     </form>
   );

@@ -48,20 +48,42 @@ export async function reviewSlipAction(formData: FormData) {
       reviewedAt: new Date()
     },
     select: {
-      userId: true
+      userId: true,
+      productType: true
     }
   });
 
   if (status === "approved") {
-    await prisma.user.update({
-      where: { id: slip.userId },
-      data: { membership: "paid" }
-    });
+    if (slip.productType === "landing-page-begins") {
+      await prisma.userCourseAccess.upsert({
+        where: {
+          userId_courseSlug: {
+            userId: slip.userId,
+            courseSlug: "landing-page-begins"
+          }
+        },
+        update: { grantedBy: "admin" },
+        create: {
+          userId: slip.userId,
+          courseSlug: "landing-page-begins",
+          grantedBy: "admin"
+        }
+      });
+    } else {
+      await prisma.user.update({
+        where: { id: slip.userId },
+        data: { membership: "paid" }
+      });
+    }
   }
 
   redirect(
     `/admin?message=${encodeURIComponent(
-      status === "approved" ? "อนุมัติสลิปและปลดล็อกพรีเมียมแล้ว" : "ปฏิเสธสลิปแล้ว"
+      status === "approved"
+        ? slip.productType === "landing-page-begins"
+          ? "อนุมัติสลิปและปลดล็อก Landing Page Begins แล้ว"
+          : "อนุมัติสลิปและปลดล็อกพรีเมียมแล้ว"
+        : "ปฏิเสธสลิปแล้ว"
     )}`
   );
 }

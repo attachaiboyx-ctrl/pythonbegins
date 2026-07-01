@@ -10,6 +10,7 @@ import {
   Sparkles
 } from "lucide-react";
 import { CourseLogoPanel } from "@/components/CourseLogoPanel";
+import { SpecialCourseBadge } from "@/components/SpecialCourseBadge";
 import { courseCatalog, upcomingCourses } from "@/lib/courses";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
@@ -76,13 +77,24 @@ export default async function LessonsPage() {
                 completedLessonIds.has(lesson.id)
               ).length;
               const freeCount = course.lessons.filter((lesson) => lesson.free).length;
-              const isLockedForUser = Boolean(course.premiumOnly && !isPremium);
+              const ownsSeparateCourse = Boolean(
+                user?.role === "admin" ||
+                  (course.separatePurchase &&
+                    user?.courseAccesses.some(
+                      (access) => access.courseSlug === course.slug
+                    ))
+              );
+              const isLockedForUser = course.separatePurchase
+                ? !ownsSeparateCourse
+                : Boolean(course.premiumOnly && !isPremium);
               const actionHref = !user
-                ? course.premiumOnly
+                ? course.premiumOnly || course.separatePurchase
                   ? "/register"
                   : `/courses/${course.slug}`
                 : isLockedForUser
-                  ? "/payment"
+                  ? course.separatePurchase
+                    ? `/courses/${course.slug}/payment`
+                    : "/payment"
                   : `/courses/${course.slug}`;
 
               return (
@@ -92,24 +104,35 @@ export default async function LessonsPage() {
                 >
                   <div className="grid gap-6 p-6 sm:p-8 lg:grid-cols-[0.72fr_0.28fr] lg:items-center">
                     <div>
-                      <div
-                        className={`mb-5 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-black ${
-                          course.premiumOnly
-                            ? "border-amber-200 bg-amber-50 text-amber-800"
-                            : "border-brand-100 bg-brand-50 text-brand-700"
-                        }`}
-                      >
-                        {course.premiumOnly ? (
-                          <Crown className="h-3.5 w-3.5" />
-                        ) : (
-                          <Code2 className="h-3.5 w-3.5" />
-                        )}
-                        {course.level}
-                      </div>
+                      {course.separatePurchase ? (
+                        <div className="mb-5">
+                          <SpecialCourseBadge />
+                        </div>
+                      ) : (
+                        <div
+                          className={`mb-5 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-black ${
+                            course.premiumOnly
+                              ? "border-amber-200 bg-amber-50 text-amber-800"
+                              : "border-brand-100 bg-brand-50 text-brand-700"
+                          }`}
+                        >
+                          {course.premiumOnly ? (
+                            <Crown className="h-3.5 w-3.5" />
+                          ) : (
+                            <Code2 className="h-3.5 w-3.5" />
+                          )}
+                          {course.level}
+                        </div>
+                      )}
                       {course.premiumOnly ? (
                         <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">
                           <CheckCircle2 className="h-3.5 w-3.5" />
                           เปิดให้เรียนแล้ว
+                        </div>
+                      ) : null}
+                      {course.separatePurchase ? (
+                        <div className="mb-4 text-sm font-black text-cyan-800">
+                          ไม่รวมใน Premium • ซื้อแยก {course.separatePurchase.price} บาท
                         </div>
                       ) : null}
                       <h3 className="text-3xl font-black tracking-tight text-ink group-hover:text-brand-700">
@@ -144,10 +167,14 @@ export default async function LessonsPage() {
                           <div className="rounded-lg bg-slate-50 p-4">
                             <Crown className="h-5 w-5 text-lavender-600" />
                             <div className="mt-3 text-2xl font-black text-ink">
-                              Premium
+                              {course.separatePurchase
+                                ? `${course.separatePurchase.price} บาท`
+                                : "Premium"}
                             </div>
                             <div className="text-sm font-bold text-slate-600">
-                              ปลดล็อกครบทุกบท
+                              {course.separatePurchase
+                                ? "ซื้อแยกจาก Premium"
+                                : "ปลดล็อกครบทุกบท"}
                             </div>
                           </div>
                       </div>
@@ -162,12 +189,16 @@ export default async function LessonsPage() {
                         {isLockedForUser ? (
                           <LockKeyhole className="h-4 w-4" />
                         ) : null}
-                        {!user && course.premiumOnly
+                        {!user && (course.premiumOnly || course.separatePurchase)
                           ? "สมัครสมาชิกเพื่อเรียน"
                           : isLockedForUser
-                            ? "อัปเกรดเพื่อเรียน"
+                            ? course.separatePurchase
+                              ? `ซื้อคอร์สนี้ ${course.separatePurchase.price} บาท`
+                              : "อัปเกรดเพื่อเรียน"
                             : course.premiumOnly
                               ? "เริ่มเรียน"
+                              : course.separatePurchase
+                                ? "เริ่มเรียน"
                               : "เข้าเรียนคอร์สนี้"}
                         {!isLockedForUser ? (
                           <ArrowRight className="h-4 w-4" />

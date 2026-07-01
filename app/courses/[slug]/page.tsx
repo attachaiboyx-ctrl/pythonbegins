@@ -13,6 +13,7 @@ import {
 import { CourseLogoPanel } from "@/components/CourseLogoPanel";
 import { LessonCard } from "@/components/LessonCard";
 import { PremiumUpgradeCard } from "@/components/PremiumUpgradeCard";
+import { SpecialCourseBadge } from "@/components/SpecialCourseBadge";
 import { courseCatalog, getCourseBySlug, type Course } from "@/lib/courses";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
@@ -53,25 +54,44 @@ export default async function CourseDetailPage({
   ).length;
   const freeCount = course.lessons.filter((lesson) => lesson.free).length;
   const isPremium = user?.membership === "paid" || user?.role === "admin";
-  const hasCourseAccess = !course.premiumOnly || isPremium;
-  const shouldShowPremiumUpgrade = Boolean(user && !isPremium);
+  const ownsSeparateCourse = Boolean(
+    user?.role === "admin" ||
+      (course.separatePurchase &&
+        user?.courseAccesses.some((access) => access.courseSlug === course.slug))
+  );
+  const hasCourseAccess = course.separatePurchase
+    ? ownsSeparateCourse
+    : !course.premiumOnly || isPremium;
+  const shouldShowPremiumUpgrade = Boolean(
+    course.premiumOnly && user && !isPremium
+  );
   const firstLesson = course.lessons[0];
   const primaryHref = !user
     ? "/register"
     : hasCourseAccess && firstLesson
       ? `/lessons/${firstLesson.slug}`
-      : "/payment";
+      : course.separatePurchase
+        ? `/courses/${course.slug}/payment`
+        : "/payment";
   const primaryLabel = !user
-    ? course.premiumOnly
+    ? course.premiumOnly || course.separatePurchase
       ? "สมัครสมาชิกเพื่อเรียน"
       : "เริ่มเรียนฟรี"
     : hasCourseAccess
       ? "เริ่มเรียน"
-      : "อัปเกรดเพื่อเรียน";
-  const accessStatTitle = course.premiumOnly ? "Premium" : `${freeCount} บทฟรี`;
-  const accessStatText = course.premiumOnly
-    ? "เปิดครบทุกบทสำหรับ Premium และ Admin"
-    : "บทที่เหลือใช้สิทธิ์พรีเมียม";
+      : course.separatePurchase
+        ? `ซื้อคอร์สนี้ ${course.separatePurchase.price} บาท`
+        : "อัปเกรดเพื่อเรียน";
+  const accessStatTitle = course.separatePurchase
+    ? `${course.separatePurchase.price} บาท`
+    : course.premiumOnly
+      ? "Premium"
+      : `${freeCount} บทฟรี`;
+  const accessStatText = course.separatePurchase
+    ? "คอร์สแยก ไม่รวมใน Premium"
+    : course.premiumOnly
+      ? "เปิดครบทุกบทสำหรับ Premium และ Admin"
+      : "บทที่เหลือใช้สิทธิ์พรีเมียม";
 
   return (
     <div className="page-shell space-y-10">
@@ -90,6 +110,14 @@ export default async function CourseDetailPage({
               <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-black text-amber-800">
                 <Crown className="h-3.5 w-3.5" />
                 Premium • เปิดให้เรียนแล้ว
+              </div>
+            ) : null}
+            {course.separatePurchase ? (
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <SpecialCourseBadge />
+                <span className="text-sm font-black text-cyan-800">
+                  ไม่รวมใน Premium • ซื้อแยก {course.separatePurchase.price} บาท
+                </span>
               </div>
             ) : null}
             <h1 className="mt-3 text-4xl font-black tracking-tight text-ink sm:text-5xl">
@@ -144,6 +172,26 @@ export default async function CourseDetailPage({
 
       {shouldShowPremiumUpgrade ? (
         <PremiumUpgradeCard courseTitle={course.title} lessonCount={course.lessons.length} />
+      ) : null}
+
+      {course.separatePurchase && !hasCourseAccess ? (
+        <section className="panel overflow-hidden border-cyan-200">
+          <div className="grid gap-5 bg-gradient-to-r from-cyan-50 via-white to-blue-50 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div>
+              <SpecialCourseBadge />
+              <h2 className="mt-4 text-2xl font-black text-ink">
+                ซื้อ Landing Page Begins แยกจาก Premium
+              </h2>
+              <p className="mt-2 max-w-2xl leading-7 text-slate-600">
+                คอร์สนี้ราคา {course.separatePurchase.price} บาท ไม่รวมใน Premium 399 บาท
+                เมื่อแอดมินอนุมัติสลิป ระบบจะปลดล็อกเฉพาะคอร์สนี้
+              </p>
+            </div>
+            <Link className="btn-primary" href={`/courses/${course.slug}/payment`}>
+              ซื้อคอร์สนี้ {course.separatePurchase.price} บาท
+            </Link>
+          </div>
+        </section>
       ) : null}
 
       <section>

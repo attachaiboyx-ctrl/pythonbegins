@@ -6,20 +6,20 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
-  title: "Python สำหรับมือใหม่ | คอร์สออนไลน์สำหรับผู้เริ่มต้น",
+  title: "Python Begins | เรียนเขียนโปรแกรมและทำเว็บสำหรับมือใหม่",
   description:
-    "เรียน Python ตั้งแต่พื้นฐาน เหมาะสำหรับผู้ที่ไม่เคยเขียนโปรแกรมมาก่อน พร้อมบทเรียน แบบฝึกหัด โปรเจกต์จริง และระบบสมาชิก",
+    "เรียนเขียนโปรแกรมและทำเว็บจากศูนย์ด้วยบทเรียนภาษาไทย ตัวอย่างโค้ด แบบฝึกหัด Quiz และโปรเจกต์จริงสำหรับผู้เริ่มต้น",
   openGraph: {
-    title: "Python สำหรับมือใหม่",
+    title: "Python Begins | คอร์สเขียนโปรแกรมสำหรับมือใหม่",
     description:
-      "เรียน Python ตั้งแต่พื้นฐาน เหมาะสำหรับผู้ที่ไม่เคยเขียนโปรแกรมมาก่อน",
+      "เรียน Python, JavaScript และพื้นฐานการทำเว็บด้วยบทเรียนภาษาไทยที่เข้าใจง่าย",
     type: "website",
     images: [
       {
         url: "/images/course-hero.png",
         width: 1792,
         height: 1024,
-        alt: "Python สำหรับมือใหม่"
+        alt: "แพลตฟอร์มเรียนเขียนโปรแกรม Python Begins"
       }
     ]
   }

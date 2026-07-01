@@ -15,8 +15,10 @@ const ALLOWED_TYPES = new Map([
   ["application/pdf", "pdf"]
 ]);
 
-function fail(message: string): never {
-  redirect(`/payment?error=${encodeURIComponent(message)}`);
+const LANDING_PAGE_PRICE = 200;
+
+function fail(message: string, returnPath = "/payment"): never {
+  redirect(`${returnPath}?error=${encodeURIComponent(message)}`);
 }
 
 function sanitizeFilename(filename: string, extension: string) {
@@ -38,26 +40,38 @@ export async function uploadSlipAction(formData: FormData) {
   const user = await requireUser();
   const fileValue = formData.get("slip");
   const note = String(formData.get("note") || "").trim();
-  const amount = Number(formData.get("amount") || getPaymentSettings().price);
+  const productType = String(formData.get("productType") || "premium");
+  const isLandingPagePurchase = productType === "landing-page-begins";
+  const returnPath = isLandingPagePurchase
+    ? "/courses/landing-page-begins/payment"
+    : "/payment";
+
+  if (!["premium", "landing-page-begins"].includes(productType)) {
+    fail("ประเภทการชำระเงินไม่ถูกต้อง", returnPath);
+  }
+
+  const amount = isLandingPagePurchase
+    ? LANDING_PAGE_PRICE
+    : getPaymentSettings().price;
 
   if (!fileValue || typeof fileValue === "string") {
-    fail("กรุณาเลือกไฟล์สลิปก่อนส่ง");
+    fail("กรุณาเลือกไฟล์สลิปก่อนส่ง", returnPath);
   }
 
   const file = fileValue as File;
 
   if (file.size <= 0) {
-    fail("ไฟล์สลิปว่างเปล่า กรุณาเลือกไฟล์ใหม่");
+    fail("ไฟล์สลิปว่างเปล่า กรุณาเลือกไฟล์ใหม่", returnPath);
   }
 
   if (file.size > MAX_FILE_SIZE) {
-    fail(FILE_SIZE_ERROR);
+    fail(FILE_SIZE_ERROR, returnPath);
   }
 
   const extension = ALLOWED_TYPES.get(file.type);
 
   if (!extension) {
-    fail("รองรับเฉพาะไฟล์ PNG, JPG, WEBP หรือ PDF");
+    fail("รองรับเฉพาะไฟล์ PNG, JPG, WEBP หรือ PDF", returnPath);
   }
 
   let imageUrl: string;
@@ -78,17 +92,22 @@ export async function uploadSlipAction(formData: FormData) {
     imageUrl = blob.url;
   } catch (error) {
     console.error("Payment slip upload failed:", error);
-    fail("อัปโหลดสลิปไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
+    fail("อัปโหลดสลิปไม่สำเร็จ กรุณาลองใหม่อีกครั้ง", returnPath);
   }
 
   await prisma.paymentSlip.create({
     data: {
       userId: user.id,
       amount,
+      productType,
       imageUrl,
       note: note || null
     }
   });
 
-  redirect("/dashboard?payment=uploaded");
+  redirect(
+    isLandingPagePurchase
+      ? "/courses/landing-page-begins/payment?uploaded=1"
+      : "/dashboard?payment=uploaded"
+  );
 }
