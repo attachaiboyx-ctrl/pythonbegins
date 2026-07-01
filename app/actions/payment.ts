@@ -18,7 +18,8 @@ const ALLOWED_TYPES = new Map([
 const LANDING_PAGE_PRICE = 200;
 
 function fail(message: string, returnPath = "/payment"): never {
-  redirect(`${returnPath}?error=${encodeURIComponent(message)}`);
+  const separator = returnPath.includes("?") ? "&" : "?";
+  redirect(`${returnPath}${separator}error=${encodeURIComponent(message)}`);
 }
 
 function sanitizeFilename(filename: string, extension: string) {
@@ -43,8 +44,8 @@ export async function uploadSlipAction(formData: FormData) {
   const productType = String(formData.get("productType") || "premium");
   const isLandingPagePurchase = productType === "landing-page-begins";
   const returnPath = isLandingPagePurchase
-    ? "/courses/landing-page-begins/payment"
-    : "/payment";
+    ? "/payment?product=landing-page-begins"
+    : "/payment?product=premium";
 
   if (!["premium", "landing-page-begins"].includes(productType)) {
     fail("ประเภทการชำระเงินไม่ถูกต้อง", returnPath);
@@ -107,7 +108,7 @@ export async function uploadSlipAction(formData: FormData) {
 
   redirect(
     isLandingPagePurchase
-      ? "/courses/landing-page-begins/payment?uploaded=1"
+      ? "/payment?product=landing-page-begins&uploaded=1"
       : "/dashboard?payment=uploaded"
   );
 }

@@ -284,7 +284,7 @@ export function LessonCard({
   const actionHref = unlocked
     ? `/lessons/${lesson.slug}`
     : lesson.purchaseCourseSlug
-      ? `/courses/${lesson.purchaseCourseSlug}/payment`
+      ? `/payment?product=${lesson.purchaseCourseSlug}`
       : "/payment";
   const actionLabel = unlocked
     ? "เริ่มเรียน"

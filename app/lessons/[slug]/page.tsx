@@ -57,7 +57,7 @@ export default async function LessonDetailPage({
     : lesson.id;
   const isSeparateCourseLesson = Boolean(lesson.purchaseCourseSlug);
   const lockedActionHref = isSeparateCourseLesson
-    ? `/courses/${lesson.purchaseCourseSlug}/payment`
+    ? `/payment?product=${lesson.purchaseCourseSlug}`
     : "/payment";
 
   if (!unlocked) {

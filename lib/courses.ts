@@ -323,7 +323,7 @@ export const separateCourses: Course[] = [
     subtitle: "สร้างเว็บหน้าเดียวสำหรับร้านค้า บริการ และ Portfolio",
     description:
       "เรียนรู้การสร้าง Landing Page สำหรับร้านค้า ธุรกิจเล็ก และคนที่อยากโปรโมทบริการ ตั้งแต่การวางโครงหน้าเว็บ ทำ Hero Section ปุ่มติดต่อ Responsive Design ไปจนถึง Deploy ขึ้นออนไลน์ เพื่อใช้เป็นผลงานใน Portfolio และต่อยอดเป็นทักษะรับงานเสริมในอนาคต",
-    level: "คอร์สแยก",
+    level: "Landing",
     status: "available",
     separatePurchase: {
       productType: "landing-page-begins",

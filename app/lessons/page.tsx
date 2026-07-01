@@ -93,7 +93,7 @@ export default async function LessonsPage() {
                   : `/courses/${course.slug}`
                 : isLockedForUser
                   ? course.separatePurchase
-                    ? `/courses/${course.slug}/payment`
+                    ? `/payment?product=${course.slug}`
                     : "/payment"
                   : `/courses/${course.slug}`;
 

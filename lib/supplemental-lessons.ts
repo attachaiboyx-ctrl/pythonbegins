@@ -26,7 +26,7 @@ function makeLesson(input: CompactLesson): Lesson {
     subtitle: input.subtitle,
     minutes: 35,
     free: false,
-    badge: input.purchaseCourseSlug ? "คอร์สแยก" : "Premium",
+    badge: input.purchaseCourseSlug ? "Landing" : "Premium",
     accent: input.accent || "bg-brand-600",
     purchaseCourseSlug: input.purchaseCourseSlug,
     objectives: [

@@ -15,8 +15,10 @@ import {
 import {
   reviewSlipAction,
   sendNotificationAction,
+  setLandingAccessAction,
   setMembershipAction
 } from "@/app/actions/admin";
+import { SpecialCourseBadge } from "@/components/SpecialCourseBadge";
 import { StatusBadge } from "@/components/StatusBadge";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/session";
@@ -180,7 +182,11 @@ export default async function AdminPage({
         email: true,
         membership: true,
         role: true,
-        createdAt: true
+        createdAt: true,
+        courseAccesses: {
+          where: { courseSlug: "landing-page-begins" },
+          select: { courseSlug: true }
+        }
       }
     }),
     prisma.paymentSlip.count({ where: { status: "pending" } }),
@@ -212,6 +218,12 @@ export default async function AdminPage({
   const adminUsers = users.filter((user) => user.role === "admin");
   const premiumMembers = customerUsers.filter((user) => user.membership === "paid");
   const freeMembers = customerUsers.filter((user) => user.membership !== "paid");
+  const landingMembers = customerUsers.filter(
+    (user) => user.courseAccesses.length > 0
+  );
+  const premiumAndLandingMembers = landingMembers.filter(
+    (user) => user.membership === "paid"
+  );
   const memberCounts: Record<MemberFilter, number> = {
     all: customerUsers.length,
     premium: premiumMembers.length,
@@ -289,7 +301,7 @@ export default async function AdminPage({
           </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <div className="rounded-lg border border-blue-100 bg-gradient-to-br from-white to-brand-50 p-5 shadow-sm">
             <div className="flex items-center justify-between gap-3">
               <div className="rounded-lg bg-brand-100 p-3 text-brand-700">
@@ -333,6 +345,24 @@ export default async function AdminPage({
               {memberCounts.free.toLocaleString("th-TH")}
             </div>
             <div className="mt-1 text-sm font-black text-slate-600">สมาชิก Free</div>
+          </div>
+
+          <div className="rounded-lg border border-cyan-100 bg-gradient-to-br from-white to-cyan-50 p-5 shadow-sm">
+            <div className="flex items-center justify-between gap-3">
+              <div className="rounded-lg bg-cyan-100 p-3 text-cyan-700">
+                <CheckCircle2 className="h-6 w-6" />
+              </div>
+              <SpecialCourseBadge />
+            </div>
+            <div className="mt-5 text-4xl font-black text-ink">
+              {landingMembers.length.toLocaleString("th-TH")}
+            </div>
+            <div className="mt-1 text-sm font-black text-slate-600">
+              มีสิทธิ์ Landing
+              {premiumAndLandingMembers.length > 0
+                ? ` • Premium + Landing ${premiumAndLandingMembers.length.toLocaleString("th-TH")}`
+                : ""}
+            </div>
           </div>
         </div>
       </section>
@@ -598,12 +628,13 @@ export default async function AdminPage({
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[860px] border-separate border-spacing-y-2 text-left text-sm">
+          <table className="w-full min-w-[1040px] border-separate border-spacing-y-2 text-left text-sm">
             <thead>
               <tr className="text-slate-500">
                 <th className="px-3 py-2">ชื่อ</th>
                 <th className="px-3 py-2">อีเมล</th>
                 <th className="px-3 py-2">สถานะสมาชิก</th>
+                <th className="px-3 py-2">สิทธิ์ Landing</th>
                 <th className="px-3 py-2">วันที่สมัคร</th>
                 <th className="px-3 py-2">ปรับสถานะ</th>
               </tr>
@@ -613,7 +644,7 @@ export default async function AdminPage({
                 <tr className="bg-slate-50">
                   <td
                     className="rounded-lg px-3 py-6 text-center font-bold text-slate-500"
-                    colSpan={5}
+                    colSpan={6}
                   >
                     ยังไม่มีสมาชิกในแท็บนี้
                   </td>
@@ -626,11 +657,34 @@ export default async function AdminPage({
                   </td>
                   <td className="px-3 py-3 font-bold text-slate-600">{user.email}</td>
                   <td className="px-3 py-3">
-                    <StatusBadge
-                      compact
-                      membership={user.membership}
-                      role={user.role}
-                    />
+                    <div className="flex flex-wrap items-center gap-2">
+                      <StatusBadge
+                        compact
+                        membership={user.membership}
+                        role={user.role}
+                      />
+                      {user.courseAccesses.length > 0 ? <SpecialCourseBadge /> : null}
+                    </div>
+                  </td>
+                  <td className="px-3 py-3">
+                    <form action={setLandingAccessAction}>
+                      <input name="userId" type="hidden" value={user.id} />
+                      <input
+                        name="access"
+                        type="hidden"
+                        value={user.courseAccesses.length > 0 ? "revoke" : "grant"}
+                      />
+                      <button
+                        className={user.courseAccesses.length > 0
+                          ? "rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-black text-red-700 transition hover:bg-red-100"
+                          : "rounded-lg border border-cyan-200 bg-cyan-50 px-3 py-2 text-xs font-black text-cyan-800 transition hover:bg-cyan-100"}
+                        type="submit"
+                      >
+                        {user.courseAccesses.length > 0
+                          ? "ปลดสิทธิ์ Landing"
+                          : "ให้สิทธิ์ Landing"}
+                      </button>
+                    </form>
                   </td>
                   <td className="px-3 py-3 font-bold text-slate-600">
                     {formatThaiDate(user.createdAt)}

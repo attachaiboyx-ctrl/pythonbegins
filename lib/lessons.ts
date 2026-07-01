@@ -3599,6 +3599,6 @@ export function getLessonStatusLabel(
   }
 
   return lesson.purchaseCourseSlug
-    ? "คอร์สแยก"
+    ? "Landing"
     : "สำหรับสมาชิกพรีเมียม";
 }

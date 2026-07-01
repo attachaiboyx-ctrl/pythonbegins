@@ -12,6 +12,7 @@ import { createGatewayPaymentAction } from "@/app/actions/gateway-payment";
 import { uploadSlipAction } from "@/app/actions/payment";
 import { GatewayPaymentCard } from "@/components/GatewayPaymentCard";
 import { PaymentSlipForm } from "@/components/PaymentSlipForm";
+import { SpecialCourseBadge } from "@/components/SpecialCourseBadge";
 import { getPaymentSettings } from "@/lib/promptpay";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
@@ -43,6 +44,31 @@ function gatewayStatusClass(status: string) {
   return "border-amber-200 bg-amber-50 text-amber-700";
 }
 
+const LANDING_PAGE_PRICE = 200;
+const premiumCourseNames = [
+  "Python มือใหม่",
+  "JavaScript มือใหม่",
+  "HTML พื้นฐาน",
+  "CSS พื้นฐาน",
+  "Git & GitHub",
+  "React เบื้องต้น",
+  "Next.js เบื้องต้น",
+  "SQL / Database",
+  "โปรเจกต์ทำเว็บจริง"
+];
+
+type ProductType = "premium" | "landing-page-begins";
+
+function getSelectedProduct(product?: string): ProductType {
+  return product === "landing-page-begins" ? product : "premium";
+}
+
+function slipProductText(productType: string) {
+  return productType === "landing-page-begins"
+    ? "Landing Page Begins"
+    : "Premium";
+}
+
 export default async function PaymentPage({
   searchParams
 }: {
@@ -51,11 +77,14 @@ export default async function PaymentPage({
     gateway?: string;
     gatewayError?: string;
     gatewayMessage?: string;
+    product?: string;
+    uploaded?: string;
   }>;
 }) {
   const query = await searchParams;
   const user = await requireUser();
   const settings = getPaymentSettings();
+  const selectedProduct = getSelectedProduct(query.product);
   const [slips, gatewayTransactions] = await Promise.all([
     prisma.paymentSlip.findMany({
       where: { userId: user.id },
@@ -69,6 +98,17 @@ export default async function PaymentPage({
     })
   ]);
   const isPaid = user.membership === "paid" || user.role === "admin";
+  const ownsLanding =
+    user.role === "admin" ||
+    user.courseAccesses.some(
+      (access) => access.courseSlug === "landing-page-begins"
+    );
+  const isLandingSelected = selectedProduct === "landing-page-begins";
+  const selectedPrice = isLandingSelected ? LANDING_PAGE_PRICE : settings.price;
+  const selectedProductTitle = isLandingSelected
+    ? "Landing Page Begins"
+    : "Premium";
+  const isSelectedOwned = isLandingSelected ? ownsLanding : isPaid;
   const selectedGatewayTransaction =
     gatewayTransactions.find((transaction) => transaction.id === query.gateway) ||
     gatewayTransactions.find((transaction) => transaction.status === "pending") ||
@@ -84,27 +124,103 @@ export default async function PaymentPage({
               Secure checkout
             </p>
             <h1 className="mt-3 text-4xl font-black tracking-tight sm:text-5xl">
-              อัปเกรดเป็นพรีเมียม
+              เลือกสินค้าและชำระเงิน
             </h1>
             <p className="mt-4 max-w-3xl leading-7 text-blue-50">
-              เลือกชำระอัตโนมัติผ่าน Opn Payments หรือโอน PromptPay และอัปโหลดสลิปเป็นช่องทางสำรอง
+              เลือก Premium สำหรับคอร์สหลัก 9 คอร์ส หรือซื้อ Landing Page Begins แยก แล้วชำระผ่าน PromptPay ตามยอดของสินค้าที่เลือก
             </p>
           </div>
           <div className="rounded-lg bg-white p-5 text-ink">
-            <div className="text-sm font-black text-brand-700">ราคาเต็มคอร์ส</div>
+            <div className="text-sm font-black text-brand-700">รายการที่เลือก</div>
+            <div className="mt-1 text-lg font-black">{selectedProductTitle}</div>
             <div className="mt-2 text-4xl font-black">
-              {settings.price.toLocaleString("th-TH")} บาท
+              {selectedPrice.toLocaleString("th-TH")} บาท
             </div>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              เรียนบทที่ 1-20 พร้อมแบบฝึกหัด แบบทดสอบ และโปรเจกต์จริง
+              {isLandingSelected
+                ? "คอร์ส Landing Page แยก ไม่รวมใน Premium"
+                : "ปลดล็อกคอร์สหลัก 9 คอร์ส รวม 82 บทเรียน"}
             </p>
           </div>
         </div>
       </section>
 
-      {isPaid ? (
+      <section className="panel p-6 sm:p-7">
+        <div>
+          <p className="eyebrow">Choose product</p>
+          <h2 className="mt-3 text-2xl font-black text-ink">เลือกสินค้าที่ต้องการชำระ</h2>
+          <p className="mt-2 text-sm font-bold leading-6 text-slate-500">
+            QR และฟอร์มสลิปด้านล่างจะเปลี่ยนยอดเงินตามรายการที่เลือก
+          </p>
+        </div>
+
+        <div className="mt-5 grid gap-4 lg:grid-cols-2">
+          <Link
+            className={`rounded-lg border-2 p-5 transition ${
+              !isLandingSelected
+                ? "border-brand-500 bg-gradient-to-br from-brand-50 to-lavender-50 shadow-lg shadow-blue-600/10"
+                : "border-slate-200 bg-white hover:border-brand-200"
+            }`}
+            href="/payment?product=premium"
+          >
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <div className="text-xl font-black text-ink">Premium</div>
+                <div className="mt-1 text-3xl font-black text-brand-700">399 บาท</div>
+              </div>
+              <span className="rounded-full bg-gradient-to-r from-brand-600 to-lavender-600 px-3 py-1 text-xs font-black text-white">
+                {!isLandingSelected ? "เลือกอยู่" : isPaid ? "มีสิทธิ์แล้ว" : "เลือก"}
+              </span>
+            </div>
+            <p className="mt-3 font-bold text-slate-700">
+              ปลดล็อกคอร์สหลัก 9 คอร์สใน Python Begins
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {premiumCourseNames.map((courseName) => (
+                <span key={courseName} className="rounded-full bg-white px-3 py-1 text-xs font-bold text-slate-600 shadow-sm">
+                  {courseName}
+                </span>
+              ))}
+            </div>
+          </Link>
+
+          <Link
+            className={`rounded-lg border-2 p-5 transition ${
+              isLandingSelected
+                ? "border-cyan-500 bg-gradient-to-br from-cyan-50 to-blue-50 shadow-lg shadow-cyan-600/10"
+                : "border-slate-200 bg-white hover:border-cyan-200"
+            }`}
+            href="/payment?product=landing-page-begins"
+          >
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <SpecialCourseBadge />
+                <div className="mt-3 text-xl font-black text-ink">Landing Page Begins</div>
+                <div className="mt-1 text-3xl font-black text-cyan-700">200 บาท</div>
+              </div>
+              <span className="rounded-full bg-cyan-700 px-3 py-1 text-xs font-black text-white">
+                {isLandingSelected ? "เลือกอยู่" : ownsLanding ? "มีสิทธิ์แล้ว" : "เลือก"}
+              </span>
+            </div>
+            <p className="mt-3 font-bold text-slate-700">
+              คอร์ส Landing Page แยก สำหรับสร้างผลงานเว็บหน้าเดียว
+            </p>
+            <p className="mt-3 text-sm font-black text-cyan-800">ไม่รวมใน Premium</p>
+          </Link>
+        </div>
+      </section>
+
+      {isSelectedOwned ? (
         <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-bold text-emerald-800">
-          บัญชีนี้เป็นพรีเมียมแล้ว เรียนได้ครบทุกบท
+          {isLandingSelected
+            ? "บัญชีนี้มีสิทธิ์ Landing Page Begins แล้ว สามารถเริ่มเรียนได้ทันที"
+            : "บัญชีนี้เป็น Premium แล้ว เรียนคอร์สหลักได้ครบทุกบท"}
+        </div>
+      ) : null}
+
+      {query.uploaded ? (
+        <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-bold text-emerald-800">
+          ส่งสลิปสำหรับ {selectedProductTitle} แล้ว กรุณารอแอดมินตรวจสอบ
         </div>
       ) : null}
 
@@ -126,13 +242,13 @@ export default async function PaymentPage({
         </div>
       ) : null}
 
-      {!isPaid ? (
+      {!isSelectedOwned ? (
         <div className="py-2 text-center">
           <div className="flex items-center gap-4">
             <div className="h-px flex-1 bg-slate-200" />
             <div className="flex items-center gap-2 text-sm font-black text-slate-600">
               <Landmark className="h-4 w-4 shrink-0" />
-              ชำระด้วยการโอนผ่าน PromptPay และอัปโหลดสลิป
+              ชำระ {selectedProductTitle} ด้วย PromptPay และอัปโหลดสลิป
             </div>
             <div className="h-px flex-1 bg-slate-200" />
           </div>
@@ -142,7 +258,7 @@ export default async function PaymentPage({
         </div>
       ) : null}
 
-      {!isPaid ? (
+      {!isSelectedOwned ? (
         <section className="grid gap-6 lg:grid-cols-[0.82fr_1.18fr]">
           <div className="panel p-6">
             <div className="mb-5 flex items-center gap-3">
@@ -160,7 +276,7 @@ export default async function PaymentPage({
                 alt="PromptPay QR"
                 className="mx-auto h-auto w-full max-w-xs rounded-lg"
                 height={420}
-                src={`/api/promptpay-qr?amount=${settings.price}`}
+                src={`/api/promptpay-qr?amount=${selectedPrice}`}
                 unoptimized
                 width={420}
               />
@@ -169,7 +285,7 @@ export default async function PaymentPage({
             <div className="mt-5 space-y-2 text-sm font-bold text-slate-700">
               <div className="flex justify-between gap-4 rounded-lg bg-slate-50 px-4 py-3">
                 <span>ยอดชำระ</span>
-                <span>{settings.price.toLocaleString("th-TH")} บาท</span>
+                <span>{selectedPrice.toLocaleString("th-TH")} บาท</span>
               </div>
               <div className="flex justify-between gap-4 rounded-lg bg-slate-50 px-4 py-3">
                 <span>PromptPay</span>
@@ -190,7 +306,7 @@ export default async function PaymentPage({
               <div>
                 <p className="eyebrow">Upload slip</p>
                 <h2 className="mt-2 text-2xl font-black text-ink">
-                  ส่งหลักฐานให้แอดมินตรวจ
+                  อัปโหลดสลิปสำหรับ {selectedProductTitle} {selectedPrice.toLocaleString("th-TH")} บาท
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-slate-600">
                   รองรับ PNG, JPG, WEBP หรือ PDF ขนาดไม่เกิน 1MB
@@ -216,14 +332,15 @@ export default async function PaymentPage({
 
             <PaymentSlipForm
               action={uploadSlipAction}
-              amount={settings.price}
-              isPaid={isPaid}
+              amount={selectedPrice}
+              isPaid={isSelectedOwned}
+              productType={selectedProduct}
             />
           </div>
         </section>
       ) : null}
 
-      {!isPaid ? (
+      {!isLandingSelected && !isPaid ? (
         <div className="py-2 text-center">
           <div className="flex items-center gap-4">
             <div className="h-px flex-1 bg-slate-200" />
@@ -239,15 +356,17 @@ export default async function PaymentPage({
         </div>
       ) : null}
 
-      <GatewayPaymentCard
-        key={`${selectedGatewayTransaction?.id || "new"}-${selectedGatewayTransaction?.status || "idle"}-${isPaid}`}
-        action={createGatewayPaymentAction}
-        isPaid={isPaid}
-        price={settings.price}
-        transaction={selectedGatewayTransaction}
-      />
+      {!isLandingSelected ? (
+        <GatewayPaymentCard
+          key={`${selectedGatewayTransaction?.id || "new"}-${selectedGatewayTransaction?.status || "idle"}-${isPaid}`}
+          action={createGatewayPaymentAction}
+          isPaid={isPaid}
+          price={settings.price}
+          transaction={selectedGatewayTransaction}
+        />
+      ) : null}
 
-      <section className="panel p-6">
+      {!isLandingSelected ? <section className="panel p-6">
         <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>
             <p className="eyebrow">Gateway history</p>
@@ -280,7 +399,7 @@ export default async function PaymentPage({
             ))
           )}
         </div>
-      </section>
+      </section> : null}
 
       <section className="panel p-6">
         <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
@@ -304,7 +423,9 @@ export default async function PaymentPage({
                 key={slip.id}
                 className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700"
               >
-                <span>{slip.amount.toLocaleString("th-TH")} บาท</span>
+                <span>
+                  {slipProductText(slip.productType)} • {slip.amount.toLocaleString("th-TH")} บาท
+                </span>
                 <span className={`rounded-full border px-3 py-1 text-xs font-black ${statusClass(slip.status)}`}>
                   {statusText(slip.status)}
                 </span>

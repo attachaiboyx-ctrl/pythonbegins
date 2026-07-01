@@ -26,7 +26,7 @@ function normalizeNotificationLink(value: string) {
 }
 
 export async function reviewSlipAction(formData: FormData) {
-  await requireAdmin();
+  const admin = await requireAdmin();
 
   const slipId = String(formData.get("slipId") || "");
   const status = String(formData.get("status") || "");
@@ -62,11 +62,11 @@ export async function reviewSlipAction(formData: FormData) {
             courseSlug: "landing-page-begins"
           }
         },
-        update: { grantedBy: "admin" },
+        update: { grantedBy: admin.id },
         create: {
           userId: slip.userId,
           courseSlug: "landing-page-begins",
-          grantedBy: "admin"
+          grantedBy: admin.id
         }
       });
     } else {
@@ -84,6 +84,54 @@ export async function reviewSlipAction(formData: FormData) {
           ? "อนุมัติสลิปและปลดล็อก Landing Page Begins แล้ว"
           : "อนุมัติสลิปและปลดล็อกพรีเมียมแล้ว"
         : "ปฏิเสธสลิปแล้ว"
+    )}`
+  );
+}
+
+export async function setLandingAccessAction(formData: FormData) {
+  const admin = await requireAdmin();
+  const userId = String(formData.get("userId") || "");
+  const access = String(formData.get("access") || "");
+
+  if (!userId || !["grant", "revoke"].includes(access)) {
+    adminFail("ข้อมูลสิทธิ์ Landing ไม่ถูกต้อง");
+  }
+
+  const targetUser = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true }
+  });
+
+  if (!targetUser || targetUser.role === "admin") {
+    adminFail("ไม่พบบัญชีผู้เรียนที่ต้องการจัดการ");
+  }
+
+  if (access === "grant") {
+    await prisma.userCourseAccess.upsert({
+      where: {
+        userId_courseSlug: {
+          userId,
+          courseSlug: "landing-page-begins"
+        }
+      },
+      update: { grantedBy: admin.id },
+      create: {
+        userId,
+        courseSlug: "landing-page-begins",
+        grantedBy: admin.id
+      }
+    });
+  } else {
+    await prisma.userCourseAccess.deleteMany({
+      where: { userId, courseSlug: "landing-page-begins" }
+    });
+  }
+
+  redirect(
+    `/admin?message=${encodeURIComponent(
+      access === "grant"
+        ? "ให้สิทธิ์ Landing เรียบร้อย"
+        : "ปลดสิทธิ์ Landing เรียบร้อย"
     )}`
   );
 }

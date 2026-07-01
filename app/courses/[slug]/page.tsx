@@ -71,7 +71,7 @@ export default async function CourseDetailPage({
     : hasCourseAccess && firstLesson
       ? `/lessons/${firstLesson.slug}`
       : course.separatePurchase
-        ? `/courses/${course.slug}/payment`
+        ? `/payment?product=${course.slug}`
         : "/payment";
   const primaryLabel = !user
     ? course.premiumOnly || course.separatePurchase
@@ -187,7 +187,7 @@ export default async function CourseDetailPage({
                 เมื่อแอดมินอนุมัติสลิป ระบบจะปลดล็อกเฉพาะคอร์สนี้
               </p>
             </div>
-            <Link className="btn-primary" href={`/courses/${course.slug}/payment`}>
+            <Link className="btn-primary" href={`/payment?product=${course.slug}`}>
               ซื้อคอร์สนี้ {course.separatePurchase.price} บาท
             </Link>
           </div>
