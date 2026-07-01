@@ -17,6 +17,7 @@ import {
 } from "@/components/PaymentProductSelector";
 import { PaymentSlipForm } from "@/components/PaymentSlipForm";
 import { getPaymentSettings } from "@/lib/promptpay";
+import { MANUAL_PREMIUM_PRICE_THB } from "@/lib/manual-payment-config";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 
@@ -94,7 +95,9 @@ export default async function PaymentPage({
       (access) => access.courseSlug === "landing-page-begins"
     );
   const isLandingSelected = selectedProduct === "landing-page-begins";
-  const selectedPrice = isLandingSelected ? LANDING_PAGE_PRICE : settings.price;
+  const selectedPrice = isLandingSelected
+    ? LANDING_PAGE_PRICE
+    : MANUAL_PREMIUM_PRICE_THB;
   const selectedProductTitle = isLandingSelected
     ? "Landing Page Begins"
     : "Premium";
@@ -138,7 +141,7 @@ export default async function PaymentPage({
       <PaymentProductSelector
         isPremium={isPaid}
         ownsLanding={ownsLanding}
-        premiumPrice={settings.price}
+        premiumPrice={MANUAL_PREMIUM_PRICE_THB}
         selectedProduct={selectedProduct}
       />
 

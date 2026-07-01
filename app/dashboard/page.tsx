@@ -18,6 +18,7 @@ import {
 import { SpecialCourseBadge } from "@/components/SpecialCourseBadge";
 import { StatusBadge } from "@/components/StatusBadge";
 import { premiumCourses, separateCourses, type Course } from "@/lib/courses";
+import { MANUAL_PREMIUM_PRICE_THB } from "@/lib/manual-payment-config";
 import { canAccessLesson } from "@/lib/lessons";
 import { prisma } from "@/lib/prisma";
 import { requireUser, type CurrentUser } from "@/lib/session";
@@ -206,7 +207,7 @@ export default async function DashboardPage({
 
             {!hasPremiumAccess ? (
               <Link className="mt-7 inline-flex items-center justify-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-black text-brand-800 shadow-lg transition hover:-translate-y-0.5 hover:bg-blue-50" href="/payment?product=premium">
-                ดู Premium 399 บาท <ArrowRight className="h-4 w-4" />
+                ดู Premium {MANUAL_PREMIUM_PRICE_THB} บาท <ArrowRight className="h-4 w-4" />
               </Link>
             ) : null}
           </div>

@@ -87,6 +87,9 @@ export function PaymentProductSelector({
           <p className="mt-3 font-bold text-slate-700">
             ปลดล็อกคอร์สหลัก 9 คอร์สใน Python Begins
           </p>
+          <p className="mt-2 text-sm font-bold text-brand-700">
+            ปรับราคาใหม่ให้เข้าถึงง่ายขึ้น
+          </p>
           <div className="mt-4 flex flex-wrap gap-2">
             {premiumCourseNames.map((courseName) => (
               <span key={courseName} className="rounded-full bg-white px-3 py-1 text-xs font-bold text-slate-600 shadow-sm">

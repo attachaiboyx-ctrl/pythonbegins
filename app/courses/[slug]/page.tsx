@@ -15,6 +15,7 @@ import { LessonCard } from "@/components/LessonCard";
 import { PremiumUpgradeCard } from "@/components/PremiumUpgradeCard";
 import { SpecialCourseBadge } from "@/components/SpecialCourseBadge";
 import { courseCatalog, getCourseBySlug, type Course } from "@/lib/courses";
+import { MANUAL_PREMIUM_PRICE_THB } from "@/lib/manual-payment-config";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 
@@ -183,7 +184,7 @@ export default async function CourseDetailPage({
                 ซื้อ Landing Page Begins แยกจาก Premium
               </h2>
               <p className="mt-2 max-w-2xl leading-7 text-slate-600">
-                คอร์สนี้ราคา {course.separatePurchase.price} บาท ไม่รวมใน Premium 399 บาท
+                คอร์สนี้ราคา {course.separatePurchase.price} บาท ไม่รวมใน Premium {MANUAL_PREMIUM_PRICE_THB} บาท
                 เมื่อแอดมินอนุมัติสลิป ระบบจะปลดล็อกเฉพาะคอร์สนี้
               </p>
             </div>

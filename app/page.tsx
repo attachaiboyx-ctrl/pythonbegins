@@ -13,6 +13,7 @@ import {
 import { CourseLogoPanel } from "@/components/CourseLogoPanel";
 import { SpecialCourseBadge } from "@/components/SpecialCourseBadge";
 import { premiumCourses, separateCourses } from "@/lib/courses";
+import { MANUAL_PREMIUM_PRICE_THB } from "@/lib/manual-payment-config";
 
 const premiumBenefits = [
   "บทเรียนภาษาไทย เข้าใจง่าย",
@@ -60,7 +61,7 @@ export default function HomePage() {
                 ดูหลักสูตรทั้งหมด <ArrowRight className="h-4 w-4" />
               </Link>
               <Link className="inline-flex items-center justify-center rounded-lg border border-white/30 bg-white/10 px-6 py-4 text-sm font-black text-white backdrop-blur transition hover:bg-white/20" href="/payment">
-                ดู Premium 399 บาท
+                ดู Premium {MANUAL_PREMIUM_PRICE_THB} บาท
               </Link>
             </div>
             <div className="mt-10 grid max-w-2xl grid-cols-3 gap-3">
@@ -130,10 +131,12 @@ export default function HomePage() {
                 <p className="inline-flex items-center gap-2 rounded-full bg-amber-300/15 px-4 py-2 text-sm font-black text-amber-200">
                   <Crown className="h-4 w-4" /> Premium access
                 </p>
-                <h2 className="mt-5 text-3xl font-black sm:text-4xl">Premium 399 บาท</h2>
+                <h2 className="mt-5 text-3xl font-black sm:text-4xl">
+                  Premium {MANUAL_PREMIUM_PRICE_THB} บาท
+                </h2>
                 <p className="mt-4 max-w-3xl leading-7 text-blue-100">
                   ปลดล็อกคอร์สหลัก {premiumCourses.length} คอร์สใน Python Begins รวม {premiumLessonCount} บทเรียน
-                  สำหรับผู้เริ่มต้นที่อยากเรียนเขียนโปรแกรมและต่อยอดสู่การทำเว็บจริง
+                  สำหรับผู้เริ่มต้นที่อยากเรียนเขียนโปรแกรมและต่อยอดสู่การทำเว็บจริง ปรับราคาใหม่ให้เข้าถึงง่ายขึ้น
                 </p>
                 <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {premiumBenefits.map((benefit) => (
@@ -147,7 +150,9 @@ export default function HomePage() {
               <div className="rounded-lg bg-white p-6 text-slate-950">
                 <GraduationCap className="h-8 w-8 text-brand-700" />
                 <div className="mt-4 text-sm font-black text-brand-700">คอร์สหลัก Premium</div>
-                <div className="mt-1 text-4xl font-black">399 บาท</div>
+                <div className="mt-1 text-4xl font-black">
+                  {MANUAL_PREMIUM_PRICE_THB} บาท
+                </div>
                 <p className="mt-3 text-sm font-bold leading-6 text-slate-600">
                   Landing Page Begins เป็นคอร์สแยกและไม่รวมในแพ็กเกจนี้
                 </p>

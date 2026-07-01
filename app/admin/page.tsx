@@ -21,6 +21,7 @@ import {
 import { SpecialCourseBadge } from "@/components/SpecialCourseBadge";
 import { StatusBadge } from "@/components/StatusBadge";
 import { prisma } from "@/lib/prisma";
+import { MANUAL_PREMIUM_PRICE_THB } from "@/lib/manual-payment-config";
 import { requireAdmin } from "@/lib/session";
 
 const slipFilters = [
@@ -93,7 +94,7 @@ function slipStatusText(status: string) {
 function slipProductText(productType: string) {
   return productType === "landing-page-begins"
     ? "Landing Page Begins 200 บาท"
-    : "Premium 399 บาท";
+    : `Premium ${MANUAL_PREMIUM_PRICE_THB} บาท`;
 }
 
 function isPdfSlipUrl(imageUrl: string) {
@@ -769,7 +770,7 @@ export default async function AdminPage({
                 name="title"
                 required
                 type="text"
-                defaultValue="Premium 399 บาท ปลดล็อกคอร์สหลักทั้งหมดใน Python Begins"
+                defaultValue={`Premium ${MANUAL_PREMIUM_PRICE_THB} บาท ปลดล็อกคอร์สหลักทั้งหมดใน Python Begins`}
               />
             </label>
 
@@ -780,7 +781,7 @@ export default async function AdminPage({
                 maxLength={800}
                 name="message"
                 required
-                defaultValue="หลังหมดโปรจะปรับเป็น 399 บาท และจะเพิ่มคอร์ส HTML, CSS, Git, React, Next.js, SQL และโปรเจกต์ทำเว็บจริง"
+                defaultValue="ปรับราคาใหม่ให้เข้าถึงง่ายขึ้น เหมาะสำหรับผู้เริ่มต้นที่อยากเรียนเขียนโปรแกรมแบบเป็นขั้นตอน"
               />
             </label>
 

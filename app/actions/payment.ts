@@ -2,7 +2,7 @@
 
 import { put } from "@vercel/blob";
 import { redirect } from "next/navigation";
-import { getPaymentSettings } from "@/lib/promptpay";
+import { MANUAL_PREMIUM_PRICE_THB } from "@/lib/manual-payment-config";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 
@@ -53,7 +53,7 @@ export async function uploadSlipAction(formData: FormData) {
 
   const amount = isLandingPagePurchase
     ? LANDING_PAGE_PRICE
-    : getPaymentSettings().price;
+    : MANUAL_PREMIUM_PRICE_THB;
 
   if (!fileValue || typeof fileValue === "string") {
     fail("กรุณาเลือกไฟล์สลิปก่อนส่ง", returnPath);

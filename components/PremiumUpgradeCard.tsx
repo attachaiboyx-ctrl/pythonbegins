@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, HelpCircle, ShieldCheck, Sparkles } from "lucide-react";
 import { StatusBadge } from "@/components/StatusBadge";
+import { MANUAL_PREMIUM_PRICE_THB } from "@/lib/manual-payment-config";
 
 type PremiumUpgradeCardProps = {
   compact?: boolean;
@@ -39,7 +40,7 @@ export function PremiumUpgradeCard({
               <StatusBadge membership="paid" role="student" />
               <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-black text-amber-100 backdrop-blur">
                 <Sparkles className="h-3.5 w-3.5" />
-                Premium 399 บาท
+                Premium {MANUAL_PREMIUM_PRICE_THB} บาท
               </span>
             </div>
 
@@ -47,7 +48,7 @@ export function PremiumUpgradeCard({
               ปลดล็อก Premium เพื่อเรียน {courseTitle} ได้ครบทุกบท
             </h2>
             <p className="mt-4 max-w-3xl leading-7 text-blue-50">
-              เหมาะสำหรับผู้เรียนที่อยากไปต่อจากพื้นฐานให้ครบคอร์ส พร้อมตัวอย่าง โจทย์ฝึก และแบบทดสอบที่ช่วยเช็กความเข้าใจทีละบท
+              ปรับราคาใหม่ให้เข้าถึงง่ายขึ้น เหมาะสำหรับผู้เรียนที่อยากไปต่อจากพื้นฐานให้ครบคอร์ส พร้อมตัวอย่าง โจทย์ฝึก และแบบทดสอบที่ช่วยเช็กความเข้าใจทีละบท
             </p>
           </div>
 
