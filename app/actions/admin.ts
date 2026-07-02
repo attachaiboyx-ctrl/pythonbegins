@@ -1,6 +1,11 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import {
+  isManualPaymentProductType,
+  manualPaymentProducts,
+  PREMIUM_PRODUCT_TYPE
+} from "@/lib/manual-payment-config";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/session";
 
@@ -54,22 +59,25 @@ export async function reviewSlipAction(formData: FormData) {
   });
 
   if (status === "approved") {
-    if (slip.productType === "landing-page-begins") {
+    if (
+      isManualPaymentProductType(slip.productType) &&
+      slip.productType !== PREMIUM_PRODUCT_TYPE
+    ) {
       await prisma.userCourseAccess.upsert({
         where: {
           userId_courseSlug: {
             userId: slip.userId,
-            courseSlug: "landing-page-begins"
+            courseSlug: slip.productType
           }
         },
         update: { grantedBy: admin.id },
         create: {
           userId: slip.userId,
-          courseSlug: "landing-page-begins",
+          courseSlug: slip.productType,
           grantedBy: admin.id
         }
       });
-    } else {
+    } else if (slip.productType === PREMIUM_PRODUCT_TYPE) {
       await prisma.user.update({
         where: { id: slip.userId },
         data: { membership: "paid" }
@@ -80,8 +88,9 @@ export async function reviewSlipAction(formData: FormData) {
   redirect(
     `/admin?message=${encodeURIComponent(
       status === "approved"
-        ? slip.productType === "landing-page-begins"
-          ? "อนุมัติสลิปและปลดล็อก Landing Page Begins แล้ว"
+        ? isManualPaymentProductType(slip.productType) &&
+          slip.productType !== PREMIUM_PRODUCT_TYPE
+          ? `อนุมัติสลิปและปลดล็อก ${manualPaymentProducts[slip.productType].title} แล้ว`
           : "อนุมัติสลิปและปลดล็อกพรีเมียมแล้ว"
         : "ปฏิเสธสลิปแล้ว"
     )}`

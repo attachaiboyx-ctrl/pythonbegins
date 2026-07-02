@@ -115,7 +115,10 @@ export default async function CourseDetailPage({
             ) : null}
             {course.separatePurchase ? (
               <div className="mt-4 flex flex-wrap items-center gap-2">
-                <SpecialCourseBadge />
+                <SpecialCourseBadge
+                  label={course.slug === "web-app-begins" ? "NEW • คอร์สแยก" : "Landing"}
+                  tone={course.slug === "web-app-begins" ? "blue" : "cyan"}
+                />
                 <span className="text-sm font-black text-cyan-800">
                   ไม่รวมใน Premium • ซื้อแยก {course.separatePurchase.price} บาท
                 </span>
@@ -179,9 +182,12 @@ export default async function CourseDetailPage({
         <section className="panel overflow-hidden border-cyan-200">
           <div className="grid gap-5 bg-gradient-to-r from-cyan-50 via-white to-blue-50 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
-              <SpecialCourseBadge />
+              <SpecialCourseBadge
+                label={course.slug === "web-app-begins" ? "NEW • คอร์สแยก" : "Landing"}
+                tone={course.slug === "web-app-begins" ? "blue" : "cyan"}
+              />
               <h2 className="mt-4 text-2xl font-black text-ink">
-                ซื้อ Landing Page Begins แยกจาก Premium
+                ซื้อ {course.title} แยกจาก Premium
               </h2>
               <p className="mt-2 max-w-2xl leading-7 text-slate-600">
                 คอร์สนี้ราคา {course.separatePurchase.price} บาท ไม่รวมใน Premium {MANUAL_PREMIUM_PRICE_THB} บาท

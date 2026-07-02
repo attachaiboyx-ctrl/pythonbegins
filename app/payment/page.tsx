@@ -17,7 +17,12 @@ import {
 } from "@/components/PaymentProductSelector";
 import { PaymentSlipForm } from "@/components/PaymentSlipForm";
 import { getPaymentSettings } from "@/lib/promptpay";
-import { MANUAL_PREMIUM_PRICE_THB } from "@/lib/manual-payment-config";
+import {
+  isManualPaymentProductType,
+  manualPaymentProducts,
+  MANUAL_PREMIUM_PRICE_THB,
+  WEB_APP_BEGINS_PRODUCT_TYPE
+} from "@/lib/manual-payment-config";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 
@@ -48,15 +53,15 @@ function gatewayStatusClass(status: string) {
   return "border-amber-200 bg-amber-50 text-amber-700";
 }
 
-const LANDING_PAGE_PRICE = 200;
-
 function getSelectedProduct(product?: string): PaymentProductType {
-  return product === "landing-page-begins" ? product : "premium";
+  return product && isManualPaymentProductType(product)
+    ? product
+    : WEB_APP_BEGINS_PRODUCT_TYPE;
 }
 
 function slipProductText(productType: string) {
-  return productType === "landing-page-begins"
-    ? "Landing Page Begins"
+  return isManualPaymentProductType(productType)
+    ? manualPaymentProducts[productType].title
     : "Premium";
 }
 
@@ -94,14 +99,22 @@ export default async function PaymentPage({
     user.courseAccesses.some(
       (access) => access.courseSlug === "landing-page-begins"
     );
+  const ownsWebApp =
+    user.role === "admin" ||
+    user.courseAccesses.some(
+      (access) => access.courseSlug === WEB_APP_BEGINS_PRODUCT_TYPE
+    );
   const isLandingSelected = selectedProduct === "landing-page-begins";
-  const selectedPrice = isLandingSelected
-    ? LANDING_PAGE_PRICE
-    : MANUAL_PREMIUM_PRICE_THB;
-  const selectedProductTitle = isLandingSelected
-    ? "Landing Page Begins"
-    : "Premium";
-  const isSelectedOwned = isLandingSelected ? ownsLanding : isPaid;
+  const isWebAppSelected = selectedProduct === WEB_APP_BEGINS_PRODUCT_TYPE;
+  const isPremiumSelected = selectedProduct === "premium";
+  const selectedProductConfig = manualPaymentProducts[selectedProduct];
+  const selectedPrice = selectedProductConfig.price;
+  const selectedProductTitle = selectedProductConfig.title;
+  const isSelectedOwned = isWebAppSelected
+    ? ownsWebApp
+    : isLandingSelected
+      ? ownsLanding
+      : isPaid;
   const selectedGatewayTransaction =
     gatewayTransactions.find((transaction) => transaction.id === query.gateway) ||
     gatewayTransactions.find((transaction) => transaction.status === "pending") ||
@@ -120,7 +133,7 @@ export default async function PaymentPage({
               เลือกสินค้าและชำระเงิน
             </h1>
             <p className="mt-4 max-w-3xl leading-7 text-blue-50">
-              เลือก Premium สำหรับคอร์สหลัก 9 คอร์ส หรือซื้อ Landing Page Begins แยก แล้วชำระผ่าน PromptPay ตามยอดของสินค้าที่เลือก
+              เลือก Web App Begins, Premium หรือ Landing Page Begins แล้วชำระผ่าน PromptPay ตามยอดของสินค้าที่เลือก
             </p>
           </div>
           <div className="rounded-lg bg-white p-5 text-ink">
@@ -130,9 +143,9 @@ export default async function PaymentPage({
               {selectedPrice.toLocaleString("th-TH")} บาท
             </div>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              {isLandingSelected
-                ? "คอร์ส Landing Page แยก ไม่รวมใน Premium"
-                : "ปลดล็อกคอร์สหลัก 9 คอร์ส รวม 82 บทเรียน"}
+              {isPremiumSelected
+                ? "ปลดล็อกคอร์สหลัก 9 คอร์ส รวม 82 บทเรียน"
+                : `คอร์ส ${selectedProductTitle} แยก ไม่รวมใน Premium`}
             </p>
           </div>
         </div>
@@ -141,15 +154,16 @@ export default async function PaymentPage({
       <PaymentProductSelector
         isPremium={isPaid}
         ownsLanding={ownsLanding}
+        ownsWebApp={ownsWebApp}
         premiumPrice={MANUAL_PREMIUM_PRICE_THB}
         selectedProduct={selectedProduct}
       />
 
       {isSelectedOwned ? (
         <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-bold text-emerald-800">
-          {isLandingSelected
-            ? "บัญชีนี้มีสิทธิ์ Landing Page Begins แล้ว สามารถเริ่มเรียนได้ทันที"
-            : "บัญชีนี้เป็น Premium แล้ว เรียนคอร์สหลักได้ครบทุกบท"}
+          {isPremiumSelected
+            ? "บัญชีนี้เป็น Premium แล้ว เรียนคอร์สหลักได้ครบทุกบท"
+            : `บัญชีนี้มีสิทธิ์ ${selectedProductTitle} แล้ว สามารถเริ่มเรียนได้ทันที`}
         </div>
       ) : null}
 
@@ -279,7 +293,7 @@ export default async function PaymentPage({
         </section>
       ) : null}
 
-      {!isLandingSelected && !isPaid ? (
+      {isPremiumSelected && !isPaid ? (
         <div className="py-2 text-center">
           <div className="flex items-center gap-4">
             <div className="h-px flex-1 bg-slate-200" />
@@ -295,7 +309,7 @@ export default async function PaymentPage({
         </div>
       ) : null}
 
-      {!isLandingSelected ? (
+      {isPremiumSelected ? (
         <GatewayPaymentCard
           key={`${selectedGatewayTransaction?.id || "new"}-${selectedGatewayTransaction?.status || "idle"}-${isPaid}`}
           action={createGatewayPaymentAction}
@@ -305,7 +319,7 @@ export default async function PaymentPage({
         />
       ) : null}
 
-      {!isLandingSelected ? <section className="panel p-6">
+      {isPremiumSelected ? <section className="panel p-6">
         <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>
             <p className="eyebrow">Gateway history</p>

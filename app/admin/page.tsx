@@ -21,7 +21,12 @@ import {
 import { SpecialCourseBadge } from "@/components/SpecialCourseBadge";
 import { StatusBadge } from "@/components/StatusBadge";
 import { prisma } from "@/lib/prisma";
-import { MANUAL_PREMIUM_PRICE_THB } from "@/lib/manual-payment-config";
+import {
+  isManualPaymentProductType,
+  manualPaymentProducts,
+  MANUAL_PREMIUM_PRICE_THB,
+  PREMIUM_PRODUCT_TYPE
+} from "@/lib/manual-payment-config";
 import { requireAdmin } from "@/lib/session";
 
 const slipFilters = [
@@ -92,9 +97,23 @@ function slipStatusText(status: string) {
 }
 
 function slipProductText(productType: string) {
-  return productType === "landing-page-begins"
-    ? "Landing Page Begins 200 บาท"
-    : `Premium ${MANUAL_PREMIUM_PRICE_THB} บาท`;
+  if (isManualPaymentProductType(productType)) {
+    const product = manualPaymentProducts[productType];
+    return `${product.title} ${product.price.toLocaleString("th-TH")} บาท`;
+  }
+
+  return `Premium ${MANUAL_PREMIUM_PRICE_THB} บาท`;
+}
+
+function approveButtonText(productType: string) {
+  if (
+    isManualPaymentProductType(productType) &&
+    productType !== PREMIUM_PRODUCT_TYPE
+  ) {
+    return `อนุมัติ ${manualPaymentProducts[productType].title}`;
+  }
+
+  return "อนุมัติพรีเมียม";
 }
 
 function isPdfSlipUrl(imageUrl: string) {
@@ -561,9 +580,7 @@ export default async function AdminPage({
                               value="approved"
                             >
                               <CheckCircle2 className="h-4 w-4" />
-                              {slip.productType === "landing-page-begins"
-                                ? "อนุมัติคอร์ส Landing Page"
-                                : "อนุมัติพรีเมียม"}
+                              {approveButtonText(slip.productType)}
                             </button>
                             <button
                               className="btn-secondary"

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { LockKeyhole } from "lucide-react";
+import { AppWindow, Code2, LockKeyhole } from "lucide-react";
 import type { Course } from "@/lib/courses";
 
 type CourseLogoPanelProps = {
@@ -189,6 +189,19 @@ function ProjectLogo() {
 
 function CourseMark({ course }: { course: Course }) {
   switch (course.slug) {
+    case "web-app-begins":
+      return (
+        <div className="text-center text-slate-950">
+          <div className="mx-auto flex items-center justify-center gap-3 text-blue-700">
+            <AppWindow className="h-14 w-14" strokeWidth={1.8} />
+            <Code2 className="h-12 w-12 text-cyan-500" strokeWidth={1.8} />
+          </div>
+          <div className="mt-4 text-4xl font-black tracking-tight">WEB APP</div>
+          <div className="mt-1 text-sm font-black uppercase tracking-[0.2em] text-blue-700">
+            Begins
+          </div>
+        </div>
+      );
     case "python-beginner":
       return course.logoImage ? (
         <Image

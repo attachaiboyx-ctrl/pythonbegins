@@ -30,6 +30,10 @@ import {
 import type { LucideIcon } from "lucide-react";
 import type { Lesson } from "@/lib/lessons";
 import { canAccessLesson, getLessonStatusLabel } from "@/lib/lessons";
+import {
+  isManualPaymentProductType,
+  manualPaymentProducts
+} from "@/lib/manual-payment-config";
 import type { CurrentUser } from "@/lib/session";
 
 type LessonProgress = {
@@ -281,6 +285,11 @@ export function LessonCard({
 }) {
   const unlocked = canAccessLesson(user, lesson);
   const statusLabel = getLessonStatusLabel(user, lesson);
+  const separateProduct =
+    lesson.purchaseCourseSlug &&
+    isManualPaymentProductType(lesson.purchaseCourseSlug)
+      ? manualPaymentProducts[lesson.purchaseCourseSlug]
+      : null;
   const actionHref = unlocked
     ? `/lessons/${lesson.slug}`
     : lesson.purchaseCourseSlug
@@ -289,7 +298,7 @@ export function LessonCard({
   const actionLabel = unlocked
     ? "เริ่มเรียน"
     : lesson.purchaseCourseSlug
-      ? "ซื้อคอร์สนี้ 200 บาท"
+      ? `ซื้อคอร์สนี้ ${separateProduct?.price ?? ""} บาท`
       : "อัปเกรดเป็น Premium";
   const coverTheme = getLessonCoverTheme(lesson.id);
   const CoverIcon = coverTheme.icon;

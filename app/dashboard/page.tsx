@@ -17,13 +17,18 @@ import {
 } from "lucide-react";
 import { SpecialCourseBadge } from "@/components/SpecialCourseBadge";
 import { StatusBadge } from "@/components/StatusBadge";
-import { premiumCourses, separateCourses, type Course } from "@/lib/courses";
-import { MANUAL_PREMIUM_PRICE_THB } from "@/lib/manual-payment-config";
+import { courseCatalog, type Course } from "@/lib/courses";
+import {
+  isManualPaymentProductType,
+  manualPaymentProducts,
+  MANUAL_PREMIUM_PRICE_THB,
+  WEB_APP_BEGINS_PRODUCT_TYPE
+} from "@/lib/manual-payment-config";
 import { canAccessLesson } from "@/lib/lessons";
 import { prisma } from "@/lib/prisma";
 import { requireUser, type CurrentUser } from "@/lib/session";
 
-const dashboardCourses = [...premiumCourses, ...separateCourses];
+const dashboardCourses = courseCatalog;
 
 function slipStatusText(status: string) {
   if (status === "approved") return "อนุมัติแล้ว";
@@ -32,8 +37,8 @@ function slipStatusText(status: string) {
 }
 
 function slipProductText(productType: string) {
-  return productType === "landing-page-begins"
-    ? "Landing Page Begins"
+  return isManualPaymentProductType(productType)
+    ? manualPaymentProducts[productType].title
     : "Premium";
 }
 
@@ -64,8 +69,8 @@ function getCourseAccess(course: Course, user: CurrentUser) {
 
   if (course.separatePurchase) {
     return {
-      href: "/payment?product=landing-page-begins",
-      label: "ซื้อคอร์ส 200 บาท",
+      href: `/payment?product=${course.separatePurchase.productType}`,
+      label: `ซื้อคอร์ส ${course.separatePurchase.price.toLocaleString("th-TH")} บาท`,
       status: "ล็อก",
       statusClass: "border-cyan-200 bg-cyan-50 text-cyan-800"
     };
@@ -104,6 +109,11 @@ export default async function DashboardPage({
     isAdmin ||
     user.courseAccesses.some(
       (access) => access.courseSlug === "landing-page-begins"
+    );
+  const hasWebAppAccess =
+    isAdmin ||
+    user.courseAccesses.some(
+      (access) => access.courseSlug === WEB_APP_BEGINS_PRODUCT_TYPE
     );
   const allLessons = dashboardCourses.flatMap((course) => course.lessons);
   const allLessonIds = new Set(allLessons.map((lesson) => lesson.id));
@@ -197,6 +207,9 @@ export default async function DashboardPage({
 
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <StatusBadge membership={user.membership} role={user.role} />
+              {hasWebAppAccess && !isAdmin ? (
+                <SpecialCourseBadge label="Web App" tone="blue" />
+              ) : null}
               {hasLandingAccess && !isAdmin ? <SpecialCourseBadge /> : null}
               {isAdmin ? (
                 <span className="inline-flex items-center gap-2 rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1 text-xs font-black text-cyan-100">
@@ -284,6 +297,7 @@ export default async function DashboardPage({
         <MembershipCard
           hasLandingAccess={hasLandingAccess}
           hasPremiumAccess={hasPremiumAccess}
+          hasWebAppAccess={hasWebAppAccess}
           isAdmin={isAdmin}
           latestSlip={latestSlip}
         />
@@ -316,6 +330,7 @@ export default async function DashboardPage({
       <AccountCard
         hasLandingAccess={hasLandingAccess}
         hasPremiumAccess={hasPremiumAccess}
+        hasWebAppAccess={hasWebAppAccess}
         user={user}
       />
     </div>
@@ -346,7 +361,10 @@ function DashboardCourseCard({
         <div className="flex items-start justify-between gap-3">
           <span className="text-2xl font-black">{course.iconLabel || "Course"}</span>
           {course.separatePurchase ? (
-            <SpecialCourseBadge />
+            <SpecialCourseBadge
+              label={course.slug === WEB_APP_BEGINS_PRODUCT_TYPE ? "NEW • Web App" : "Landing"}
+              tone={course.slug === WEB_APP_BEGINS_PRODUCT_TYPE ? "blue" : "cyan"}
+            />
           ) : (
             <span className="rounded-full border border-white/20 bg-white/15 px-3 py-1 text-xs font-black backdrop-blur">
               Premium
@@ -390,11 +408,13 @@ function DashboardCourseCard({
 function MembershipCard({
   hasLandingAccess,
   hasPremiumAccess,
+  hasWebAppAccess,
   isAdmin,
   latestSlip
 }: {
   hasLandingAccess: boolean;
   hasPremiumAccess: boolean;
+  hasWebAppAccess: boolean;
   isAdmin: boolean;
   latestSlip?: {
     productType: string;
@@ -429,6 +449,11 @@ function MembershipCard({
             มีสิทธิ์ Landing Page Begins
           </div>
         ) : null}
+        {hasWebAppAccess && !isAdmin ? (
+          <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm font-bold leading-6 text-blue-950">
+            มีสิทธิ์ Web App Begins
+          </div>
+        ) : null}
         {!hasPremiumAccess && latestSlip ? (
           <div className="rounded-lg bg-slate-50 p-4 text-sm font-bold leading-6 text-slate-700">
             สลิปล่าสุดสำหรับ {slipProductText(latestSlip.productType)}: {slipStatusText(latestSlip.status)}
@@ -442,13 +467,16 @@ function MembershipCard({
       </div>
 
       <div className="mt-5 flex flex-col gap-3 sm:flex-row lg:flex-col">
+        {!hasWebAppAccess && !isAdmin ? (
+          <Link className="btn-primary w-full" href="/payment?product=web-app-begins">ดู Web App Begins</Link>
+        ) : null}
         {!hasPremiumAccess ? (
           <Link className="btn-primary w-full" href="/payment?product=premium">ดูแพ็กเกจ Premium</Link>
         ) : null}
         {!hasLandingAccess && !isAdmin ? (
           <Link className="btn-secondary w-full" href="/payment?product=landing-page-begins">ดู Landing Page Begins</Link>
         ) : null}
-        {hasPremiumAccess && (hasLandingAccess || isAdmin) ? (
+        {hasPremiumAccess && (hasLandingAccess || hasWebAppAccess || isAdmin) ? (
           <Link className="btn-secondary w-full" href="/lessons">ไปหน้าหลักสูตร</Link>
         ) : null}
       </div>
@@ -459,10 +487,12 @@ function MembershipCard({
 function AccountCard({
   hasLandingAccess,
   hasPremiumAccess,
+  hasWebAppAccess,
   user
 }: {
   hasLandingAccess: boolean;
   hasPremiumAccess: boolean;
+  hasWebAppAccess: boolean;
   user: CurrentUser;
 }) {
   return (
@@ -492,13 +522,11 @@ function AccountCard({
             <div className="mt-2 font-black text-ink">
               {user.role === "admin"
                 ? "ทุกคอร์ส"
-                : hasPremiumAccess && hasLandingAccess
-                  ? "Premium + Landing"
-                  : hasLandingAccess
-                    ? "Landing"
-                    : hasPremiumAccess
-                      ? "Premium"
-                      : "บทเรียนฟรี"}
+                : [
+                    hasWebAppAccess ? "Web App" : null,
+                    hasPremiumAccess ? "Premium" : null,
+                    hasLandingAccess ? "Landing" : null
+                  ].filter(Boolean).join(" + ") || "บทเรียนฟรี"}
             </div>
           </div>
         </div>

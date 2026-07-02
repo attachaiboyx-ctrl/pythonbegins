@@ -11,6 +11,7 @@ import {
 import { submitQuizAction } from "@/app/actions/progress";
 import { PremiumUpgradeCard } from "@/components/PremiumUpgradeCard";
 import { LessonDiagram } from "@/components/LessonDiagram";
+import { LessonStepCard } from "@/components/LessonStepCard";
 import { SpecialCourseBadge } from "@/components/SpecialCourseBadge";
 import { getCourseByLessonSlug } from "@/lib/courses";
 import { allLessons, canAccessLesson, getLessonBySlug, lessons } from "@/lib/lessons";
@@ -55,7 +56,17 @@ export default async function LessonDetailPage({
   const lessonNumber = course
     ? course.lessons.findIndex((courseLesson) => courseLesson.id === lesson.id) + 1
     : lesson.id;
+  const courseLessonIndex = course
+    ? course.lessons.findIndex((courseLesson) => courseLesson.id === lesson.id)
+    : -1;
+  const nextLesson =
+    course && courseLessonIndex >= 0
+      ? course.lessons[courseLessonIndex + 1]
+      : null;
   const isSeparateCourseLesson = Boolean(lesson.purchaseCourseSlug);
+  const separateCourseTitle = course?.title || "คอร์สแยก";
+  const separateCoursePrice = course?.separatePurchase?.price;
+  const isWebAppCourse = course?.slug === "web-app-begins";
   const lockedActionHref = isSeparateCourseLesson
     ? `/payment?product=${lesson.purchaseCourseSlug}`
     : "/payment";
@@ -67,7 +78,10 @@ export default async function LessonDetailPage({
           <div className="grid gap-8 bg-gradient-to-br from-brand-50 via-white to-lavender-50 p-6 sm:p-8 lg:grid-cols-[1fr_0.7fr]">
             <div>
               {isSeparateCourseLesson ? (
-                <SpecialCourseBadge />
+                <SpecialCourseBadge
+                  label={isWebAppCourse ? "NEW • คอร์สแยก" : "Landing"}
+                  tone={isWebAppCourse ? "blue" : "cyan"}
+                />
               ) : (
                 <p className="eyebrow">Premium lesson</p>
               )}
@@ -76,13 +90,13 @@ export default async function LessonDetailPage({
               </h1>
               <p className="mt-4 max-w-2xl leading-7 text-slate-600">
                 {isSeparateCourseLesson
-                  ? "บทนี้อยู่ใน Landing Page Begins ซึ่งเป็นคอร์สซื้อแยก 200 บาทและไม่รวมใน Premium เมื่อแอดมินอนุมัติสลิปแล้ว คุณจะเข้าเรียนทั้ง 10 บทของคอร์สนี้ได้"
+                  ? `บทนี้อยู่ใน ${separateCourseTitle} ซึ่งเป็นคอร์สซื้อแยก ${separateCoursePrice ?? ""} บาทและไม่รวมใน Premium เมื่อแอดมินอนุมัติสลิปแล้ว คุณจะเข้าเรียนทุกบทในคอร์สนี้ได้`
                   : `บทนี้เป็นบทเรียน Premium สำหรับผู้ที่ต้องการเรียนต่อให้ครบทั้งคอร์ส บัญชี Free เรียนได้เฉพาะบทฟรี ส่วน Premium จะปลดล็อกบทที่ 1-${courseLessonCount} พร้อมแบบฝึกหัดและแบบทดสอบทุกบท`}
               </p>
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
                 <Link className="btn-primary" href={lockedActionHref}>
                   {isSeparateCourseLesson
-                    ? "ซื้อคอร์สนี้ 200 บาท"
+                    ? `ซื้อคอร์สนี้ ${separateCoursePrice ?? ""} บาท`
                     : "อัปเกรดเป็น Premium"}
                 </Link>
                 <Link className="btn-secondary" href={courseHref}>
@@ -93,9 +107,13 @@ export default async function LessonDetailPage({
             </div>
 
             {isSeparateCourseLesson ? (
-              <div className="rounded-lg border border-cyan-200 bg-white p-6 shadow-sm">
-                <p className="text-sm font-black text-cyan-700">LANDING PAGE BEGINS</p>
-                <p className="mt-3 text-4xl font-black text-slate-950">200 บาท</p>
+              <div className={`rounded-lg border bg-white p-6 shadow-sm ${isWebAppCourse ? "border-blue-200" : "border-cyan-200"}`}>
+                <p className={`text-sm font-black ${isWebAppCourse ? "text-blue-700" : "text-cyan-700"}`}>
+                  {separateCourseTitle.toUpperCase()}
+                </p>
+                <p className="mt-3 text-4xl font-black text-slate-950">
+                  {separateCoursePrice?.toLocaleString("th-TH")} บาท
+                </p>
                 <p className="mt-3 text-sm font-bold leading-6 text-slate-600">
                   ซื้อครั้งเดียวเพื่อปลดล็อกคอร์สนี้โดยเฉพาะ สถานะ Premium เดิมของบัญชีจะไม่เปลี่ยน
                 </p>
@@ -165,6 +183,43 @@ export default async function LessonDetailPage({
             </article>
           ))}
 
+          {lesson.steps?.length ? (
+            <section className="space-y-5">
+              <div className="px-1">
+                <p className="eyebrow">Step-by-step lesson</p>
+                <h2 className="mt-3 text-3xl font-black text-ink">
+                  ลงมือทำทีละขั้น
+                </h2>
+                <p className="mt-3 max-w-3xl leading-7 text-slate-600">
+                  ทำตามลำดับและเช็ก Checklist ของแต่ละขั้นก่อนเลื่อนไปขั้นถัดไป
+                  พื้นที่ภาพเตรียม path ไว้แล้วและสามารถแทนด้วยภาพจริงภายหลังได้ทันที
+                </p>
+              </div>
+              {lesson.steps.map((step, index) => (
+                <LessonStepCard
+                  key={`${lesson.slug}-${step.stepTitle}`}
+                  number={index + 1}
+                  step={step}
+                />
+              ))}
+            </section>
+          ) : null}
+
+          {lesson.summary?.length ? (
+            <article className="panel border-cyan-200 bg-gradient-to-br from-cyan-50 via-white to-blue-50 p-6 sm:p-8">
+              <p className="eyebrow">Lesson summary</p>
+              <h2 className="mt-3 text-2xl font-black text-ink">สรุปท้ายบท</h2>
+              <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+                {lesson.summary.map((item) => (
+                  <li key={item} className="flex items-start gap-3 rounded-lg bg-white px-4 py-3 text-sm font-bold leading-6 text-slate-700 shadow-sm">
+                    <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-cyan-700" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ) : null}
+
           <article className="panel p-6 sm:p-8">
             <p className="eyebrow">Practice</p>
             <h2 className="mt-3 text-2xl font-black text-ink">
@@ -211,6 +266,11 @@ export default async function LessonDetailPage({
               <Link className="btn-secondary" href="/dashboard">
                 ไป Dashboard
               </Link>
+              {nextLesson && canAccessLesson(user, nextLesson) ? (
+                <Link className="btn-primary" href={`/lessons/${nextLesson.slug}`}>
+                  บทถัดไป
+                </Link>
+              ) : null}
             </div>
           </div>
         </aside>

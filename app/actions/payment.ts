@@ -2,7 +2,11 @@
 
 import { put } from "@vercel/blob";
 import { redirect } from "next/navigation";
-import { MANUAL_PREMIUM_PRICE_THB } from "@/lib/manual-payment-config";
+import {
+  isManualPaymentProductType,
+  manualPaymentProducts,
+  PREMIUM_PRODUCT_TYPE
+} from "@/lib/manual-payment-config";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 
@@ -14,8 +18,6 @@ const ALLOWED_TYPES = new Map([
   ["image/webp", "webp"],
   ["application/pdf", "pdf"]
 ]);
-
-const LANDING_PAGE_PRICE = 200;
 
 function fail(message: string, returnPath = "/payment"): never {
   const separator = returnPath.includes("?") ? "&" : "?";
@@ -41,19 +43,16 @@ export async function uploadSlipAction(formData: FormData) {
   const user = await requireUser();
   const fileValue = formData.get("slip");
   const note = String(formData.get("note") || "").trim();
-  const productType = String(formData.get("productType") || "premium");
-  const isLandingPagePurchase = productType === "landing-page-begins";
-  const returnPath = isLandingPagePurchase
-    ? "/payment?product=landing-page-begins"
-    : "/payment?product=premium";
+  const productType = String(
+    formData.get("productType") || PREMIUM_PRODUCT_TYPE
+  );
+  const returnPath = `/payment?product=${encodeURIComponent(productType)}`;
 
-  if (!["premium", "landing-page-begins"].includes(productType)) {
-    fail("ประเภทการชำระเงินไม่ถูกต้อง", returnPath);
+  if (!isManualPaymentProductType(productType)) {
+    fail("ประเภทการชำระเงินไม่ถูกต้อง", "/payment");
   }
 
-  const amount = isLandingPagePurchase
-    ? LANDING_PAGE_PRICE
-    : MANUAL_PREMIUM_PRICE_THB;
+  const amount = manualPaymentProducts[productType].price;
 
   if (!fileValue || typeof fileValue === "string") {
     fail("กรุณาเลือกไฟล์สลิปก่อนส่ง", returnPath);
@@ -107,8 +106,8 @@ export async function uploadSlipAction(formData: FormData) {
   });
 
   redirect(
-    isLandingPagePurchase
-      ? "/payment?product=landing-page-begins&uploaded=1"
+    productType !== PREMIUM_PRODUCT_TYPE
+      ? `/payment?product=${productType}&uploaded=1`
       : "/dashboard?payment=uploaded"
   );
 }

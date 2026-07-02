@@ -18,6 +18,13 @@ import {
   reactSupplementalLessons,
   sqlSupplementalLessons
 } from "@/lib/supplemental-lessons";
+import {
+  LANDING_PAGE_BEGINS_PRICE_THB,
+  LANDING_PAGE_BEGINS_PRODUCT_TYPE,
+  WEB_APP_BEGINS_PRICE_THB,
+  WEB_APP_BEGINS_PRODUCT_TYPE
+} from "@/lib/manual-payment-config";
+import { webAppLessons } from "@/lib/web-app-lessons";
 
 export type Course = {
   slug: string;
@@ -312,13 +319,27 @@ export const upcomingCourses: Course[] = [
   }
 ];
 
-export const courseCatalog: Course[] = [...courses, ...upcomingCourses];
-
 export const premiumCourses: Course[] = [...courses, ...upcomingCourses];
 
-export const separateCourses: Course[] = [
-  {
-    slug: "landing-page-begins",
+export const webAppCourse: Course = {
+  slug: WEB_APP_BEGINS_PRODUCT_TYPE,
+  title: "Web App Begins",
+  subtitle: "สร้างเว็บแอปจริงตั้งแต่ศูนย์ พร้อมภาพอธิบายทุกขั้นตอน",
+  description:
+    "สร้างเว็บแอปจริงตั้งแต่ศูนย์ ด้วย HTML, CSS, JavaScript, TypeScript, React, Next.js, Database และ Deploy ขึ้นออนไลน์ เรียนแบบ step-by-step พร้อมพื้นที่ภาพอธิบาย โค้ด Checklist และแบบฝึกหัดทุกบท",
+  level: "New course",
+  status: "available",
+  separatePurchase: {
+    productType: WEB_APP_BEGINS_PRODUCT_TYPE,
+    price: WEB_APP_BEGINS_PRICE_THB
+  },
+  lessons: webAppLessons,
+  accent: "from-cyan-400 via-blue-600 to-slate-950",
+  iconLabel: "WEB"
+};
+
+export const landingPageCourse: Course = {
+    slug: LANDING_PAGE_BEGINS_PRODUCT_TYPE,
     title: "Landing Page Begins",
     subtitle: "สร้างเว็บหน้าเดียวสำหรับร้านค้า บริการ และ Portfolio",
     description:
@@ -326,16 +347,21 @@ export const separateCourses: Course[] = [
     level: "Landing",
     status: "available",
     separatePurchase: {
-      productType: "landing-page-begins",
-      price: 200
+      productType: LANDING_PAGE_BEGINS_PRODUCT_TYPE,
+      price: LANDING_PAGE_BEGINS_PRICE_THB
     },
     lessons: numberedLandingPageLessons,
     accent: "from-cyan-500 via-blue-600 to-slate-950",
     iconLabel: "LP"
-  }
-];
+};
 
-courseCatalog.push(...separateCourses);
+export const separateCourses: Course[] = [webAppCourse, landingPageCourse];
+
+export const courseCatalog: Course[] = [
+  webAppCourse,
+  ...premiumCourses,
+  landingPageCourse
+];
 
 export const futureCourses = upcomingCourses.map((course) => course.title);
 

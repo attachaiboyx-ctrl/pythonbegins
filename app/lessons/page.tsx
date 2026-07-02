@@ -40,7 +40,7 @@ export default async function LessonsPage() {
             </h1>
             <p className="mt-4 max-w-3xl text-lg leading-8 text-slate-600">
               เลือกเส้นทางเรียนที่เหมาะกับเป้าหมายของคุณ ทั้ง Python, JavaScript
-              และคอร์สสายทำเว็บที่กำลังจะเปิด เรียงจากพื้นฐานไปสู่โปรเจกต์จริง
+              และคอร์สสายทำเว็บที่เปิดให้เรียนแล้ว เรียงจากพื้นฐานไปสู่โปรเจกต์จริง
             </p>
           </div>
 
@@ -106,7 +106,10 @@ export default async function LessonsPage() {
                     <div>
                       {course.separatePurchase ? (
                         <div className="mb-5">
-                          <SpecialCourseBadge />
+                          <SpecialCourseBadge
+                            label={course.slug === "web-app-begins" ? "NEW • แนะนำ" : "Landing"}
+                            tone={course.slug === "web-app-begins" ? "blue" : "cyan"}
+                          />
                         </div>
                       ) : (
                         <div

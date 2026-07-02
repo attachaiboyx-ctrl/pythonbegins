@@ -2,10 +2,15 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { LoaderCircle } from "lucide-react";
+import { AppWindow, LoaderCircle } from "lucide-react";
 import { SpecialCourseBadge } from "@/components/SpecialCourseBadge";
+import {
+  LANDING_PAGE_BEGINS_PRICE_THB,
+  type ManualPaymentProductType,
+  WEB_APP_BEGINS_PRICE_THB
+} from "@/lib/manual-payment-config";
 
-export type PaymentProductType = "premium" | "landing-page-begins";
+export type PaymentProductType = ManualPaymentProductType;
 
 const premiumCourseNames = [
   "Python มือใหม่",
@@ -21,6 +26,7 @@ const premiumCourseNames = [
 
 type PaymentProductSelectorProps = {
   ownsLanding: boolean;
+  ownsWebApp: boolean;
   premiumPrice: number;
   isPremium: boolean;
   selectedProduct: PaymentProductType;
@@ -28,6 +34,7 @@ type PaymentProductSelectorProps = {
 
 export function PaymentProductSelector({
   ownsLanding,
+  ownsWebApp,
   premiumPrice,
   isPremium,
   selectedProduct
@@ -47,9 +54,12 @@ export function PaymentProductSelector({
     });
   }
 
-  const loadingText = pendingProduct === "landing-page-begins"
-    ? "กำลังเตรียมข้อมูล Landing Page Begins..."
-    : "กำลังเตรียมข้อมูล Premium...";
+  const loadingText =
+    pendingProduct === "web-app-begins"
+      ? "กำลังเตรียมข้อมูล Web App Begins..."
+      : pendingProduct === "landing-page-begins"
+        ? "กำลังเตรียมข้อมูล Landing Page Begins..."
+        : "กำลังเตรียมข้อมูล Premium...";
 
   return (
     <section className="panel relative overflow-hidden p-6 sm:p-7" aria-busy={isPending}>
@@ -61,7 +71,48 @@ export function PaymentProductSelector({
         </p>
       </div>
 
-      <div className="mt-5 grid gap-4 lg:grid-cols-2">
+      <div className="mt-5 grid gap-4 lg:grid-cols-3">
+        <button
+          aria-pressed={selectedProduct === "web-app-begins"}
+          className={`relative rounded-lg border-2 p-5 text-left transition disabled:cursor-wait ${
+            selectedProduct === "web-app-begins"
+              ? "border-blue-500 bg-gradient-to-br from-cyan-50 via-white to-blue-50 shadow-lg shadow-blue-600/10"
+              : "border-slate-200 bg-white hover:border-blue-300"
+          } ${isPending ? "opacity-70" : ""}`}
+          disabled={isPending}
+          onClick={() => selectProduct("web-app-begins")}
+          type="button"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <SpecialCourseBadge label="NEW • แนะนำ" tone="blue" />
+              <div className="mt-3 flex items-center gap-2 text-xl font-black text-ink">
+                <AppWindow className="h-5 w-5 text-blue-700" />
+                Web App Begins
+              </div>
+              <div className="mt-1 text-3xl font-black text-blue-700">
+                {WEB_APP_BEGINS_PRICE_THB.toLocaleString("th-TH")} บาท
+              </div>
+            </div>
+            <span className="rounded-full bg-blue-700 px-3 py-1 text-xs font-black text-white">
+              {selectedProduct === "web-app-begins"
+                ? "เลือกอยู่"
+                : ownsWebApp
+                  ? "มีสิทธิ์แล้ว"
+                  : "เลือก"}
+            </span>
+          </div>
+          <p className="mt-3 font-bold leading-6 text-slate-700">
+            สร้างเว็บแอปจริงแบบ step-by-step พร้อมภาพอธิบายทุกขั้นตอน
+          </p>
+          <p className="mt-3 text-sm font-black text-blue-800">
+            คอร์สแยก • ไม่รวมใน Premium
+          </p>
+          {isPending && pendingProduct === "web-app-begins" ? (
+            <LoadingOverlay text={loadingText} tone="web-app" />
+          ) : null}
+        </button>
+
         <button
           aria-pressed={selectedProduct === "premium"}
           className={`relative rounded-lg border-2 p-5 text-left transition disabled:cursor-wait ${
@@ -117,7 +168,9 @@ export function PaymentProductSelector({
             <div>
               <SpecialCourseBadge />
               <div className="mt-3 text-xl font-black text-ink">Landing Page Begins</div>
-              <div className="mt-1 text-3xl font-black text-cyan-700">200 บาท</div>
+              <div className="mt-1 text-3xl font-black text-cyan-700">
+                {LANDING_PAGE_BEGINS_PRICE_THB.toLocaleString("th-TH")} บาท
+              </div>
             </div>
             <span className="rounded-full bg-cyan-700 px-3 py-1 text-xs font-black text-white">
               {selectedProduct === "landing-page-begins" ? "เลือกอยู่" : ownsLanding ? "มีสิทธิ์แล้ว" : "เลือก"}
@@ -145,11 +198,14 @@ function LoadingOverlay({
   tone
 }: {
   text: string;
-  tone: "premium" | "landing";
+  tone: "premium" | "landing" | "web-app";
 }) {
-  const toneClass = tone === "landing"
-    ? "border-cyan-200 bg-cyan-50/95 text-cyan-900"
-    : "border-brand-200 bg-brand-50/95 text-brand-900";
+  const toneClass =
+    tone === "web-app"
+      ? "border-blue-200 bg-blue-50/95 text-blue-950"
+      : tone === "landing"
+        ? "border-cyan-200 bg-cyan-50/95 text-cyan-900"
+        : "border-brand-200 bg-brand-50/95 text-brand-900";
 
   return (
     <span className={`absolute inset-2 z-10 flex items-center justify-center rounded-lg border backdrop-blur-sm ${toneClass}`}>

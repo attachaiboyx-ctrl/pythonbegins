@@ -4,6 +4,7 @@ import {
   landingPageLessons,
   supplementalPremiumLessons
 } from "@/lib/supplemental-lessons";
+import { webAppLessons } from "@/lib/web-app-lessons";
 
 export type QuizQuestion = {
   question: string;
@@ -35,6 +36,18 @@ export type LessonDiagramType =
   | "project-sitemap"
   | "project-user-flow";
 
+export type LessonStep = {
+  stepTitle: string;
+  stepDescription: string;
+  imagePath: string;
+  imageAlt: string;
+  imageReady?: boolean;
+  code?: string;
+  codeExplanation?: string;
+  note?: string;
+  checklist?: string[];
+};
+
 export type Lesson = {
   id: number;
   slug: string;
@@ -46,6 +59,8 @@ export type Lesson = {
   accent: string;
   order?: number;
   purchaseCourseSlug?: string;
+  steps?: LessonStep[];
+  summary?: string[];
   objectives: string[];
   sections: {
     heading: string;
@@ -3559,7 +3574,8 @@ export const allLessons: Lesson[] = [
     (lesson) => !retiredDraftLessonSlugs.has(lesson.slug)
   ),
   ...supplementalPremiumLessons,
-  ...landingPageLessons
+  ...landingPageLessons,
+  ...webAppLessons
 ];
 
 export function getLessonBySlug(slug: string) {
@@ -3598,7 +3614,9 @@ export function getLessonStatusLabel(
     return lesson.free ? "ฟรี" : "ปลดล็อกแล้ว";
   }
 
-  return lesson.purchaseCourseSlug
-    ? "Landing"
-    : "สำหรับสมาชิกพรีเมียม";
+  if (lesson.purchaseCourseSlug === "web-app-begins") {
+    return "Web App";
+  }
+
+  return lesson.purchaseCourseSlug ? "คอร์สแยก" : "สำหรับสมาชิกพรีเมียม";
 }

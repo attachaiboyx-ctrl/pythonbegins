@@ -2,18 +2,27 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
+  AppWindow,
   BookOpenCheck,
   CheckCircle2,
   Code2,
   Crown,
   GraduationCap,
   Laptop,
+  MonitorSmartphone,
   Sparkles
 } from "lucide-react";
 import { CourseLogoPanel } from "@/components/CourseLogoPanel";
 import { SpecialCourseBadge } from "@/components/SpecialCourseBadge";
-import { premiumCourses, separateCourses } from "@/lib/courses";
-import { MANUAL_PREMIUM_PRICE_THB } from "@/lib/manual-payment-config";
+import {
+  landingPageCourse,
+  premiumCourses,
+  webAppCourse
+} from "@/lib/courses";
+import {
+  MANUAL_PREMIUM_PRICE_THB,
+  WEB_APP_BEGINS_PRICE_THB
+} from "@/lib/manual-payment-config";
 
 const premiumBenefits = [
   "บทเรียนภาษาไทย เข้าใจง่าย",
@@ -29,8 +38,6 @@ export default function HomePage() {
     (total, course) => total + course.lessons.length,
     0
   );
-  const separateCourse = separateCourses[0];
-
   return (
     <div>
       <section className="relative isolate min-h-[620px] overflow-hidden">
@@ -68,13 +75,64 @@ export default function HomePage() {
               {[
                 [String(premiumCourses.length), "คอร์สหลัก"],
                 [String(premiumLessonCount), "บทเรียน"],
-                ["1", "คอร์สแยก"]
+                ["2", "คอร์สแยก"]
               ].map(([value, label]) => (
                 <div key={label} className="rounded-lg border border-white/15 bg-white/10 p-4 text-center backdrop-blur">
                   <div className="text-2xl font-black">{value}</div>
                   <div className="mt-1 text-xs font-bold text-slate-300">{label}</div>
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="page-shell py-14">
+        <div className="overflow-hidden rounded-lg border border-blue-200 bg-gradient-to-br from-slate-950 via-blue-950 to-cyan-950 text-white shadow-2xl shadow-blue-900/15">
+          <div className="grid gap-8 p-6 sm:p-9 lg:grid-cols-[0.36fr_0.64fr] lg:items-center">
+            <div className="grid min-h-64 place-items-center rounded-lg border border-white/10 bg-white/5 p-7 text-center">
+              <div>
+                <div className="mx-auto flex items-center justify-center gap-3 text-cyan-300">
+                  <AppWindow className="h-16 w-16" strokeWidth={1.7} />
+                  <Code2 className="h-14 w-14" strokeWidth={1.7} />
+                </div>
+                <div className="mt-5 text-5xl font-black tracking-tight">WEB APP</div>
+                <div className="mt-2 text-sm font-black uppercase tracking-[0.22em] text-cyan-200">Begins</div>
+              </div>
+            </div>
+            <div>
+              <SpecialCourseBadge label="NEW • คอร์สใหม่แนะนำ" tone="blue" />
+              <h2 className="mt-5 text-3xl font-black sm:text-4xl">Web App Begins</h2>
+              <p className="mt-4 max-w-3xl text-lg font-bold leading-8 text-blue-100">
+                คอร์สสร้างเว็บแอปจริงสำหรับมือใหม่ พร้อมภาพอธิบายทุกขั้นตอน
+              </p>
+              <p className="mt-3 max-w-3xl leading-7 text-slate-300">
+                {webAppCourse.description}
+              </p>
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                {[
+                  [MonitorSmartphone, `${webAppCourse.lessons.length} บทเรียน`, "Step-by-step"],
+                  [BookOpenCheck, "Checklist ทุกขั้น", "ลงมือทำตามได้"],
+                  [AppWindow, `${WEB_APP_BEGINS_PRICE_THB} บาท`, "คอร์สแยก"]
+                ].map(([Icon, value, label]) => {
+                  const ItemIcon = Icon as typeof AppWindow;
+                  return (
+                    <div key={String(label)} className="rounded-lg border border-white/10 bg-white/5 p-4">
+                      <ItemIcon className="h-5 w-5 text-cyan-300" />
+                      <div className="mt-3 text-lg font-black">{String(value)}</div>
+                      <div className="mt-1 text-xs font-bold text-slate-300">{String(label)}</div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                <Link className="btn-primary" href="/courses/web-app-begins">
+                  ดูรายละเอียดคอร์ส <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link className="inline-flex items-center justify-center rounded-lg border border-white/20 bg-white/10 px-5 py-3 text-sm font-black text-white hover:bg-white/15" href="/payment?product=web-app-begins">
+                  ซื้อคอร์ส {WEB_APP_BEGINS_PRICE_THB} บาท
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -154,7 +212,7 @@ export default function HomePage() {
                   {MANUAL_PREMIUM_PRICE_THB} บาท
                 </div>
                 <p className="mt-3 text-sm font-bold leading-6 text-slate-600">
-                  Landing Page Begins เป็นคอร์สแยกและไม่รวมในแพ็กเกจนี้
+                  Web App Begins และ Landing Page Begins เป็นคอร์สแยก ไม่รวมในแพ็กเกจนี้
                 </p>
                 <Link className="btn-primary mt-5 w-full" href="/payment">ดูวิธีชำระเงิน</Link>
               </div>
@@ -172,11 +230,11 @@ export default function HomePage() {
           <div>
             <SpecialCourseBadge />
             <h2 className="mt-4 text-3xl font-black text-ink">Landing Page Begins</h2>
-            <p className="mt-3 leading-7 text-slate-600">{separateCourse.description}</p>
+            <p className="mt-3 leading-7 text-slate-600">{landingPageCourse.description}</p>
             <div className="mt-5 flex flex-wrap items-center gap-3">
               <span className="text-3xl font-black text-cyan-800">200 บาท</span>
               <span className="rounded-full bg-slate-950 px-3 py-1 text-xs font-black text-white">ไม่รวมใน Premium</span>
-              <span className="text-sm font-bold text-slate-600">{separateCourse.lessons.length} บทเรียน</span>
+              <span className="text-sm font-bold text-slate-600">{landingPageCourse.lessons.length} บทเรียน</span>
             </div>
             <Link className="btn-primary mt-6" href="/courses/landing-page-begins">
               ดูรายละเอียดคอร์ส <ArrowRight className="h-4 w-4" />
